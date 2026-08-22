@@ -14,6 +14,7 @@ export function formatDistance(meters) {
 export function formatBucket(bucket) {
   if (bucket === 'fund_charger_now') return 'Fund charger now';
   if (bucket === 'fund_grid_upgrade_first') return 'Fund grid upgrade first';
+  if (bucket === 'insufficient_data') return 'Needs data review';
   return 'Not flagged';
 }
 

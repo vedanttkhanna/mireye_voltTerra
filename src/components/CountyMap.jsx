@@ -13,6 +13,7 @@ const CA_ZOOM = 6;
 const BUCKET_FILL = {
   fund_charger_now: '#10b981',
   fund_grid_upgrade_first: '#f59e0b',
+  insufficient_data: '#64748b',
 };
 const NOT_FLAGGED_FILL = '#e2e8f0';
 
@@ -269,6 +270,7 @@ function Legend() {
     <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', fontSize: '0.78rem', color: 'var(--fg-muted)' }}>
       <LegendItem color={BUCKET_FILL.fund_charger_now} label="Fund charger now" />
       <LegendItem color={BUCKET_FILL.fund_grid_upgrade_first} label="Fund grid upgrade first" />
+      <LegendItem color={BUCKET_FILL.insufficient_data} label="Needs data review" />
       <LegendItem color="#cbd5e1" label="Not flagged" />
     </div>
   );

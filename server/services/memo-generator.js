@@ -2,11 +2,12 @@
 // English, cited justification memo via Mireye's /v1/ask — "ready to
 // attach to a BEAD or NEVI funding request," per the spec.
 
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from '../config.js';
 import { mireye } from './mireye.js';
+import { writeJsonAtomic } from '../lib/safe-persistence.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CACHE_DIR = path.join(__dirname, '../data/cache');
@@ -94,9 +95,8 @@ async function persistMemos(state, memos) {
     memo_count: memos.length,
     memos,
   };
-  await mkdir(CACHE_DIR, { recursive: true });
   const outPath = path.join(CACHE_DIR, `memos-${state}.json`);
-  await writeFile(outPath, JSON.stringify(output, null, 2));
+  await writeJsonAtomic(outPath, output);
   return { outPath, ...output };
 }
 

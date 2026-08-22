@@ -17,8 +17,8 @@ test('computeDriverToPlugRatio divides registrations by charger count', () => {
   assert.equal(computeDriverToPlugRatio({ registrations: 3326, chargerCount: 183 }), 3326 / 183);
 });
 
-test('computeDriverToPlugRatio returns null when chargerCount is zero', () => {
-  assert.equal(computeDriverToPlugRatio({ registrations: 100, chargerCount: 0 }), null);
+test('computeDriverToPlugRatio marks registered EVs with zero public ports as unbounded demand', () => {
+  assert.equal(computeDriverToPlugRatio({ registrations: 100, chargerCount: 0 }), Infinity);
 });
 
 // --- flagUnderservedCounties ---
@@ -171,11 +171,7 @@ test('scoreCountyGridFeasibility handles an empty sample point list', () => {
   assert.equal(usedFallback, true);
 });
 
-test('scoreCountyGridFeasibility prefers demand_centroid over the plain centroid when both are present', () => {
-  // Regression test for the Riverside/San Bernardino/San Francisco cases:
-  // when the geographic centroid diverged too far from where demand
-  // actually concentrates, orchestrator.js adds a demand_centroid point,
-  // and it should decide the bucket instead of the geographic centroid.
+test('scoreCountyGridFeasibility does not treat the existing-charger mean as demand', () => {
   const desertCentroid = { type: 'centroid', grid_fields: gridFields({}) }; // no substation found
   const demandCentroid = {
     type: 'demand_centroid',
@@ -184,9 +180,9 @@ test('scoreCountyGridFeasibility prefers demand_centroid over the plain centroid
 
   const { primary, usedDemandCentroid } = scoreCountyGridFeasibility([desertCentroid, demandCentroid]);
 
-  assert.equal(usedDemandCentroid, true);
-  assert.equal(primary.point, demandCentroid);
-  assert.equal(primary.feasibility.passes_gates, true);
+  assert.equal(usedDemandCentroid, false);
+  assert.equal(primary.point, desertCentroid);
+  assert.equal(primary.feasibility.passes_gates, false);
 });
 
 test('scoreCountyGridFeasibility uses the plain centroid when no demand_centroid point is present', () => {
@@ -204,6 +200,10 @@ test('bucketCounty maps passing gates to fund_charger_now', () => {
 
 test('bucketCounty maps failing gates to fund_grid_upgrade_first', () => {
   assert.equal(bucketCounty({ passes_gates: false }), 'fund_grid_upgrade_first');
+});
+
+test('bucketCounty maps missing physical evidence to insufficient_data', () => {
+  assert.equal(bucketCounty({ passes_gates: false, data_sufficient: false }), 'insufficient_data');
 });
 
 test('bucketCounty throws without a feasibility result', () => {

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { findCountyFromText, buildGroundedChatQuestion, queryChatAgent } from '../chat-agent.js';
+import { findCountiesFromText, findCountyFromText, buildGroundedChatQuestion, queryChatAgent } from '../chat-agent.js';
 
 test('findCountyFromText detects county mentions in user query', () => {
   const counties = [
@@ -13,6 +13,17 @@ test('findCountyFromText detects county mentions in user query', () => {
   assert.equal(findCountyFromText('Can we install chargers in Riverside near highway 91?', counties)?.county_fips, '06065');
   assert.equal(findCountyFromText('Tell me about Contra Costa grid constraints', counties)?.county_fips, '06013');
   assert.equal(findCountyFromText('How does overall California policy work?', counties), null);
+});
+
+test('findCountiesFromText detects every county in a comparison', () => {
+  const counties = [
+    { county_name: 'Calaveras County', county_fips: '06009' },
+    { county_name: 'Contra Costa County', county_fips: '06013' },
+  ];
+  assert.deepEqual(
+    findCountiesFromText('Compare Calaveras with Contra Costa County', counties).map((c) => c.county_fips),
+    ['06009', '06013']
+  );
 });
 
 test('buildGroundedChatQuestion generates physical geospatial question for Mireye', () => {

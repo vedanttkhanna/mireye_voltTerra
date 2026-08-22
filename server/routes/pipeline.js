@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Router } from 'express';
 import { config } from '../config.js';
+import { conflictWhileRunning, rateLimit } from '../lib/operation-guard.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CACHE_DIR = path.join(__dirname, '../data/cache');
@@ -16,7 +17,7 @@ let lastScoreStatus = null;
 // canonical join (/v1/lookup), cost check (/v1/fetch/quote), grid data
 // fetch (/v1/fetch/batch), then scoring (Days 8-9) on top of that output.
 // Memo generation (Days 10-11) still needs to run separately, per county.
-pipelineRouter.post('/run', async (_req, res) => {
+pipelineRouter.post('/run', rateLimit({ name: 'pipeline-run', max: 1, windowMs: 60 * 60_000 }), conflictWhileRunning('pipeline', async (_req, res) => {
   try {
     const { runFullSweep } = await import('../services/orchestrator.js');
     const result = await runFullSweep({ state: config.pilotState });
@@ -37,14 +38,16 @@ pipelineRouter.post('/run', async (_req, res) => {
       counties_underserved: scoreResult.counties_underserved,
       counties_fund_charger_now: scoreResult.counties_fund_charger_now,
       counties_fund_grid_upgrade_first: scoreResult.counties_fund_grid_upgrade_first,
+      counties_insufficient_data: scoreResult.counties_insufficient_data,
     };
 
     res.json({ sweep: lastRunStatus, scoring: lastScoreStatus });
   } catch (err) {
-    lastRunStatus = { ok: false, message: err.message, at: new Date().toISOString() };
-    res.status(500).json({ error: 'sweep_failed', detail: err.message });
+    lastRunStatus = { ok: false, error: 'sweep_failed', at: new Date().toISOString() };
+    console.error('[pipeline/run]', err);
+    res.status(500).json({ error: 'sweep_failed' });
   }
-});
+}));
 
 pipelineRouter.post('/run/:fips', (_req, res) => {
   res
@@ -55,7 +58,7 @@ pipelineRouter.post('/run/:fips', (_req, res) => {
 // POST /api/pipeline/score — re-run scoring alone against the existing
 // join-pipeline cache, without spending any Mireye credits. Useful for
 // iterating on scoring.js's thresholds without re-fetching grid data.
-pipelineRouter.post('/score', async (_req, res) => {
+pipelineRouter.post('/score', rateLimit({ name: 'pipeline-score', max: 6, windowMs: 60 * 60_000 }), conflictWhileRunning('pipeline', async (_req, res) => {
   try {
     const { runScoring } = await import('../services/scoring.js');
     const result = await runScoring({ state: config.pilotState });
@@ -65,13 +68,15 @@ pipelineRouter.post('/score', async (_req, res) => {
       counties_underserved: result.counties_underserved,
       counties_fund_charger_now: result.counties_fund_charger_now,
       counties_fund_grid_upgrade_first: result.counties_fund_grid_upgrade_first,
+      counties_insufficient_data: result.counties_insufficient_data,
     };
     res.json(lastScoreStatus);
   } catch (err) {
-    lastScoreStatus = { ok: false, message: err.message, at: new Date().toISOString() };
-    res.status(500).json({ error: 'scoring_failed', detail: err.message });
+    lastScoreStatus = { ok: false, error: 'scoring_failed', at: new Date().toISOString() };
+    console.error('[pipeline/score]', err);
+    res.status(500).json({ error: 'scoring_failed' });
   }
-});
+}));
 
 pipelineRouter.get('/status', async (_req, res) => {
   let lastJoinPipelineRun = null;
@@ -99,6 +104,7 @@ pipelineRouter.get('/status', async (_req, res) => {
       counties_underserved: data.counties_underserved,
       counties_fund_charger_now: data.counties_fund_charger_now,
       counties_fund_grid_upgrade_first: data.counties_fund_grid_upgrade_first,
+      counties_insufficient_data: data.counties_insufficient_data ?? 0,
     };
   } catch {
     // No scoring run yet — leave null.
@@ -124,6 +130,6 @@ pipelineRouter.get('/backtest', async (_req, res) => {
     const raw = await readFile(path.join(CACHE_DIR, `backtest-${config.pilotState}.json`), 'utf8');
     res.json(JSON.parse(raw));
   } catch {
-    res.status(501).json({ error: 'not_implemented', detail: 'No backtest run yet — npm run backtest' });
+    res.status(404).json({ error: 'not_found', detail: 'No backtest run yet — npm run backtest' });
   }
 });

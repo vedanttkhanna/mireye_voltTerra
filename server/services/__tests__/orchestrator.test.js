@@ -4,7 +4,6 @@ import {
   buildCountySamplePoints,
   checkLookupAgreement,
   GRID_FEASIBILITY_FIELDS,
-  CENTROID_DIVERGENCE_THRESHOLD_M,
 } from '../orchestrator.js';
 
 test('buildCountySamplePoints puts the centroid first, then corridor points', () => {
@@ -38,20 +37,14 @@ test('buildCountySamplePoints omits the centroid if none is found', () => {
   assert.equal(points[0].type, 'corridor');
 });
 
-test('buildCountySamplePoints adds a demand_centroid point when it diverges from the geographic centroid beyond the threshold', () => {
-  // Real Riverside County figures: geographic centroid in the desert,
-  // charger-mean demand centroid ~84km away in the Inland Empire.
+test('buildCountySamplePoints never treats the existing-charger mean as a demand point', () => {
   const points = buildCountySamplePoints({
     centroid: { lat: 33.729828, lng: -116.002239 },
     corridorPoints: [],
     demandCentroid: { lat: 33.85, lng: -117.0 },
   });
 
-  const demandPoint = points.find((p) => p.type === 'demand_centroid');
-  assert.ok(demandPoint, 'expected a demand_centroid point to be added');
-  assert.equal(demandPoint.lat, 33.85);
-  assert.equal(demandPoint.source, 'afdc_station_mean');
-  assert.ok(demandPoint.divergence_from_centroid_m > CENTROID_DIVERGENCE_THRESHOLD_M);
+  assert.equal(points.some((p) => p.type === 'demand_centroid'), false);
 });
 
 test('buildCountySamplePoints does NOT add a demand_centroid point when divergence is small', () => {

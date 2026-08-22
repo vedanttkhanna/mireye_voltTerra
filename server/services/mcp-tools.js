@@ -32,6 +32,18 @@ async function loadJoinData(state = config.pilotState) {
  */
 export const MCP_TOOL_DEFINITIONS = [
   {
+    name: 'get_statewide_summary',
+    description: 'Retrieves the California-wide median, underserved threshold, bucket totals, and ranked counties. Use for statewide, ranking, highest/lowest, and broad comparison questions.',
+    parameters: {
+      type: 'OBJECT',
+      properties: {
+        limit: { type: 'NUMBER', description: 'Maximum ranked counties to return, from 1 to 20.' },
+        underserved_only: { type: 'BOOLEAN', description: 'Return only counties flagged underserved.' },
+      },
+      required: [],
+    },
+  },
+  {
     name: 'get_county_demand_metrics',
     description: 'Retrieves EV registration counts, existing public charging ports (Level 2 and DC Fast), driver-to-plug ratio, and underserved status for a California county.',
     parameters: {
@@ -89,16 +101,17 @@ export const MCP_TOOL_DEFINITIONS = [
   },
   {
     name: 'make_funding_decision',
-    description: 'Autonomously determines the final EV infrastructure recommendation bucket ("fund_charger_now", "fund_grid_upgrade_first", or "not_flagged") based on demand stress and grid screening.',
+    description: 'Determines the recommendation bucket, including insufficient_data when physical evidence is missing.',
     parameters: {
       type: 'OBJECT',
       properties: {
         county_name: { type: 'STRING', description: 'The county name.' },
         underserved: { type: 'BOOLEAN', description: 'Whether the county has an EV/port ratio >= 2x state median.' },
         passes_grid_gates: { type: 'BOOLEAN', description: 'Whether local electrical grid passes proximity and voltage gates.' },
+        grid_data_sufficient: { type: 'BOOLEAN', description: 'Whether substation distance and voltage are both known.' },
         justification: { type: 'STRING', description: 'The plain-English reasoning supporting the decision.' },
       },
-      required: ['county_name', 'underserved', 'passes_grid_gates', 'justification'],
+      required: ['county_name', 'underserved', 'passes_grid_gates', 'grid_data_sufficient', 'justification'],
     },
   },
 ];
@@ -126,6 +139,33 @@ export async function executeMcpTool(toolName, args, { askImpl = mireye.ask.bind
   const joinData = await loadJoinData();
 
   switch (toolName) {
+    case 'get_statewide_summary': {
+      const limit = Math.max(1, Math.min(20, Math.trunc(Number(args.limit) || 10)));
+      const counties = (scoredData?.counties ?? []).filter((county) => !args.underserved_only || county.underserved);
+      return {
+        state: scoredData?.state ?? config.pilotState,
+        state_median_driver_to_plug_ratio: scoredData?.state_median_driver_to_plug_ratio,
+        underserved_threshold_multiplier: scoredData?.underserved_threshold_multiplier,
+        counties_total: scoredData?.counties?.length ?? 0,
+        counties_underserved: scoredData?.counties_underserved ?? 0,
+        bucket_totals: {
+          fund_charger_now: scoredData?.counties_fund_charger_now ?? 0,
+          fund_grid_upgrade_first: scoredData?.counties_fund_grid_upgrade_first ?? 0,
+          insufficient_data: scoredData?.counties_insufficient_data ?? 0,
+        },
+        ranked_counties: counties.slice(0, limit).map((county) => ({
+          county_fips: county.county_fips,
+          county_name: county.county_name,
+          driver_to_plug_ratio: county.driver_to_plug_ratio,
+          underserved: county.underserved,
+          bucket: county.bucket,
+        })),
+        citations: [
+          { source: 'CA DMV Vehicle Fuel Type Counts', source_url: 'https://data.ca.gov/dataset/vehicle-fuel-type-count-by-zip-code', confidence: 'high' },
+          { source: 'DOE Alternative Fuels Data Center (AFDC)', source_url: 'https://developer.nlr.gov', confidence: 'high' },
+        ],
+      };
+    }
     case 'get_county_demand_metrics': {
       const county = resolveCounty(args.county_name_or_fips, scoredData);
       if (!county) {
@@ -149,7 +189,13 @@ export async function executeMcpTool(toolName, args, { askImpl = mireye.ask.bind
 
     case 'get_grid_infrastructure': {
       const county = resolveCounty(args.county_name_or_fips, scoredData);
-      const gf = county?.grid_feasibility;
+      const joinCounty = joinData?.counties?.find((c) => c.county_fips === county?.county_fips);
+      const cachedPoint = joinCounty?.sample_points?.find((p) => p.type === 'centroid') ?? joinCounty?.sample_points?.[0];
+      const computed = cachedPoint?.grid_fields ? computeGridFeasibilityScore(cachedPoint.grid_fields) : null;
+      const gf = county?.grid_feasibility ?? (computed ? {
+        ...computed,
+        sampled_at: { type: cachedPoint.type, lat: cachedPoint.lat, lng: cachedPoint.lng },
+      } : null);
       const inputs = gf?.inputs ?? {};
       const samplePoint = gf?.sampled_at ?? { lat: args.lat ?? 37.2, lng: args.lng ?? -119.4 };
 
@@ -167,8 +213,8 @@ export async function executeMcpTool(toolName, args, { askImpl = mireye.ask.bind
         substation_distance_m: inputs.substation_distance_m,
         substation_distance_miles: inputs.substation_distance_m != null ? Number((inputs.substation_distance_m / METERS_PER_MILE).toFixed(2)) : null,
         substation_voltage_kv: inputs.substation_voltage_kv,
-        substation_status: inputs.substation_status ?? 'OPERATIONAL',
-        substation_source: inputs.substation_source ?? 'EIA_POWER',
+        substation_status: inputs.substation_status ?? null,
+        substation_source: inputs.substation_source ?? null,
         grid_feasibility_score: gf?.score ?? null,
         citations,
       };
@@ -187,6 +233,7 @@ export async function executeMcpTool(toolName, args, { askImpl = mireye.ask.bind
 
       return {
         passes_gates: evalResult.passes_gates,
+        data_sufficient: evalResult.data_sufficient,
         score: evalResult.score,
         gate_failures: evalResult.gate_failures,
         summary: evalResult.passes_gates
@@ -213,13 +260,15 @@ export async function executeMcpTool(toolName, args, { askImpl = mireye.ask.bind
     case 'make_funding_decision': {
       let decision = 'not_flagged';
       if (args.underserved) {
-        decision = args.passes_grid_gates ? 'fund_charger_now' : 'fund_grid_upgrade_first';
+        decision = !args.grid_data_sufficient
+          ? 'insufficient_data'
+          : args.passes_grid_gates ? 'fund_charger_now' : 'fund_grid_upgrade_first';
       }
 
       return {
         county_name: args.county_name,
         decision,
-        decision_label: decision === 'fund_charger_now' ? 'Fund Charger Now' : decision === 'fund_grid_upgrade_first' ? 'Fund Grid Upgrade First' : 'Not Flagged for Intervention',
+        decision_label: decision === 'fund_charger_now' ? 'Fund Charger Now' : decision === 'fund_grid_upgrade_first' ? 'Fund Grid Upgrade First' : decision === 'insufficient_data' ? 'Needs Data Review' : 'Not Flagged for Intervention',
         justification: args.justification,
         timestamp: new Date().toISOString(),
       };

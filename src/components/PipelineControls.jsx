@@ -44,7 +44,7 @@ export default function PipelineControls({ status, onRerun }) {
           <div>
             <strong style={{ color: 'var(--fg)' }}>Last scored:</strong> {formatTimestamp(lastScore?.scored_at)}
             {lastScore &&
-              ` (${lastScore.counties_underserved} underserved: ${lastScore.counties_fund_charger_now} charger now, ${lastScore.counties_fund_grid_upgrade_first} grid upgrade first)`}
+              ` (${lastScore.counties_underserved} underserved: ${lastScore.counties_fund_charger_now} charger now, ${lastScore.counties_fund_grid_upgrade_first} grid upgrade first, ${lastScore.counties_insufficient_data ?? 0} review)`}
           </div>
         </div>
         <button

@@ -44,6 +44,16 @@ export function findCountyFromText(text, countiesList = []) {
   return null;
 }
 
+export function findCountiesFromText(text, countiesList = []) {
+  if (!text || typeof text !== 'string') return [];
+  const clean = text.toLowerCase();
+  return countiesList.filter((county) => {
+    const name = county.county_name.toLowerCase();
+    const bare = name.replace(/\s+county$/, '');
+    return clean.includes(name) || (bare.length > 3 && new RegExp(`\\b${bare.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\b`, 'i').test(clean));
+  });
+}
+
 /**
  * Builds a Mireye-compatible physical infrastructure question.
  * Mireye covers: terrain, utilities (power/pipelines/rail), built environment,

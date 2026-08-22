@@ -1,9 +1,10 @@
-import { writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'csv-parse/sync';
 import { config } from '../config.js';
 import { zipToCounty } from '../lib/zip-county.js';
+import { listCountiesForState } from '../lib/zip-county.js';
+import { writeJsonAtomic } from '../lib/safe-persistence.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CACHE_DIR = path.join(__dirname, '../data/cache');
@@ -30,6 +31,7 @@ export async function listRegistrationResources({
   if (!res.ok) throw new Error(`CKAN package_show failed: ${res.status}`);
   const data = await res.json();
 
+  if (!Array.isArray(data?.result?.resources)) throw new Error('CKAN response missing result.resources');
   const csvResources = data.result.resources
     .filter((r) => r.format === 'CSV')
     .map((r) => ({
@@ -40,7 +42,9 @@ export async function listRegistrationResources({
     }))
     .sort((a, b) => new Date(b.asOfDate) - new Date(a.asOfDate));
 
-  return csvResources.slice(0, yearsBack);
+  const selected = csvResources.filter((r) => Number.isFinite(Date.parse(r.asOfDate))).slice(0, yearsBack);
+  if (selected.length < yearsBack) throw new Error(`CKAN returned only ${selected.length} valid dated CSV resources`);
+  return selected;
 }
 
 /**
@@ -50,13 +54,19 @@ export async function listRegistrationResources({
  */
 export function parseRegistrationsCsv(csvText) {
   const records = parse(csvText, { columns: true, skip_empty_lines: true });
+  const required = ['Date', 'ZIP Code', 'Fuel', 'Vehicles'];
+  if (records.length && required.some((key) => !(key in records[0]))) {
+    throw new Error(`Registration CSV missing required columns: ${required.join(', ')}`);
+  }
   const rows = [];
   for (const r of records) {
     const fuel = r.Fuel?.trim();
     if (!EV_FUEL_TYPES.has(fuel)) continue;
     const vehicles = Number(r.Vehicles);
-    if (!Number.isFinite(vehicles)) continue;
-    const year = new Date(r.Date).getFullYear();
+    if (!Number.isFinite(vehicles) || vehicles < 0) continue;
+    const dateMs = Date.parse(r.Date);
+    if (!Number.isFinite(dateMs)) continue;
+    const year = new Date(dateMs).getUTCFullYear();
     rows.push({ zip: r['ZIP Code'], year, fuel, vehicles });
   }
   return rows;
@@ -126,21 +136,26 @@ export async function ingestRegistrations({
   }
 
   const { counties, unresolvedZips } = aggregateRegistrationsByCounty(allRows, { state });
+  const expectedCountyCount = listCountiesForState(state).length;
+  if (counties.length < Math.ceil(expectedCountyCount * 0.9)) {
+    throw new Error(`Registration coverage too low: ${counties.length}/${expectedCountyCount} counties; keeping existing cache`);
+  }
 
   const output = {
     state,
     fetched_at: new Date().toISOString(),
     source: 'California DMV "Vehicle Fuel Type Count by Zip Code" (data.ca.gov)',
     source_resources: resources.map((r) => ({ name: r.name, url: r.url })),
+    data_vintages: resources.map((r) => r.asOfDate),
+    county_coverage: { resolved: counties.length, expected: expectedCountyCount },
     ev_fuel_types_counted: [...EV_FUEL_TYPES],
     unresolved_zip_count: unresolvedZips.length,
     counties,
     unresolvedZips,
   };
 
-  await mkdir(CACHE_DIR, { recursive: true });
   const outPath = path.join(CACHE_DIR, `ev-registrations-${state}.json`);
-  await writeFile(outPath, JSON.stringify(output, null, 2));
+  await writeJsonAtomic(outPath, output);
   return { outPath, ...output };
 }
 

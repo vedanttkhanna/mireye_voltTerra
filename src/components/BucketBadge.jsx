@@ -11,6 +11,11 @@ const STYLES = {
     color: 'var(--warn-dark, #b45309)',
     border: '1px solid var(--warn-border, #fde68a)',
   },
+  insufficient_data: {
+    background: '#f1f5f9',
+    color: '#475569',
+    border: '1px solid #94a3b8',
+  },
   not_flagged: {
     background: '#f1f5f9',
     color: '#64748b',

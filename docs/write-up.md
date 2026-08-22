@@ -48,7 +48,7 @@ The spec's 14-day plan (PDF page 6) is not reproduced in the README — only her
 1. *Driver-to-plug ratio* — `latest_registrations / (Level 2 + DC fast ports)`. Level 1 ports excluded (under 1% of the public network statewide, not a real fast-charging resource). A county is flagged "underserved" once its ratio clears 2x the state median — the peer-relative threshold the build brief explicitly asks for, not an arbitrary cutoff.
 2. *Grid feasibility* — three hard gates evaluated at a representative point: a substation exists and is in service, is within 8km, and is at least 60kV. Both thresholds are derived from Mireye's own field documentation (not fit to the sample), and the design is a decision tree, not a weighted score, per the build brief's explicit preference for justifiable rules over arbitrary weights.
 
-A county that clears all three gates is bucketed `fund_charger_now`; failing any gate is `fund_grid_upgrade_first`.
+A county that clears all three gates is bucketed `fund_charger_now`; a known physical failure is `fund_grid_upgrade_first`; missing distance or voltage evidence is `insufficient_data`.
 
 *Bug found and fixed during this phase:* the first version of the feasibility check picked whichever of a county's sample points scored best — including existing-charger corridor points — which quietly favored any county with even one charger, since chargers tend to already sit near good grid access. Confirmed on real data (Riverside's corridor point papered over its centroid having zero substation data) and fixed by deciding the bucket from the centroid alone, with corridor points demoted to informational context only.
 
@@ -60,7 +60,7 @@ The dashboard (Vite + React) follows the spec's "thin, read-only layer" framing 
 
 A site-level spot-check went further: fetched live grid data at an actual NEVI-awarded station's real coordinates in Murrieta (Riverside County) and found it would clear every VOLT-TERRA gate on its own — evidence for the next finding.
 
-**Days 12-13 — Sparse/edge-case fix.** Prompted by a direct question about whether the single-centroid design was fundamentally broken. Measured it rather than guessing: computed the distance between every county's geographic centroid and a "demand centroid" (mean location of every known charger in that county). Riverside (84km) wasn't alone — San Bernardino (125km, centroid lands in the Mojave) and San Francisco (55km, whose official land area includes the Farallon Islands, ~48km offshore) were worse or comparable, against a state median of 17.6km. Added a `demand_centroid` sample point wherever this divergence exceeds 50km, and had scoring prefer it over the plain centroid when present — an aggregate over every known charger, not a cherry-picked "best" site, so it doesn't reintroduce the Days 8-9 selection bias. Result: **Riverside flipped from `fund_grid_upgrade_first` to `fund_charger_now`**, backed by a real substation 5km from the demand-weighted point. Also found and categorized a smaller issue: several `/v1/lookup` cross-checks came back empty and resolved correctly on immediate retry — a transient API blip now tracked separately from genuine disagreements so it doesn't inflate the mismatch count.
+**Days 12-13 — Sparse/edge-case investigation.** The build measured divergence between geographic centroids and the mean of known charger locations. A later correctness review removed that mean from decision-making: existing chargers measure historical supply placement, not EV demand. The current pipeline uses the geographic centroid while retaining charger sites as informational context; a defensible replacement should use registration/population weighting or multiple demand clusters.
 
 **Post-13 — Interactive map (added on request, not in the original 14-day plan).** The Riverside/San Bernardino/San Francisco centroid finding above led directly to a follow-up ask: an interactive map showing recommended counties and letting an analyst check feasibility at a specific point. This intersects the build brief's explicit "not site selection" rule, so the scope was checked with the user before building rather than assumed — the answer was to build both a county-level choropleth (the primary, default view — real Census county polygons, not points, colored by funding bucket) and an opt-in point-check tool, with the point-check deliberately never ranking or comparing candidate points, only reporting whether a clicked point clears the same physical gates a flagged county's own bucket used, with full citations. Verified in a real, driven browser session (a headless Chrome check, since the interactive browser extension wouldn't connect that session) — which caught a real bug: clicking the confirm button inside a map popup was also bubbling through to the underlying map's own click handler, silently opening a second popup at a different point. Fixed with an explicit `stopPropagation()`.
 
@@ -102,10 +102,10 @@ Per the build brief's point 6 — not a hypothetical checklist, things that actu
 | Counties covered | 58/58 |
 | Sample points | 236 |
 | Counties flagged underserved | 6 (median ratio 21.0, threshold 2x) |
-| Bucket split | 6 `fund_charger_now`, 0 `fund_grid_upgrade_first` |
+| Bucket split | 5 `fund_charger_now`, 1 `fund_grid_upgrade_first`, 0 `insufficient_data` |
 | Memos generated | 6/6 flagged counties |
 | NEVI backtest | 5/6 flagged counties independently funded |
-| Tests | 93, all passing |
+| Tests | 116, all passing |
 | Mireye credits used | 16,470 / 25,000 (8,530 remaining) |
 
 ## What's left

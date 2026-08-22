@@ -54,7 +54,7 @@ test('collects corridor_points from stations that carry coordinates', () => {
   assert.deepEqual(la.corridor_points[0], { id: 1, station_name: undefined, lat: 34.0, lng: -118.2 });
 });
 
-test('demand_centroid averages ALL geocoded stations, not just the truncated corridor sample', () => {
+test('aggregation does not label the existing-charger mean as demand', () => {
   const withCoords = [
     { id: 1, zip: '90001', latitude: 34.0, longitude: -118.0 },
     { id: 2, zip: '90001', latitude: 34.2, longitude: -118.2 },
@@ -64,14 +64,13 @@ test('demand_centroid averages ALL geocoded stations, not just the truncated cor
   const { counties } = aggregateStationsByCounty(withCoords, { state: 'CA' });
   const la = counties.find((c) => c.county_name === 'Los Angeles County');
   assert.equal(la.corridor_points.length, 3); // truncated per CORRIDOR_SAMPLE_SIZE
-  assert.ok(Math.abs(la.demand_centroid.lat - 34.3) < 1e-9); // mean of all 4
-  assert.ok(Math.abs(la.demand_centroid.lng - -118.3) < 1e-9);
+  assert.equal('demand_centroid' in la, false);
 });
 
-test('demand_centroid is null for a county with no geocoded stations', () => {
+test('aggregation omits demand_centroid when stations lack coordinates', () => {
   const { counties } = aggregateStationsByCounty([{ id: 1, zip: '90001' }], { state: 'CA' });
   const la = counties.find((c) => c.county_name === 'Los Angeles County');
-  assert.equal(la.demand_centroid, null);
+  assert.equal('demand_centroid' in la, false);
 });
 
 test('pickEvenlySpaced returns the whole list when under the max', () => {

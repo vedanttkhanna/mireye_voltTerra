@@ -15,7 +15,14 @@ export const config = {
   mireyeBaseUrl: process.env.MIREYE_BASE_URL || 'https://api.mireye.com',
 
   // Optional LLM API keys for autonomous decision agent
+  llmProvider: process.env.LLM_PROVIDER || 'auto',
   geminiApiKey: process.env.GEMINI_API_KEY || '',
+  geminiModel: process.env.GEMINI_MODEL || 'gemini-3.6-flash',
+  geminiTimeoutMs: Number(process.env.GEMINI_TIMEOUT_MS) || 90_000,
+  groqApiKey: process.env.GROQ_API_KEY || '',
+  groqModel: process.env.GROQ_MODEL || 'openai/gpt-oss-20b',
+  groqTimeoutMs: Number(process.env.GROQ_TIMEOUT_MS) || 90_000,
+  groqMaxCompletionTokens: Number(process.env.GROQ_MAX_COMPLETION_TOKENS) || 2800,
   anthropicApiKey: process.env.ANTHROPIC_API_KEY || '',
 
   // developer.nrel.gov retired May 2026; AFDC now serves from developer.nlr.gov.

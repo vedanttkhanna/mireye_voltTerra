@@ -2,10 +2,11 @@
 // the fund-now/fund-grid-upgrade split, built on top of the join pipeline's
 // output (server/data/cache/join-pipeline-<state>.json, Days 5-7).
 
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from '../config.js';
+import { writeJsonAtomic } from '../lib/safe-persistence.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CACHE_DIR = path.join(__dirname, '../data/cache');
@@ -19,6 +20,7 @@ const CACHE_DIR = path.join(__dirname, '../data/cache');
 // throughput multiplier; it's a real limitation, named below rather than
 // hidden — see README's Known blind spots.
 export function computeDriverToPlugRatio({ registrations, chargerCount }) {
+  if (chargerCount === 0 && registrations > 0) return Infinity;
   if (!chargerCount) return null;
   return registrations / chargerCount;
 }
@@ -155,6 +157,7 @@ export function computeGridFeasibilityScore(gridFields) {
   return {
     score,
     passes_gates: passesGates,
+    data_sufficient: substationFound && voltage != null,
     gate_failures: gateFailures,
     inputs: {
       substation_distance_m: distance,
@@ -171,7 +174,7 @@ export function computeGridFeasibilityScore(gridFields) {
  * site, with the best-scoring remaining point carried along as
  * informational context only.
  *
- * Primary point priority: demand_centroid > centroid > best remaining point.
+ * Primary point priority: geographic centroid > best remaining point.
  *
  * Earlier version of this function picked whichever sample point scored
  * highest, corridor points included, on the reasoning that "is there a
@@ -190,26 +193,13 @@ export function computeGridFeasibilityScore(gridFields) {
  * Madera's grid story around "2.1 mi from county centroid," not the
  * nearest existing charger — is the fairer, unbiased read on county-wide
  * demand geography, so it became primary instead.
- *
- * That fix assumed the geographic centroid itself is always representative
- * of a county's demand geography, which doesn't hold for a handful of
- * large or oddly-shaped counties: Riverside's centroid sits 84km from
- * where its chargers actually cluster (a remote desert vs. the urban
- * Inland Empire), San Bernardino's is 125km off, and San Francisco's
- * official land area includes the Farallon Islands ~55km offshore, pulling
- * its Census internal point away from the entirely urban mainland where
- * all its infrastructure sits. orchestrator.js's buildCountySamplePoints
- * only adds a `demand_centroid` point (the mean location of every charger
- * in the county — an aggregate, not a cherry-picked "best" single site, so
- * it doesn't reintroduce the self-selection bias above) when that
- * divergence exceeds CENTROID_DIVERGENCE_THRESHOLD_M. When present, it
- * takes priority over the plain centroid as primary; the geographic
- * centroid then becomes informational context alongside corridor points.
+ * Existing-charger means are deliberately excluded: they describe historic
+ * supply placement, not EV demand. A future replacement should use a
+ * registration- or population-weighted surface or multiple demand clusters.
  */
 export function scoreCountyGridFeasibility(samplePoints = []) {
-  const demandCentroid = samplePoints.find((p) => p.type === 'demand_centroid') ?? null;
   const centroid = samplePoints.find((p) => p.type === 'centroid') ?? null;
-  const primaryPoint = demandCentroid ?? centroid;
+  const primaryPoint = centroid;
 
   const others = samplePoints.filter((p) => p !== primaryPoint).map((point) => ({
     point,
@@ -230,12 +220,13 @@ export function scoreCountyGridFeasibility(samplePoints = []) {
 
   const bestAlternative = others.length ? others.reduce((a, b) => (b.feasibility.score > a.feasibility.score ? b : a)) : null;
 
-  return { primary: primaryEntry, bestAlternative, usedFallback, usedDemandCentroid: demandCentroid != null };
+  return { primary: primaryEntry, bestAlternative, usedFallback, usedDemandCentroid: false };
 }
 
 /** Turns a computeGridFeasibilityScore result into the two funding buckets. */
 export function bucketCounty(feasibility) {
   if (!feasibility) throw new Error('bucketCounty requires a feasibility result');
+  if (feasibility.data_sufficient === false) return 'insufficient_data';
   return feasibility.passes_gates ? 'fund_charger_now' : 'fund_grid_upgrade_first';
 }
 
@@ -305,14 +296,18 @@ export function scoreAllCounties(joinPipelineOutput) {
       county_name: c.county_name,
       latest_registrations: c.latestRegistrations,
       charger_count: c.chargerCount,
-      driver_to_plug_ratio: c.ratio,
+      driver_to_plug_ratio: Number.isFinite(c.ratio) ? c.ratio : null,
+      zero_public_ports: c.ratio === Infinity,
       underserved,
       grid_feasibility: gridFeasibility,
       bucket,
     };
   });
 
-  counties.sort((a, b) => (b.driver_to_plug_ratio ?? -1) - (a.driver_to_plug_ratio ?? -1));
+  counties.sort((a, b) => {
+    if (a.zero_public_ports !== b.zero_public_ports) return a.zero_public_ports ? -1 : 1;
+    return (b.driver_to_plug_ratio ?? -1) - (a.driver_to_plug_ratio ?? -1);
+  });
 
   return {
     state: joinPipelineOutput.state,
@@ -322,6 +317,7 @@ export function scoreAllCounties(joinPipelineOutput) {
     counties_underserved: flagged.length,
     counties_fund_charger_now: counties.filter((c) => c.bucket === 'fund_charger_now').length,
     counties_fund_grid_upgrade_first: counties.filter((c) => c.bucket === 'fund_grid_upgrade_first').length,
+    counties_insufficient_data: counties.filter((c) => c.bucket === 'insufficient_data').length,
     counties,
   };
 }
@@ -331,9 +327,8 @@ export async function runScoring({ state = config.pilotState } = {}) {
   const joinPipelineOutput = JSON.parse(raw);
   const result = scoreAllCounties(joinPipelineOutput);
 
-  await mkdir(CACHE_DIR, { recursive: true });
   const outPath = path.join(CACHE_DIR, `scored-counties-${state}.json`);
-  await writeFile(outPath, JSON.stringify(result, null, 2));
+  await writeJsonAtomic(outPath, result);
   return { outPath, ...result };
 }
 

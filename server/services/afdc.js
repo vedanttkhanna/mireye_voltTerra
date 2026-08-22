@@ -1,9 +1,9 @@
-import { writeFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from '../config.js';
 import { zipToCounty } from '../lib/zip-county.js';
-import { meanPoint } from '../lib/geo.js';
+import { listCountiesForState } from '../lib/zip-county.js';
+import { writeJsonAtomic } from '../lib/safe-persistence.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CACHE_DIR = path.join(__dirname, '../data/cache');
@@ -53,7 +53,10 @@ export async function fetchAllStations({
     url.searchParams.set('api_key', apiKey);
 
     const data = await fetchPageWithRetry(fetchImpl, url);
-    totalResults = data.total_results ?? 0;
+    if (!Array.isArray(data?.fuel_stations) || !Number.isInteger(data?.total_results) || data.total_results < 0) {
+      throw new Error('AFDC response has an invalid station schema');
+    }
+    totalResults = data.total_results;
     stations.push(...data.fuel_stations);
     offset += PAGE_LIMIT;
 
@@ -100,12 +103,8 @@ export function pickEvenlySpaced(list, max) {
  * Level 2 vs DC fast, plus:
  *   - up to CORRIDOR_SAMPLE_SIZE representative station coordinates per
  *     county for the join pipeline's county sampling step, and
- *   - `demand_centroid`, the arithmetic mean lat/lng of EVERY station in
- *     the county (not just the truncated corridor sample) — a proxy for
- *     where charging demand actually concentrates geographically, used to
- *     detect when a county's Census-gazetteer centroid is a poor stand-in
- *     for that (orchestrator.js's CENTROID_DIVERGENCE_THRESHOLD_M). null
- *     for a county with zero geocoded stations.
+ * Existing stations are retained only as contextual supply samples. They
+ * are never labeled or used as a demand centroid.
  * Stations whose ZIP isn't in the state's crosswalk (bad ZIP, PO box,
  * data entry error) are counted separately rather than silently dropped.
  */
@@ -151,7 +150,6 @@ export function aggregateStationsByCounty(stations, { state = config.pilotState 
     .map(({ stationsWithCoords, ...county }) => ({
       ...county,
       corridor_points: pickEvenlySpaced(stationsWithCoords, CORRIDOR_SAMPLE_SIZE),
-      demand_centroid: meanPoint(stationsWithCoords),
     }))
     .sort((a, b) => a.county_fips.localeCompare(b.county_fips));
 
@@ -161,6 +159,10 @@ export function aggregateStationsByCounty(stations, { state = config.pilotState 
 export async function ingestAfdc({ state = config.pilotState } = {}) {
   const stations = await fetchAllStations({ state });
   const { counties, unresolved } = aggregateStationsByCounty(stations, { state });
+  const expectedCountyCount = listCountiesForState(state).length;
+  if (stations.length === 0 || counties.length < Math.ceil(expectedCountyCount * 0.5)) {
+    throw new Error(`AFDC coverage too low: ${counties.length}/${expectedCountyCount} counties; keeping existing cache`);
+  }
 
   const output = {
     state,
@@ -168,13 +170,14 @@ export async function ingestAfdc({ state = config.pilotState } = {}) {
     source: 'DOE Alternative Fuels Data Center (developer.nlr.gov)',
     total_stations: stations.length,
     unresolved_count: unresolved.length,
+    data_vintage: new Date().toISOString().slice(0, 10),
+    county_coverage: { resolved: counties.length, expected: expectedCountyCount },
     counties,
     unresolved,
   };
 
-  await mkdir(CACHE_DIR, { recursive: true });
   const outPath = path.join(CACHE_DIR, `afdc-${state}.json`);
-  await writeFile(outPath, JSON.stringify(output, null, 2));
+  await writeJsonAtomic(outPath, output);
   return { outPath, ...output };
 }
 

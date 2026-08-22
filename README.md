@@ -4,14 +4,14 @@
 
 VOLT-TERRA answers one question: *which California counties have EV registrations outrunning their public charging infrastructure, and for the ones that do, is the fix "build a charger" or "upgrade the grid first"?*
 
-It's an agent, not a dashboard: it pulls EV registration data (state DMV) and existing charger locations (DOE), joins them against cited physical grid data from Mireye (substation distance, voltage, interconnection capacity), computes a peer-relative demand signal, runs that signal through a physical feasibility screen, and sorts every flagged county into one of two funding buckets — with a plain-English, cited justification memo generated per county via Mireye's `/v1/ask`. Every decision traces back to the exact fields and sources that drove it.
+It's an agent, not a dashboard: it pulls EV registration data (state DMV) and existing charger locations (DOE), joins them against cited physical grid data from Mireye (substation distance, voltage, interconnection capacity), computes a peer-relative demand signal, runs that signal through a physical feasibility screen, and sorts every flagged county into a funding or data-review outcome — with a plain-English, cited justification memo generated per county via Mireye's `/v1/ask`. Every decision traces back to the exact fields and sources that drove it.
 
-By the numbers (live California pilot, one full statewide run): **58/58 counties analyzed, 6 flagged as underserved, 93 automated tests passing, cross-checked against 114 real state EV-infrastructure funding records.** See [`docs/write-up.md`](docs/write-up.md) for the full day-by-day build narrative, including every bug found and fixed against live data.
+By the numbers (live California pilot, one full statewide run): **58/58 counties analyzed, 6 flagged as underserved, 116 automated tests passing, cross-checked against 114 real state EV-infrastructure funding records.** See [`docs/write-up.md`](docs/write-up.md) for the full day-by-day build narrative, including every bug found and fixed against live data.
 
 ## What it does
 
 - **Ranks and flags counties.** Computes registered-EVs-per-charging-port for every county, and flags the ones running at 2× (or more) the state median — a peer-relative threshold, not an arbitrary cutoff.
-- **Screens grid feasibility.** For each flagged county, checks whether a real substation sits close enough and at high enough voltage to support a new DC fast charger, using cited Mireye physical data. Buckets the county as `fund_charger_now` or `fund_grid_upgrade_first` accordingly.
+- **Screens grid feasibility.** For each flagged county, checks whether a real substation sits close enough and at high enough voltage to support a new DC fast charger. Missing evidence becomes `insufficient_data`; it is never treated as proof that an upgrade is required.
 - **Writes the justification memo.** Calls Mireye's `/v1/ask` to generate a cited, plain-English memo per flagged county — ready to attach to a funding request.
 - **Backtests itself against reality.** Cross-checks its own flags against real federal NEVI charging-infrastructure award data for California, and reports plainly where the two signals agree and where they don't.
 - **Interactive map.** A county-level choropleth (colored by funding bucket) plus an opt-in tool to check live grid feasibility — with full citations — at any point on the map.
@@ -31,6 +31,18 @@ cp .env.example .env   # then fill in MIREYE_API_KEY
 ```
 
 `.env.example` documents every variable; everything except `MIREYE_API_KEY` has a working default.
+
+The chat agent supports Gemini or Groq. Set one provider and its server-side key:
+
+```bash
+LLM_PROVIDER=groq
+GROQ_API_KEY=your_key_here
+GROQ_MODEL=openai/gpt-oss-20b
+```
+
+Use `LLM_PROVIDER=gemini` for Gemini, or `auto` to try Gemini, then Groq, before the deterministic fallback. Never expose either key through a `VITE_` variable.
+
+Chat requests carry recent conversation history plus structured state/county context containing demand metrics, the current bucket, grid feasibility, and cited Mireye fields. The model autonomously chooses cached county/state tools and only calls the metered live Mireye evidence tool when deeper live physical evidence is explicitly requested.
 
 ```bash
 npm run dev             # backend on :3000, frontend on :5173 (proxies /api to :3000)
@@ -91,6 +103,8 @@ Chosen because it's the demo example in the project's own spec (Madera County), 
 | `POST /v1/geocode`, `POST /v1/field-requests` | Not used — every sample point already has a coordinate, and nothing required was missing from the catalog. See the write-up for the full reasoning. |
 
 Client implementation (rate limiting, batching, retry-with-backoff) lives in [`server/services/mireye.js`](server/services/mireye.js).
+
+Costly HTTP operations are rate-limited and mutually exclusive, but this local pilot intentionally has no caller authentication. Keep Express behind a trusted network boundary; the Mireye key remains server-side and must never be exposed through Vite client variables.
 
 ## Data sources
 

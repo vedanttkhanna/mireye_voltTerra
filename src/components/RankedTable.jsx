@@ -7,6 +7,7 @@ const FILTERS = [
   { key: 'underserved', label: 'Underserved only' },
   { key: 'fund_charger_now', label: 'Fund charger now' },
   { key: 'fund_grid_upgrade_first', label: 'Fund grid upgrade first' },
+  { key: 'insufficient_data', label: 'Needs data review' },
 ];
 
 export default function RankedTable({ counties, selectedFips, onSelect }) {

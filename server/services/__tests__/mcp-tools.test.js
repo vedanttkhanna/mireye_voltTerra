@@ -3,15 +3,23 @@ import assert from 'node:assert/strict';
 import { executeMcpTool, resolveCounty, MCP_TOOL_DEFINITIONS } from '../mcp-tools.js';
 
 test('MCP tool definitions have valid schema', () => {
-  assert.equal(MCP_TOOL_DEFINITIONS.length, 5);
+  assert.equal(MCP_TOOL_DEFINITIONS.length, 6);
   const names = MCP_TOOL_DEFINITIONS.map((t) => t.name);
   assert.deepEqual(names, [
+    'get_statewide_summary',
     'get_county_demand_metrics',
     'get_grid_infrastructure',
     'evaluate_feasibility_gates',
     'ask_mireye_evidence',
     'make_funding_decision',
   ]);
+});
+
+test('get_statewide_summary returns ranked California context', async () => {
+  const result = await executeMcpTool('get_statewide_summary', { limit: 3, underserved_only: true });
+  assert.equal(result.state, 'CA');
+  assert.equal(result.ranked_counties.length, 3);
+  assert.ok(result.ranked_counties.every((county) => county.underserved));
 });
 
 test('resolveCounty matches FIPS and name variations', () => {
@@ -57,6 +65,7 @@ test('make_funding_decision returns fund_charger_now when underserved and passes
     county_name: 'Sutter County',
     underserved: true,
     passes_grid_gates: true,
+    grid_data_sufficient: true,
     justification: 'High ratio and adjacent substation',
   });
 

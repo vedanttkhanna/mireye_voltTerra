@@ -11,6 +11,24 @@ const INITIAL_PROMPTS = [
   'Which California counties have the highest charging stress?',
 ];
 
+function formatDataGap(gap) {
+  if (typeof gap === 'string') return gap;
+  if (!gap || typeof gap !== 'object') return String(gap);
+  return gap.message ?? gap.description ?? gap.field ?? JSON.stringify(gap);
+}
+
+function summarizeDataGaps(gaps) {
+  const formatted = gaps.map(formatDataGap);
+  if (formatted.length <= 6) return formatted.join(', ');
+  return `${formatted.slice(0, 6).join(', ')} and ${formatted.length - 6} more`;
+}
+
+function formatProvider(provider) {
+  if (provider === 'gemini') return 'Gemini';
+  if (provider === 'groq') return 'Groq';
+  return 'deterministic fallback';
+}
+
 export default function ChatPanel({ selectedCounty, onSelectCounty }) {
   const [messages, setMessages] = useState([
     {
@@ -56,6 +74,11 @@ export default function ChatPanel({ selectedCounty, onSelectCounty }) {
     setLoading(true);
     setError(null);
 
+    const history = messages
+      .filter((message) => message.id !== 'welcome' && ['user', 'assistant'].includes(message.role))
+      .slice(-6)
+      .map(({ role, content }) => ({ role, content: content.slice(0, 1500) }));
+
     try {
       const res = await fetch('/api/chat', {
         method: 'POST',
@@ -63,6 +86,7 @@ export default function ChatPanel({ selectedCounty, onSelectCounty }) {
         body: JSON.stringify({
           message: textToSend.trim(),
           county_fips: selectedCounty?.county_fips,
+          history,
         }),
       });
 
@@ -94,6 +118,11 @@ export default function ChatPanel({ selectedCounty, onSelectCounty }) {
         answered_at: data.answered_at,
         county: data.county,
         tool_executions: data.tool_executions,
+        provider: data.provider,
+        fallback_used: data.fallback_used,
+        fallback_reason: data.fallback_reason,
+        context_scope: data.context_scope,
+        token_usage: data.token_usage,
         followups: data.suggested_followups,
       };
 
@@ -206,9 +235,30 @@ export default function ChatPanel({ selectedCounty, onSelectCounty }) {
                       </div>
                     )}
 
+                    {msg.provider && (
+                      <div style={{ marginTop: '0.4rem', fontSize: '0.75rem', color: 'var(--fg-muted)' }}>
+                        Answered by <strong>{formatProvider(msg.provider)}</strong>
+                        {msg.fallback_used && msg.fallback_reason ? ` · ${msg.fallback_reason}` : ''}
+                      </div>
+                    )}
+
+                    {msg.context_scope && (
+                      <div style={{ marginTop: '0.3rem', fontSize: '0.72rem', color: 'var(--fg-muted)' }}>
+                        Context: {msg.context_scope.state}
+                        {msg.context_scope.county ? ` · ${msg.context_scope.county}` : ''}
+                        {` · ${msg.context_scope.history_messages} prior messages · ${msg.context_scope.mireye_fields} Mireye fields`}
+                      </div>
+                    )}
+
+                    {msg.token_usage?.total > 0 && (
+                      <div style={{ marginTop: '0.2rem', fontSize: '0.72rem', color: 'var(--fg-muted)' }}>
+                        Groq tokens: {msg.token_usage.total.toLocaleString()}
+                      </div>
+                    )}
+
                     {msg.data_gaps && msg.data_gaps.length > 0 && (
                       <div style={{ marginTop: '0.4rem', fontSize: '0.75rem', color: 'var(--warn-dark)', background: 'var(--warn-light)', padding: '0.3rem 0.5rem', borderRadius: 4 }}>
-                        <strong>Data note:</strong> {msg.data_gaps.join(', ')}
+                        <strong>Data note:</strong> {summarizeDataGaps(msg.data_gaps)}
                       </div>
                     )}
 

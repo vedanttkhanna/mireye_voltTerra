@@ -14,7 +14,6 @@
 // already has one — the county's Census-gazetteer centroid, or an AFDC
 // station's own lat/lng — so there's no address in the loop to resolve.
 
-import { mkdir, writeFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from '../config.js';
@@ -23,7 +22,7 @@ import { ingestAfdc } from './afdc.js';
 import { ingestRegistrations } from './registrations.js';
 import { listCountiesForState } from '../lib/zip-county.js';
 import { getCountyCentroid } from '../lib/county-centroids.js';
-import { haversineDistanceMeters } from '../lib/geo.js';
+import { writeJsonAtomic } from '../lib/safe-persistence.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CACHE_DIR = path.join(__dirname, '../data/cache');
@@ -72,25 +71,7 @@ export const GRID_FEASIBILITY_FIELDS = [
   'nearest_proposed_generator_status',
 ];
 
-// Trigger for adding a demand_centroid sample point (below): the distance
-// between a county's Census-gazetteer centroid and its charger-weighted
-// demand centroid (afdc.js's demand_centroid — mean of every charger in
-// the county). Below this, evaluating grid data at the geographic centroid
-// is a reasonable proxy for "where people/infrastructure are" and any
-// divergence is normal county elongation. Above it, the centroid can be
-// evaluating a place with no real relationship to where charging demand
-// or infrastructure actually sits — confirmed on real CA data, not a
-// hypothetical: Riverside County's centroid sits 84km from where its
-// chargers cluster (a remote desert vs. the urban Inland Empire), and San
-// Bernardino's is 125km off (its centroid lands in the Mojave). San
-// Francisco's is a different flavor of the same problem — the county's
-// official land area includes the Farallon Islands, ~55km offshore, which
-// pulls its Census internal point away from the entirely urban mainland
-// where every one of its 509 chargers sits. 50km sits well above the
-// state median divergence (17.6km across all 58 CA counties) and below
-// these three's actual values, so it catches genuinely broken cases
-// without firing on ordinary geographic spread.
-export const CENTROID_DIVERGENCE_THRESHOLD_M = 50_000;
+export const LOOKUP_CREDITS_PER_POINT = 1;
 
 /**
  * Step 2, county sampling: one fixed point per county (its Census-gazetteer
@@ -98,31 +79,15 @@ export const CENTROID_DIVERGENCE_THRESHOLD_M = 50_000;
  * locations from the AFDC ingest, standing in for a highway-corridor
  * dataset this project doesn't have in scope. A county with zero chargers
  * still gets sampled via its centroid alone.
- *
- * When the county's demand_centroid (afdc.js) diverges from the geographic
- * centroid by more than CENTROID_DIVERGENCE_THRESHOLD_M, an additional
- * `demand_centroid` sample point is added — scoring.js prefers it as the
- * primary bucket-deciding point over the geographic centroid in that case
- * (see scoreCountyGridFeasibility), since the geographic centroid has been
- * shown to be a poor proxy for that county specifically.
  */
-export function buildCountySamplePoints({ centroid, corridorPoints = [], demandCentroid = null }) {
+export function buildCountySamplePoints({ centroid, corridorPoints = [] }) {
   const points = [];
   if (centroid) {
     points.push({ type: 'centroid', lat: centroid.lat, lng: centroid.lng, source: 'census_gazetteer_2020' });
   }
-  if (centroid && demandCentroid) {
-    const divergenceM = haversineDistanceMeters(centroid, demandCentroid);
-    if (divergenceM > CENTROID_DIVERGENCE_THRESHOLD_M) {
-      points.push({
-        type: 'demand_centroid',
-        lat: demandCentroid.lat,
-        lng: demandCentroid.lng,
-        source: 'afdc_station_mean',
-        divergence_from_centroid_m: Math.round(divergenceM),
-      });
-    }
-  }
+  // A mean of existing chargers measures supply placement, not demand. Do
+  // not let it become the bucket-deciding point. Corridor samples remain
+  // informational until a registration/population-weighted surface exists.
   for (const cp of corridorPoints) {
     points.push({
       type: 'corridor',
@@ -167,13 +132,24 @@ export async function runFullSweep({ state = config.pilotState, maxSweepCredits 
     sample_points: buildCountySamplePoints({
       centroid: getCountyCentroid(county.county_fips, state),
       corridorPoints: chargersByFips.get(county.county_fips)?.corridor_points ?? [],
-      demandCentroid: chargersByFips.get(county.county_fips)?.demand_centroid ?? null,
     }),
   }));
 
   const flatPoints = counties.flatMap((c) =>
     c.sample_points.map((p) => ({ ...p, county_fips: c.county_fips }))
   );
+
+  // Complete preflight before any metered lookup or fetch operation.
+  const perLocationQuote = await mireye.fetchQuote({ fields: GRID_FEASIBILITY_FIELDS, locations: 1 });
+  const fetchCredits = perLocationQuote.credits_total * flatPoints.length;
+  const lookupCredits = LOOKUP_CREDITS_PER_POINT * flatPoints.length;
+  const estimatedCredits = fetchCredits + lookupCredits;
+  if (estimatedCredits > maxSweepCredits) {
+    throw new Error(
+      `Sweep would cost ~${estimatedCredits} credits (${fetchCredits} fetch + ${lookupCredits} lookup), ` +
+        `over the ${maxSweepCredits}-credit safety cap (MAX_SWEEP_CREDITS).`
+    );
+  }
 
   // Step 3: canonical join, one /v1/lookup per sample point. include_parcel
   // stays false throughout (see mireye.js) — parcel data is 300 credits/
@@ -190,17 +166,6 @@ export async function runFullSweep({ state = config.pilotState, maxSweepCredits 
   // (fetch_per_field x fields x locations, per GET /v1/meta/plans), and a
   // 1-location quote still catches a stale/renamed field before it costs
   // anything for real.
-  const perLocationQuote = await mireye.fetchQuote({ fields: GRID_FEASIBILITY_FIELDS, locations: 1 });
-  const estimatedCredits = perLocationQuote.credits_total * flatPoints.length;
-  if (estimatedCredits > maxSweepCredits) {
-    throw new Error(
-      `Sweep would cost ~${estimatedCredits} credits ` +
-        `(${flatPoints.length} locations x ${perLocationQuote.credits_total} credits/location), ` +
-        `over the ${maxSweepCredits}-credit safety cap (MAX_SWEEP_CREDITS). ` +
-        `Raise the cap or reduce sample points before re-running.`
-    );
-  }
-
   // Step 5: grid data fetch, batched (<=25 locations/call) and rate-limited
   // inside MireyeClient.
   const gridResults = await mireye.fetchBatchChunked({
@@ -240,7 +205,7 @@ export async function runFullSweep({ state = config.pilotState, maxSweepCredits 
     state,
     generated_at: new Date().toISOString(),
     fields_fetched: GRID_FEASIBILITY_FIELDS,
-    credits_spent: estimatedCredits + flatPoints.length, // batch fetch + 1-credit lookups
+    credits_spent: estimatedCredits,
     counties_processed: joinedCounties.length,
     sample_points_total: flatPoints.length,
     // Split by reason: `different_county` is a genuine cross-validation
@@ -263,9 +228,8 @@ export async function runFullSweep({ state = config.pilotState, maxSweepCredits 
     counties: joinedCounties,
   };
 
-  await mkdir(CACHE_DIR, { recursive: true });
   const outPath = path.join(CACHE_DIR, `join-pipeline-${state}.json`);
-  await writeFile(outPath, JSON.stringify(output, null, 2));
+  await writeJsonAtomic(outPath, output);
 
   return { outPath, ...output };
 }
