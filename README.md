@@ -6,7 +6,7 @@ VOLT-TERRA answers one question: *which California counties have EV registration
 
 It's an agent, not a dashboard: it pulls EV registration data (state DMV), existing charger locations (DOE), and independent county population centers (Census), joins them against cited physical grid data from Mireye, computes a peer-relative demand signal, and runs that signal through a physical feasibility screen. Flagged counties become `fund_charger_now`, `fund_grid_upgrade_first`, or `insufficient_data`; missing evidence is never treated as proof that an upgrade is required.
 
-The most recent recorded California run analyzed **58/58 counties, flagged 6 as underserved, and cross-checked against 114 real state EV-infrastructure funding records**. The current implementation has **97 passing automated tests**. Re-run the pipeline after checkout to produce results with the current population-center and insufficient-data methodology.
+The most recent recorded California run analyzed **58/58 counties, flagged 6 as underserved, and cross-checked against 114 real state EV-infrastructure funding records**. The current implementation has **96 passing automated tests**. Re-run the pipeline after checkout to produce results with the current population-center and insufficient-data methodology.
 
 ## What it does
 
@@ -21,17 +21,16 @@ The most recent recorded California run analyzed **58/58 counties, flagged 6 as 
 
 - **Node.js ≥ 20**
 - A [Mireye API key](https://www.mireye.com) (free tier works for light use; the Build plan is what this project was developed against — 25,000 credits/month)
-- A separate, long random `VOLTERRA_OPERATOR_KEY`, used by the dashboard to authorize every metered or mutating request
 - macOS/Linux shell with `unzip` available (used to unpack two Census data downloads on first ingest — present by default on macOS and most Linux distros)
 
 ## Setup
 
 ```bash
 npm install
-cp .env.example .env   # then fill in MIREYE_API_KEY and VOLTERRA_OPERATOR_KEY
+cp .env.example .env   # then fill in MIREYE_API_KEY
 ```
 
-Generate the operator key with a password manager or secure random generator. Do not reuse or expose `MIREYE_API_KEY`; the browser only sends the separate operator key. The backend binds to `127.0.0.1` by default. Set `HOST` deliberately when placing it behind an authenticated reverse proxy.
+The backend binds to `127.0.0.1` by default. Set `HOST` deliberately when placing it behind a reverse proxy or exposing it to another machine. The dashboard does not ask for a separate operator key.
 
 ```bash
 npm run dev             # backend on :3000, frontend on :5173 (proxies /api to :3000)
@@ -60,10 +59,9 @@ npm run backtest                 # cross-check flags/buckets against real CA NEV
 
 ## Operational safety
 
-- All non-read-only `/api` requests require `X-Volt-Terra-Key` matching `VOLTERRA_OPERATOR_KEY`; the dashboard asks once and keeps it in session storage only.
-- Unsafe requests are rate-limited. Concurrent pipeline operations return `409 Conflict`, and memo persistence is serialized.
+- Metered and mutating requests are rate-limited. Concurrent pipeline operations return `409 Conflict`, and memo persistence is serialized.
 - Generated JSON is written to a temporary sibling and atomically renamed, preventing readers from observing partially-written cache files.
-- `HOST=127.0.0.1` is the safe default. The in-process limiter and lock are appropriate for this single-process application; a multi-instance deployment also needs shared authentication, rate limiting, and job coordination at the platform layer.
+- `HOST=127.0.0.1` is the safe default. There is no application-level login, so deployments exposed beyond the local machine should add authentication at the reverse proxy or platform layer. Multi-instance deployments also need shared rate limiting and job coordination.
 
 ## Project structure
 

@@ -28,8 +28,5 @@ export const config = {
   // monthly allowance (25,000 on the build plan) in one run.
   maxSweepCredits: Number(process.env.MAX_SWEEP_CREDITS) || 15000,
 
-  // Separate from the Mireye credential: browser operators never need the
-  // upstream API key. Unsafe endpoints remain disabled when this is unset.
-  operatorKey: process.env.VOLTERRA_OPERATOR_KEY || null,
-  operatorRateLimitPerMinute: Number(process.env.OPERATOR_RATE_LIMIT_PER_MINUTE) || 10,
+  actionRateLimitPerMinute: Number(process.env.ACTION_RATE_LIMIT_PER_MINUTE) || 10,
 };

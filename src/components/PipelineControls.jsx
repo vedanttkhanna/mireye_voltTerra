@@ -1,6 +1,5 @@
 import { useState } from 'react';
 import { formatTimestamp } from '../utils/format.js';
-import { operatorFetch } from '../utils/operatorFetch.js';
 
 export default function PipelineControls({ status, onRerun }) {
   const [running, setRunning] = useState(false);
@@ -22,7 +21,7 @@ export default function PipelineControls({ status, onRerun }) {
     setError(null);
     setResult(null);
     try {
-      const res = await operatorFetch('/api/pipeline/run', { method: 'POST' });
+      const res = await fetch('/api/pipeline/run', { method: 'POST' });
       const body = await res.json();
       if (!res.ok) throw new Error(body.detail || 'Sweep failed');
       setResult(body);

@@ -63,7 +63,7 @@ A site-level spot-check went further: fetched live grid data at an actual NEVI-a
 
 **Days 12-13 — Sparse/edge-case fix, subsequently strengthened.** The original correction used the mean location of existing chargers when a county internal point was badly displaced. That improved large-county geography but still depended on historic charging supply. The current implementation replaces it with the Census mean center of population for every county, independently locating the population demand proxy; existing chargers remain informational context only.
 
-**Post-review operational hardening.** Metered and mutating routes now require a separate operator key and are rate-limited. Pipeline operations cannot overlap, memo updates are serialized, cache replacement is atomic, and the full fetch-plus-lookup estimate is checked before any paid lookup. Counties with EV registrations and zero ports are explicitly flagged, while missing grid evidence routes to `insufficient_data`.
+**Post-review operational hardening.** Metered and mutating routes are rate-limited, pipeline operations cannot overlap, memo updates are serialized, cache replacement is atomic, and the full fetch-plus-lookup estimate is checked before any paid lookup. The local dashboard intentionally has no operator-key prompt; deployments exposed beyond localhost must provide authentication at the reverse proxy or platform layer. Counties with EV registrations and zero ports are explicitly flagged, while missing grid evidence routes to `insufficient_data`.
 
 **Post-13 — Interactive map (added on request, not in the original 14-day plan).** The Riverside/San Bernardino/San Francisco centroid finding above led directly to a follow-up ask: an interactive map showing recommended counties and letting an analyst check feasibility at a specific point. This intersects the build brief's explicit "not site selection" rule, so the scope was checked with the user before building rather than assumed — the answer was to build both a county-level choropleth (the primary, default view — real Census county polygons, not points, colored by funding bucket) and an opt-in point-check tool, with the point-check deliberately never ranking or comparing candidate points, only reporting whether a clicked point clears the same physical gates a flagged county's own bucket used, with full citations. Verified in a real, driven browser session (a headless Chrome check, since the interactive browser extension wouldn't connect that session) — which caught a real bug: clicking the confirm button inside a map popup was also bubbling through to the underlying map's own click handler, silently opening a second popup at a different point. Fixed with an explicit `stopPropagation()`.
 
@@ -108,7 +108,7 @@ Per the build brief's point 6 — not a hypothetical checklist, things that actu
 | Bucket split | 6 `fund_charger_now`, 0 `fund_grid_upgrade_first` |
 | Memos generated | 6/6 flagged counties |
 | NEVI backtest | 5/6 flagged counties independently funded |
-| Tests | 97 passing in the post-review implementation |
+| Tests | 96 passing in the post-review implementation |
 | Mireye credits used | 16,470 / 25,000 (8,530 remaining) |
 
 ## What's left
