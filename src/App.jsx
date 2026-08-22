@@ -31,7 +31,7 @@ export default function App() {
           </span>
         </div>
         <p style={{ color: 'var(--fg-muted)', margin: 0, fontSize: '0.95rem' }}>
-          County charging-gap &amp; grid-feasibility orchestrator — {health ? (health.ok ? `connected, pilot state ${health.pilot_state}` : 'backend unreachable') : 'checking...'}
+          County charging-gap &amp; grid-feasibility orchestrator | {health ? (health.ok ? `connected, pilot state ${health.pilot_state}` : 'backend unreachable') : 'checking...'}
         </p>
       </header>
 
@@ -40,7 +40,7 @@ export default function App() {
       {statsLoading && <p style={{ color: 'var(--fg-muted)' }}>Loading scored counties...</p>}
       {statsError && (
         <p style={{ color: 'var(--danger)' }}>
-          {statsError} — run <code>npm run pipeline:run</code> then <code>npm run pipeline:score</code>, or use the re-run button above.
+          {statsError}. Run <code>npm run pipeline:run</code> then <code>npm run pipeline:score</code>, or use the re-run button above.
         </p>
       )}
 

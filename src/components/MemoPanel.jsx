@@ -64,7 +64,7 @@ export default function MemoPanel({ fips, bucket }) {
 
       {status === STATUS.GENERATING && (
         <p style={{ color: 'var(--accent-darker)', fontWeight: 500, fontSize: '0.9rem' }}>
-          Calling Mireye /v1/ask — this typically takes 10-20 seconds...
+          Calling Mireye /v1/ask (typically takes 10-20 seconds)...
         </p>
       )}
 

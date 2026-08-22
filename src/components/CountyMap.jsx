@@ -102,7 +102,7 @@ function CheckPointPopup({ point, onClose }) {
               <p style={{ margin: '0 0 0.5rem' }}>
                 In <strong>{result.resolved_county.county_name}</strong>
                 {result.resolved_county.underserved != null && (
-                  <> — county bucket: <strong>{formatBucket(result.resolved_county.bucket)}</strong></>
+                  <> (county bucket: <strong>{formatBucket(result.resolved_county.bucket)}</strong>)</>
                 )}
               </p>
             ) : (
@@ -110,7 +110,7 @@ function CheckPointPopup({ point, onClose }) {
             )}
 
             <p style={{ margin: '0 0 0.4rem' }}>
-              <strong>{result.feasibility.passes_gates ? 'Passes' : 'Fails'} grid-feasibility gates</strong> — score {result.feasibility.score}/100
+              <strong>{result.feasibility.passes_gates ? 'Passes' : 'Fails'} grid-feasibility gates</strong> (score {result.feasibility.score}/100)
             </p>
             <p style={{ margin: '0 0 0.4rem', color: '#475569' }}>
               Nearest substation: <strong>{formatDistance(result.feasibility.inputs.substation_distance_m)}</strong>
@@ -162,13 +162,13 @@ export default function CountyMap() {
             transition: 'all 0.15s ease',
           }}
         >
-          {exploreMode ? '● Checking points — click map' : 'Check a specific point'}
+          {exploreMode ? '● Checking points (click map)' : 'Check a specific point'}
         </button>
       </div>
 
       {boundariesError && (
         <p style={{ color: 'var(--danger)', fontSize: '0.85rem' }}>
-          {boundariesError} — run <code>npm run ingest:boundaries</code>.
+          {boundariesError}. Run <code>npm run ingest:boundaries</code>.
         </p>
       )}
 
@@ -203,7 +203,7 @@ export default function CountyMap() {
                 <Marker position={[gf.sampled_at.lat, gf.sampled_at.lng]} icon={gf.passes_gates ? PASS_ICON : FAIL_ICON}>
                   <Popup>
                     <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '0.85rem', color: '#0f172a' }}>
-                      <strong>{c.county_name}</strong> — {gf.sampled_at.type === 'demand_centroid' ? 'demand-weighted point' : 'centroid'}
+                      <strong>{c.county_name}</strong> ({gf.sampled_at.type === 'demand_centroid' ? 'demand-weighted point' : 'centroid'})
                       <br />
                       {formatBucket(c.bucket)}, score <strong>{gf.score}/100</strong>
                     </div>
@@ -213,7 +213,7 @@ export default function CountyMap() {
                   <Marker position={[alt.lat, alt.lng]} icon={ALT_ICON}>
                     <Popup>
                       <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '0.85rem', color: '#0f172a' }}>
-                        <strong>{alt.station_name ?? 'Existing charger'}</strong> — alternative site
+                        <strong>{alt.station_name ?? 'Existing charger'}</strong> (alternative site)
                         <br />
                         score {alt.score}/100, {alt.passes_gates ? 'passes gates' : 'fails gates'}
                       </div>
@@ -236,7 +236,7 @@ export default function CountyMap() {
 
       <p style={{ fontSize: '0.8rem', color: 'var(--fg-muted)', marginTop: '0.65rem' }}>
         Filled boundaries are VOLT-TERRA's county-level recommendation (green = fund charger now, amber = fund grid
-        upgrade first). Dots mark the specific points behind each flagged county's verdict — blue dots are
+        upgrade first). Dots mark the specific points behind each flagged county's verdict. Blue dots are
         informational alternatives.
       </p>
     </div>

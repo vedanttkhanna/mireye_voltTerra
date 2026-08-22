@@ -1,9 +1,32 @@
 :root {
-  color-scheme: dark;
-  --bg: #0a0f1a;
-  --fg: #e6edf3;
-  --accent: #00e676;
-  --warn: #ffab00;
+  color-scheme: light;
+  --bg: #f8fafc;
+  --fg: #0f172a;
+  --fg-muted: #64748b;
+  --card-bg: #ffffff;
+  --card-border: #e2e8f0;
+  --card-hover: #f1f5f9;
+  
+  /* Green Accents */
+  --accent: #10b981;
+  --accent-dark: #059669;
+  --accent-darker: #047857;
+  --accent-light: #ecfdf5;
+  --accent-border: #a7f3d0;
+  --accent-shadow: rgba(16, 185, 129, 0.2);
+
+  /* Amber / Warning */
+  --warn: #d97706;
+  --warn-dark: #b45309;
+  --warn-light: #fffbeb;
+  --warn-border: #fde68a;
+
+  /* Status */
+  --danger: #ef4444;
+  --danger-light: #fef2f2;
+  --info: #0284c7;
+  --info-light: #f0f9ff;
+  --info-border: #bae6fd;
 }
 
 * {
@@ -12,10 +35,22 @@
 
 body {
   margin: 0;
-  background: var(--bg);
+  background-color: var(--bg);
   color: var(--fg);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* Card utility */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+/* Responsive Grid Layout */
 .main-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -24,11 +59,65 @@ body {
 }
 
 .main-layout.with-drilldown {
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 960px) {
   .main-layout.with-drilldown {
     grid-template-columns: minmax(0, 1fr);
   }
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Leaflet Map overrides for Light Theme */
+.leaflet-container {
+  font-family: inherit;
+}
+
+.leaflet-popup-content-wrapper {
+  background: #ffffff !important;
+  color: var(--fg) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+  border-radius: 8px !important;
+  border: 1px solid var(--card-border) !important;
+}
+
+.leaflet-popup-tip {
+  background: #ffffff !important;
+}
+
+.leaflet-tooltip {
+  background-color: #ffffff !important;
+  color: var(--fg) !important;
+  border: 1px solid var(--card-border) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  border-radius: 6px !important;
+  padding: 6px 10px !important;
+  font-size: 0.82rem !important;
+}
+
+.leaflet-tooltip-top:before,
+.leaflet-tooltip-bottom:before,
+.leaflet-tooltip-left:before,
+.leaflet-tooltip-right:before {
+  border-top-color: #ffffff !important;
+  border-bottom-color: #ffffff !important;
 }

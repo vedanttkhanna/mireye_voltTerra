@@ -52,9 +52,9 @@ export default function CountyDrilldown({ fips }) {
           )}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.65rem', fontSize: '0.875rem', color: 'var(--fg)' }}>
             <div><span style={{ color: 'var(--fg-muted)' }}>Distance:</span> <strong>{formatDistance(gf.inputs.substation_distance_m)}</strong></div>
-            <div><span style={{ color: 'var(--fg-muted)' }}>Voltage:</span> <strong>{gf.inputs.substation_voltage_kv != null ? `${gf.inputs.substation_voltage_kv} kV` : '—'}</strong></div>
-            <div><span style={{ color: 'var(--fg-muted)' }}>Status:</span> <strong>{gf.inputs.substation_status ?? '—'}</strong></div>
-            <div><span style={{ color: 'var(--fg-muted)' }}>Source:</span> <strong>{gf.inputs.substation_source ?? '—'}</strong></div>
+            <div><span style={{ color: 'var(--fg-muted)' }}>Voltage:</span> <strong>{gf.inputs.substation_voltage_kv != null ? `${gf.inputs.substation_voltage_kv} kV` : '-'}</strong></div>
+            <div><span style={{ color: 'var(--fg-muted)' }}>Status:</span> <strong>{gf.inputs.substation_status ?? '-'}</strong></div>
+            <div><span style={{ color: 'var(--fg-muted)' }}>Source:</span> <strong>{gf.inputs.substation_source ?? '-'}</strong></div>
             <div><span style={{ color: 'var(--fg-muted)' }}>Feasibility Score:</span> <strong style={{ color: 'var(--accent-darker)' }}>{gf.score}/100</strong></div>
           </div>
 

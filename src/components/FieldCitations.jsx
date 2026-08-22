@@ -8,8 +8,8 @@ export default function FieldCitations({ fields }) {
           {v.source && (
             <span style={{ color: 'var(--fg-muted, #64748b)' }}>
               {' '}
-              — <a href={v.source_url} target="_blank" rel="noreferrer" style={{ color: 'var(--accent-darker, #047857)', fontWeight: 600 }}>{v.source}</a>
-              {v.confidence && <span>, confidence: {v.confidence}</span>}
+              (source: <a href={v.source_url} target="_blank" rel="noreferrer" style={{ color: 'var(--accent-darker, #047857)', fontWeight: 600 }}>{v.source}</a>
+              {v.confidence && <span>, confidence: {v.confidence}</span>})
             </span>
           )}
         </div>

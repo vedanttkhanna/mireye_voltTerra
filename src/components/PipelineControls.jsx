@@ -44,7 +44,7 @@ export default function PipelineControls({ status, onRerun }) {
           <div>
             <strong style={{ color: 'var(--fg)' }}>Last scored:</strong> {formatTimestamp(lastScore?.scored_at)}
             {lastScore &&
-              ` (${lastScore.counties_underserved} underserved — ${lastScore.counties_fund_charger_now} charger now, ${lastScore.counties_fund_grid_upgrade_first} grid upgrade first)`}
+              ` (${lastScore.counties_underserved} underserved: ${lastScore.counties_fund_charger_now} charger now, ${lastScore.counties_fund_grid_upgrade_first} grid upgrade first)`}
           </div>
         </div>
         <button
@@ -70,7 +70,7 @@ export default function PipelineControls({ status, onRerun }) {
       {error && <p style={{ color: 'var(--danger)', marginTop: '0.75rem', marginBottom: 0, fontSize: '0.85rem' }}>{error}</p>}
       {result && (
         <p style={{ color: 'var(--accent-darker)', marginTop: '0.75rem', marginBottom: 0, fontSize: '0.85rem', fontWeight: 600 }}>
-          ✓ Done — {result.sweep?.counties_processed} counties processed, {result.scoring?.counties_underserved} underserved.
+          ✓ Done: {result.sweep?.counties_processed} counties processed, {result.scoring?.counties_underserved} underserved.
         </p>
       )}
     </div>
