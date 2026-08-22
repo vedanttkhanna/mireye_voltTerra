@@ -1,0 +1,42 @@
+{
+  "name": "volt-terra",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "concurrently -n server,client -c blue,green \"npm:server:dev\" \"npm:client:dev\"",
+    "server:dev": "node --watch server/index.js",
+    "server:start": "node server/index.js",
+    "client:dev": "vite",
+    "client:build": "vite build",
+    "ingest:afdc": "node server/services/afdc.js",
+    "ingest:registrations": "node server/services/registrations.js",
+    "ingest:centroids": "node server/services/county-centroids.js",
+    "ingest:boundaries": "node server/services/county-boundaries.js",
+    "pipeline:run": "node server/services/orchestrator.js",
+    "pipeline:score": "node server/services/scoring.js",
+    "pipeline:memos": "node server/services/memo-generator.js",
+    "backtest": "node server/services/nevi-backtest.js",
+    "verify:setup": "node server/services/verify-pilot-setup.js",
+    "test": "node --test server/**/__tests__/*.test.js"
+  },
+  "dependencies": {
+    "@tmcw/togeojson": "^7.1.2",
+    "@xmldom/xmldom": "^0.9.12",
+    "csv-parse": "^5.5.6",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "leaflet": "^1.9.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-leaflet": "^4.2.1"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-react": "^4.3.1",
+    "concurrently": "^8.2.2",
+    "vite": "^5.4.0"
+  }
+}

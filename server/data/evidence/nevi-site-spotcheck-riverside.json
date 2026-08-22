@@ -1,0 +1,30 @@
+{
+  "purpose": "Day 12 backtest spot-check: does VOLT-TERRA's county-centroid grid-feasibility verdict for Riverside County (fund_grid_upgrade_first) hold up at an actual NEVI-awarded site within that county, not just at the Census centroid?",
+  "county": "Riverside County",
+  "county_centroid_verdict": {
+    "lat": 33.729828,
+    "lng": -116.002239,
+    "bucket": "fund_grid_upgrade_first",
+    "nearest_substation_distance_m": 12152.2,
+    "nearest_substation_voltage_kv": 230,
+    "substation_source": "OSM (EIA found nothing within radius)"
+  },
+  "real_nevi_awarded_site": {
+    "source": "California Energy Commission / Caltrans NEVI program, Round 1 award",
+    "source_url": "https://cecgis-caenergy.opendata.arcgis.com/datasets/CAEnergy::planned-ev-charging-stations-awarded-in-nevi-round-1-december-16-2024",
+    "applicant": "Sustainable Energies CA LLC",
+    "address": "41000 California Oaks Rd, Murrieta, CA",
+    "lat": 33.566946,
+    "lng": -117.203709,
+    "fetched_grid_fields": {
+      "nearest_substation_distance_m": 1006.3,
+      "nearest_substation_max_voltage_kv": 115.0,
+      "nearest_substation_status": "IN SERVICE",
+      "nearest_osm_substation_distance_m": 947.3,
+      "nearest_osm_substation_max_voltage_kv": 115.0
+    },
+    "fetched_at": "2026-08-21T16:19:48.428151+00:00",
+    "would_pass_volt_terra_gates_if_evaluated_alone": true
+  },
+  "finding": "The county centroid (an interior point ~150km from Murrieta) and the actual NEVI-funded site disagree because Riverside County is geographically vast and heterogeneous -- the centroid falls in a remote desert area far from the grid, while real infrastructure investment (both NEVI's and, per the join pipeline's corridor points, existing chargers) concentrates in the urban Inland Empire near the I-15 corridor. This is independent, real-world confirmation of the 'single centroid is a coarse proxy for a large county' limitation already named in README.md's Known blind spots -- not a flaw introduced by this spot-check, but evidence the flaw is real and consequential, not hypothetical."
+}

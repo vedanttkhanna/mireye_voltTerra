@@ -1,0 +1,7234 @@
+{
+  "89010": {
+    "county_fips": "06051",
+    "county_name": "Mono County"
+  },
+  "89019": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "89060": {
+    "county_fips": "06027",
+    "county_name": "Inyo County"
+  },
+  "89061": {
+    "county_fips": "06027",
+    "county_name": "Inyo County"
+  },
+  "89439": {
+    "county_fips": "06091",
+    "county_name": "Sierra County"
+  },
+  "90001": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90002": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90003": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90004": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90005": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90006": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90007": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90008": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90010": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90011": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90012": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90013": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90014": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90015": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90016": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90017": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90018": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90019": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90020": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90021": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90022": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90023": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90024": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90025": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90026": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90027": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90028": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90029": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90031": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90032": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90033": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90034": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90035": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90036": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90037": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90038": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90039": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90040": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90041": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90042": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90043": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90044": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90045": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90046": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90047": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90048": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90049": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90052": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90056": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90057": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90058": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90059": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90061": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90062": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90063": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90064": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90065": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90066": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90067": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90068": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90069": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90071": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90073": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90077": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90079": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90089": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90094": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90095": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90201": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90210": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90211": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90212": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90220": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90221": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90222": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90230": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90232": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90240": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90241": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90242": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90245": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90247": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90248": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90249": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90250": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90254": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90255": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90260": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90262": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90263": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90265": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90266": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90270": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90272": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90274": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90275": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90277": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90278": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90280": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90290": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90291": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90292": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90293": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90301": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90302": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90303": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90304": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90305": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90401": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90402": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90403": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90404": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90405": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90501": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90502": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90503": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90504": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90505": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90506": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90601": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90602": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90603": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90604": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90605": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90606": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90620": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "90621": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "90623": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "90630": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "90631": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "90638": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90639": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90640": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90650": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90660": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90670": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90680": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "90701": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90703": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90704": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90706": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90710": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90712": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90713": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90715": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90716": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90717": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90720": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "90723": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90731": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90732": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90740": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "90742": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "90743": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "90744": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90745": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90746": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90747": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90755": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90802": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90803": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90804": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90805": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90806": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90807": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90808": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90810": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90813": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90814": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90815": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90822": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90831": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "90840": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91001": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91006": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91007": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91008": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91010": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91011": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91016": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91020": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91024": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91030": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91040": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91042": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91046": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91101": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91103": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91104": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91105": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91106": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91107": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91108": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91125": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91201": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91202": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91203": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91204": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91205": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91206": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91207": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91208": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91210": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91214": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91301": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91302": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91303": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91304": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91306": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91307": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91311": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91316": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91320": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "91321": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91324": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91325": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91326": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91330": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91331": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91335": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91340": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91342": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91343": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91344": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91345": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91350": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91351": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91352": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91354": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91355": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91356": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91360": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "91361": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "91362": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "91364": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91367": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91371": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91377": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "91381": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91384": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91387": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91390": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91401": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91402": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91403": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91405": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91406": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91411": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91423": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91436": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91501": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91502": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91504": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91505": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91506": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91601": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91602": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91604": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91605": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91606": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91607": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91608": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91701": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "91702": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91706": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91708": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "91709": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "91710": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "91711": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91722": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91723": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91724": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91730": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "91731": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91732": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91733": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91737": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "91739": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "91740": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91741": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91744": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91745": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91746": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91748": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91750": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91752": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "91754": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91755": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91759": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91761": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "91762": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "91763": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "91764": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "91765": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91766": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91767": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91768": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91770": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91773": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91775": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91776": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91780": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91784": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "91786": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "91789": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91790": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91791": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91792": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91801": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91803": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "91901": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "91902": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "91905": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "91906": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "91910": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "91911": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "91913": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "91914": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "91915": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "91916": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "91917": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "91931": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "91932": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "91934": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "91935": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "91941": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "91942": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "91945": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "91948": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "91950": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "91962": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "91963": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "91977": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "91978": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "91980": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92003": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92004": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92007": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92008": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92009": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92010": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92011": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92014": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92019": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92020": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92021": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92024": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92025": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92026": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92027": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92028": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92029": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92036": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92037": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92040": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92054": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92055": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92056": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92057": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92058": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92059": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92060": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92061": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92064": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92065": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92066": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92067": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92069": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92070": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92071": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92075": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92078": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92081": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92082": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92083": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92084": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92086": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92091": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92092": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92093": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92096": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92101": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92102": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92103": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92104": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92105": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92106": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92107": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92108": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92109": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92110": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92111": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92113": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92114": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92115": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92116": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92117": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92118": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92119": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92120": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92121": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92122": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92123": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92124": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92126": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92127": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92128": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92129": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92130": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92131": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92132": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92134": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92135": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92136": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92139": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92140": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92145": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92147": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92154": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92155": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92161": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92173": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92179": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92182": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92201": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92203": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92210": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92211": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92220": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92222": {
+    "county_fips": "06025",
+    "county_name": "Imperial County"
+  },
+  "92223": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92225": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92227": {
+    "county_fips": "06025",
+    "county_name": "Imperial County"
+  },
+  "92230": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92231": {
+    "county_fips": "06025",
+    "county_name": "Imperial County"
+  },
+  "92233": {
+    "county_fips": "06025",
+    "county_name": "Imperial County"
+  },
+  "92234": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92236": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92239": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92240": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92241": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92242": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92243": {
+    "county_fips": "06025",
+    "county_name": "Imperial County"
+  },
+  "92249": {
+    "county_fips": "06025",
+    "county_name": "Imperial County"
+  },
+  "92250": {
+    "county_fips": "06025",
+    "county_name": "Imperial County"
+  },
+  "92251": {
+    "county_fips": "06025",
+    "county_name": "Imperial County"
+  },
+  "92252": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92253": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92254": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92256": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92257": {
+    "county_fips": "06025",
+    "county_name": "Imperial County"
+  },
+  "92258": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92259": {
+    "county_fips": "06025",
+    "county_name": "Imperial County"
+  },
+  "92260": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92262": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92264": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92266": {
+    "county_fips": "06025",
+    "county_name": "Imperial County"
+  },
+  "92267": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92268": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92270": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92273": {
+    "county_fips": "06025",
+    "county_name": "Imperial County"
+  },
+  "92274": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92275": {
+    "county_fips": "06025",
+    "county_name": "Imperial County"
+  },
+  "92276": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92277": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92278": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92280": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92281": {
+    "county_fips": "06025",
+    "county_name": "Imperial County"
+  },
+  "92282": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92283": {
+    "county_fips": "06025",
+    "county_name": "Imperial County"
+  },
+  "92284": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92285": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92301": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92304": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92305": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92307": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92308": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92309": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92310": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92311": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92313": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92314": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92315": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92316": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92317": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92320": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92321": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92322": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92324": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92325": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92327": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92328": {
+    "county_fips": "06027",
+    "county_name": "Inyo County"
+  },
+  "92332": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92333": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92335": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92336": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92337": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92338": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92339": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92341": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92342": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92344": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92345": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92346": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92347": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92350": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92352": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92354": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92356": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92358": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92359": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92363": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92364": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92365": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92368": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92369": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92371": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92372": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92373": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92374": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92376": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92377": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92378": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92382": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92384": {
+    "county_fips": "06027",
+    "county_name": "Inyo County"
+  },
+  "92385": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92386": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92389": {
+    "county_fips": "06027",
+    "county_name": "Inyo County"
+  },
+  "92391": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92392": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92394": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92395": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92397": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "92398": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92399": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92401": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92404": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92405": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92407": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92408": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92410": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92411": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92415": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "92501": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92503": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92504": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92505": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92506": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92507": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92508": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92509": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92518": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92521": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92530": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92532": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92536": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92539": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92543": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92544": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92545": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92548": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92549": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92551": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92553": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92555": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92557": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92561": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92562": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92563": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92567": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92570": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92571": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92582": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92583": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92584": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92585": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92586": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92587": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92590": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92591": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92592": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92595": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92596": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92602": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92603": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92604": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92606": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92610": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92612": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92614": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92617": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92618": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92620": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92624": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92625": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92626": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92627": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92629": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92630": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92637": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92646": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92647": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92648": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92649": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92651": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92653": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92655": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92656": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92657": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92660": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92661": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92662": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92663": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92672": {
+    "county_fips": "06073",
+    "county_name": "San Diego County"
+  },
+  "92673": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92675": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92676": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92677": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92678": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92679": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92683": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92688": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92691": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92692": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92694": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92697": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92701": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92703": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92704": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92705": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92706": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92707": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92708": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92780": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92782": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92801": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92802": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92804": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92805": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92806": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92807": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92808": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92821": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92823": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92831": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92832": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92833": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92835": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92840": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92841": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92843": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92844": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92845": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92860": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92861": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92865": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92866": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92867": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92868": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92869": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92870": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92879": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92880": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92881": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92882": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92883": {
+    "county_fips": "06065",
+    "county_name": "Riverside County"
+  },
+  "92886": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "92887": {
+    "county_fips": "06059",
+    "county_name": "Orange County"
+  },
+  "93001": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "93003": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "93004": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "93010": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "93012": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "93013": {
+    "county_fips": "06083",
+    "county_name": "Santa Barbara County"
+  },
+  "93015": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "93021": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "93022": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "93023": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "93030": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "93033": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "93035": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "93036": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "93040": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "93041": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "93042": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "93043": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "93060": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "93063": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "93064": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "93065": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "93066": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "93067": {
+    "county_fips": "06083",
+    "county_name": "Santa Barbara County"
+  },
+  "93101": {
+    "county_fips": "06083",
+    "county_name": "Santa Barbara County"
+  },
+  "93103": {
+    "county_fips": "06083",
+    "county_name": "Santa Barbara County"
+  },
+  "93105": {
+    "county_fips": "06083",
+    "county_name": "Santa Barbara County"
+  },
+  "93106": {
+    "county_fips": "06083",
+    "county_name": "Santa Barbara County"
+  },
+  "93108": {
+    "county_fips": "06083",
+    "county_name": "Santa Barbara County"
+  },
+  "93109": {
+    "county_fips": "06083",
+    "county_name": "Santa Barbara County"
+  },
+  "93110": {
+    "county_fips": "06083",
+    "county_name": "Santa Barbara County"
+  },
+  "93111": {
+    "county_fips": "06083",
+    "county_name": "Santa Barbara County"
+  },
+  "93117": {
+    "county_fips": "06083",
+    "county_name": "Santa Barbara County"
+  },
+  "93201": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93202": {
+    "county_fips": "06031",
+    "county_name": "Kings County"
+  },
+  "93203": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93204": {
+    "county_fips": "06031",
+    "county_name": "Kings County"
+  },
+  "93205": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93206": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93207": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93208": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93210": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93212": {
+    "county_fips": "06031",
+    "county_name": "Kings County"
+  },
+  "93215": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93218": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93219": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93220": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93221": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93222": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93223": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93224": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93225": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "93226": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93227": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93230": {
+    "county_fips": "06031",
+    "county_name": "Kings County"
+  },
+  "93234": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93235": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93237": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93238": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93239": {
+    "county_fips": "06031",
+    "county_name": "Kings County"
+  },
+  "93240": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93241": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93242": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93243": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93244": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93245": {
+    "county_fips": "06031",
+    "county_name": "Kings County"
+  },
+  "93246": {
+    "county_fips": "06031",
+    "county_name": "Kings County"
+  },
+  "93247": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93249": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93250": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93251": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93252": {
+    "county_fips": "06111",
+    "county_name": "Ventura County"
+  },
+  "93254": {
+    "county_fips": "06083",
+    "county_name": "Santa Barbara County"
+  },
+  "93255": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93256": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93257": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93258": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93260": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93261": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93262": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93263": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93265": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93266": {
+    "county_fips": "06031",
+    "county_name": "Kings County"
+  },
+  "93267": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93268": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93270": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93271": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93272": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93274": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93276": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93277": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93280": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93283": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93285": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93286": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93287": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93291": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93292": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93301": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93304": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93305": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93306": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93307": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93308": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93309": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93311": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93312": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93313": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93314": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93401": {
+    "county_fips": "06079",
+    "county_name": "San Luis Obispo County"
+  },
+  "93402": {
+    "county_fips": "06079",
+    "county_name": "San Luis Obispo County"
+  },
+  "93405": {
+    "county_fips": "06079",
+    "county_name": "San Luis Obispo County"
+  },
+  "93407": {
+    "county_fips": "06079",
+    "county_name": "San Luis Obispo County"
+  },
+  "93408": {
+    "county_fips": "06079",
+    "county_name": "San Luis Obispo County"
+  },
+  "93409": {
+    "county_fips": "06079",
+    "county_name": "San Luis Obispo County"
+  },
+  "93410": {
+    "county_fips": "06079",
+    "county_name": "San Luis Obispo County"
+  },
+  "93420": {
+    "county_fips": "06079",
+    "county_name": "San Luis Obispo County"
+  },
+  "93422": {
+    "county_fips": "06079",
+    "county_name": "San Luis Obispo County"
+  },
+  "93424": {
+    "county_fips": "06079",
+    "county_name": "San Luis Obispo County"
+  },
+  "93426": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "93427": {
+    "county_fips": "06083",
+    "county_name": "Santa Barbara County"
+  },
+  "93428": {
+    "county_fips": "06079",
+    "county_name": "San Luis Obispo County"
+  },
+  "93429": {
+    "county_fips": "06083",
+    "county_name": "Santa Barbara County"
+  },
+  "93430": {
+    "county_fips": "06079",
+    "county_name": "San Luis Obispo County"
+  },
+  "93432": {
+    "county_fips": "06079",
+    "county_name": "San Luis Obispo County"
+  },
+  "93433": {
+    "county_fips": "06079",
+    "county_name": "San Luis Obispo County"
+  },
+  "93434": {
+    "county_fips": "06083",
+    "county_name": "Santa Barbara County"
+  },
+  "93436": {
+    "county_fips": "06083",
+    "county_name": "Santa Barbara County"
+  },
+  "93437": {
+    "county_fips": "06083",
+    "county_name": "Santa Barbara County"
+  },
+  "93440": {
+    "county_fips": "06083",
+    "county_name": "Santa Barbara County"
+  },
+  "93441": {
+    "county_fips": "06083",
+    "county_name": "Santa Barbara County"
+  },
+  "93442": {
+    "county_fips": "06079",
+    "county_name": "San Luis Obispo County"
+  },
+  "93444": {
+    "county_fips": "06079",
+    "county_name": "San Luis Obispo County"
+  },
+  "93445": {
+    "county_fips": "06079",
+    "county_name": "San Luis Obispo County"
+  },
+  "93446": {
+    "county_fips": "06079",
+    "county_name": "San Luis Obispo County"
+  },
+  "93449": {
+    "county_fips": "06079",
+    "county_name": "San Luis Obispo County"
+  },
+  "93450": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "93451": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "93452": {
+    "county_fips": "06079",
+    "county_name": "San Luis Obispo County"
+  },
+  "93453": {
+    "county_fips": "06079",
+    "county_name": "San Luis Obispo County"
+  },
+  "93454": {
+    "county_fips": "06083",
+    "county_name": "Santa Barbara County"
+  },
+  "93455": {
+    "county_fips": "06083",
+    "county_name": "Santa Barbara County"
+  },
+  "93458": {
+    "county_fips": "06083",
+    "county_name": "Santa Barbara County"
+  },
+  "93460": {
+    "county_fips": "06083",
+    "county_name": "Santa Barbara County"
+  },
+  "93461": {
+    "county_fips": "06079",
+    "county_name": "San Luis Obispo County"
+  },
+  "93463": {
+    "county_fips": "06083",
+    "county_name": "Santa Barbara County"
+  },
+  "93465": {
+    "county_fips": "06079",
+    "county_name": "San Luis Obispo County"
+  },
+  "93501": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93505": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93510": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "93512": {
+    "county_fips": "06051",
+    "county_name": "Mono County"
+  },
+  "93513": {
+    "county_fips": "06027",
+    "county_name": "Inyo County"
+  },
+  "93514": {
+    "county_fips": "06051",
+    "county_name": "Mono County"
+  },
+  "93516": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93517": {
+    "county_fips": "06051",
+    "county_name": "Mono County"
+  },
+  "93518": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93519": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93522": {
+    "county_fips": "06027",
+    "county_name": "Inyo County"
+  },
+  "93523": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93524": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93526": {
+    "county_fips": "06027",
+    "county_name": "Inyo County"
+  },
+  "93527": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93528": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93529": {
+    "county_fips": "06051",
+    "county_name": "Mono County"
+  },
+  "93530": {
+    "county_fips": "06027",
+    "county_name": "Inyo County"
+  },
+  "93531": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93532": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "93534": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "93535": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "93536": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "93541": {
+    "county_fips": "06051",
+    "county_name": "Mono County"
+  },
+  "93543": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "93544": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "93545": {
+    "county_fips": "06027",
+    "county_name": "Inyo County"
+  },
+  "93546": {
+    "county_fips": "06051",
+    "county_name": "Mono County"
+  },
+  "93549": {
+    "county_fips": "06027",
+    "county_name": "Inyo County"
+  },
+  "93550": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "93551": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "93552": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "93553": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "93554": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93555": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93558": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "93560": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93561": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93562": {
+    "county_fips": "06071",
+    "county_name": "San Bernardino County"
+  },
+  "93563": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "93581": {
+    "county_fips": "06029",
+    "county_name": "Kern County"
+  },
+  "93591": {
+    "county_fips": "06037",
+    "county_name": "Los Angeles County"
+  },
+  "93601": {
+    "county_fips": "06039",
+    "county_name": "Madera County"
+  },
+  "93602": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93603": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93604": {
+    "county_fips": "06039",
+    "county_name": "Madera County"
+  },
+  "93605": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93606": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93608": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93609": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93610": {
+    "county_fips": "06039",
+    "county_name": "Madera County"
+  },
+  "93611": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93612": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93614": {
+    "county_fips": "06039",
+    "county_name": "Madera County"
+  },
+  "93615": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93616": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93618": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93619": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93620": {
+    "county_fips": "06047",
+    "county_name": "Merced County"
+  },
+  "93621": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93622": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93623": {
+    "county_fips": "06043",
+    "county_name": "Mariposa County"
+  },
+  "93624": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93625": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93626": {
+    "county_fips": "06039",
+    "county_name": "Madera County"
+  },
+  "93627": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93628": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93630": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93631": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93633": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93634": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93635": {
+    "county_fips": "06047",
+    "county_name": "Merced County"
+  },
+  "93636": {
+    "county_fips": "06039",
+    "county_name": "Madera County"
+  },
+  "93637": {
+    "county_fips": "06039",
+    "county_name": "Madera County"
+  },
+  "93638": {
+    "county_fips": "06039",
+    "county_name": "Madera County"
+  },
+  "93640": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93641": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93643": {
+    "county_fips": "06039",
+    "county_name": "Madera County"
+  },
+  "93644": {
+    "county_fips": "06039",
+    "county_name": "Madera County"
+  },
+  "93645": {
+    "county_fips": "06039",
+    "county_name": "Madera County"
+  },
+  "93646": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93647": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93648": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93650": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93651": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93652": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93653": {
+    "county_fips": "06039",
+    "county_name": "Madera County"
+  },
+  "93654": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93656": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93657": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93660": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93662": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93664": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93665": {
+    "county_fips": "06047",
+    "county_name": "Merced County"
+  },
+  "93666": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93667": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93668": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93669": {
+    "county_fips": "06039",
+    "county_name": "Madera County"
+  },
+  "93670": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93673": {
+    "county_fips": "06107",
+    "county_name": "Tulare County"
+  },
+  "93675": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93701": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93702": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93703": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93704": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93705": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93706": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93710": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93711": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93720": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93721": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93722": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93723": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93725": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93726": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93727": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93728": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93730": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93737": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93740": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93741": {
+    "county_fips": "06019",
+    "county_name": "Fresno County"
+  },
+  "93901": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "93905": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "93906": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "93907": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "93908": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "93920": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "93921": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "93923": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "93924": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "93925": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "93926": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "93927": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "93928": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "93930": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "93932": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "93933": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "93940": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "93943": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "93944": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "93950": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "93953": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "93954": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "93955": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "93960": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "93962": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "94002": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94005": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94010": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94014": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94015": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94018": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94019": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94020": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94021": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94022": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "94024": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "94025": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94027": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94028": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94030": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94037": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94038": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94040": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "94041": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "94043": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "94044": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94060": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94061": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94062": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94063": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94065": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94066": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94070": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94074": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94080": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94085": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "94086": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "94087": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "94089": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "94102": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94103": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94104": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94105": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94107": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94108": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94109": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94110": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94111": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94112": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94114": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94115": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94116": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94117": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94118": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94121": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94122": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94123": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94124": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94127": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94128": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94129": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94130": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94131": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94132": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94133": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94134": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94158": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94188": {
+    "county_fips": "06075",
+    "county_name": "San Francisco County"
+  },
+  "94301": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "94303": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "94304": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "94305": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "94306": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "94401": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94402": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94403": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94404": {
+    "county_fips": "06081",
+    "county_name": "San Mateo County"
+  },
+  "94501": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94502": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94503": {
+    "county_fips": "06055",
+    "county_name": "Napa County"
+  },
+  "94505": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94506": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94507": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94508": {
+    "county_fips": "06055",
+    "county_name": "Napa County"
+  },
+  "94509": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94510": {
+    "county_fips": "06095",
+    "county_name": "Solano County"
+  },
+  "94511": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94512": {
+    "county_fips": "06095",
+    "county_name": "Solano County"
+  },
+  "94513": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94514": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94515": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "94516": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94517": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94518": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94519": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94520": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94521": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94523": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94525": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94526": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94528": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94530": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94531": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94533": {
+    "county_fips": "06095",
+    "county_name": "Solano County"
+  },
+  "94534": {
+    "county_fips": "06095",
+    "county_name": "Solano County"
+  },
+  "94535": {
+    "county_fips": "06095",
+    "county_name": "Solano County"
+  },
+  "94536": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94538": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94539": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94541": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94542": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94544": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94545": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94546": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94547": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94548": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94549": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94550": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94551": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94552": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94553": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94555": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94556": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94558": {
+    "county_fips": "06055",
+    "county_name": "Napa County"
+  },
+  "94559": {
+    "county_fips": "06055",
+    "county_name": "Napa County"
+  },
+  "94560": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94561": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94562": {
+    "county_fips": "06055",
+    "county_name": "Napa County"
+  },
+  "94563": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94564": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94565": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94566": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94567": {
+    "county_fips": "06055",
+    "county_name": "Napa County"
+  },
+  "94568": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94569": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94571": {
+    "county_fips": "06095",
+    "county_name": "Solano County"
+  },
+  "94572": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94573": {
+    "county_fips": "06055",
+    "county_name": "Napa County"
+  },
+  "94574": {
+    "county_fips": "06055",
+    "county_name": "Napa County"
+  },
+  "94575": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94576": {
+    "county_fips": "06055",
+    "county_name": "Napa County"
+  },
+  "94577": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94578": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94579": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94580": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94582": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94583": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94585": {
+    "county_fips": "06095",
+    "county_name": "Solano County"
+  },
+  "94586": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94587": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94588": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94589": {
+    "county_fips": "06095",
+    "county_name": "Solano County"
+  },
+  "94590": {
+    "county_fips": "06095",
+    "county_name": "Solano County"
+  },
+  "94591": {
+    "county_fips": "06095",
+    "county_name": "Solano County"
+  },
+  "94592": {
+    "county_fips": "06095",
+    "county_name": "Solano County"
+  },
+  "94595": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94596": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94597": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94598": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94599": {
+    "county_fips": "06055",
+    "county_name": "Napa County"
+  },
+  "94601": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94602": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94603": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94605": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94606": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94607": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94608": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94609": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94610": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94611": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94612": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94613": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94618": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94619": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94621": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94702": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94703": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94704": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94705": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94706": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94707": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94708": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94709": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94710": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94720": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "94801": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94803": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94804": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94805": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94806": {
+    "county_fips": "06013",
+    "county_name": "Contra Costa County"
+  },
+  "94901": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94903": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94904": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94920": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94922": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "94923": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "94924": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94925": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94928": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "94929": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94930": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94931": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "94933": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94937": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94938": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94939": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94940": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94941": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94945": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94946": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94947": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94949": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94950": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94951": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "94952": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94954": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "94956": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94957": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94960": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94963": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94964": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94965": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94970": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94971": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "94972": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "94973": {
+    "county_fips": "06041",
+    "county_name": "Marin County"
+  },
+  "95002": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95003": {
+    "county_fips": "06087",
+    "county_name": "Santa Cruz County"
+  },
+  "95004": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "95005": {
+    "county_fips": "06087",
+    "county_name": "Santa Cruz County"
+  },
+  "95006": {
+    "county_fips": "06087",
+    "county_name": "Santa Cruz County"
+  },
+  "95007": {
+    "county_fips": "06087",
+    "county_name": "Santa Cruz County"
+  },
+  "95008": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95010": {
+    "county_fips": "06087",
+    "county_name": "Santa Cruz County"
+  },
+  "95012": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "95013": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95014": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95017": {
+    "county_fips": "06087",
+    "county_name": "Santa Cruz County"
+  },
+  "95018": {
+    "county_fips": "06087",
+    "county_name": "Santa Cruz County"
+  },
+  "95019": {
+    "county_fips": "06087",
+    "county_name": "Santa Cruz County"
+  },
+  "95020": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95023": {
+    "county_fips": "06069",
+    "county_name": "San Benito County"
+  },
+  "95030": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95032": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95033": {
+    "county_fips": "06087",
+    "county_name": "Santa Cruz County"
+  },
+  "95035": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95037": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95039": {
+    "county_fips": "06053",
+    "county_name": "Monterey County"
+  },
+  "95041": {
+    "county_fips": "06087",
+    "county_name": "Santa Cruz County"
+  },
+  "95043": {
+    "county_fips": "06069",
+    "county_name": "San Benito County"
+  },
+  "95045": {
+    "county_fips": "06069",
+    "county_name": "San Benito County"
+  },
+  "95046": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95050": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95051": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95053": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95054": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95060": {
+    "county_fips": "06087",
+    "county_name": "Santa Cruz County"
+  },
+  "95062": {
+    "county_fips": "06087",
+    "county_name": "Santa Cruz County"
+  },
+  "95064": {
+    "county_fips": "06087",
+    "county_name": "Santa Cruz County"
+  },
+  "95065": {
+    "county_fips": "06087",
+    "county_name": "Santa Cruz County"
+  },
+  "95066": {
+    "county_fips": "06087",
+    "county_name": "Santa Cruz County"
+  },
+  "95070": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95073": {
+    "county_fips": "06087",
+    "county_name": "Santa Cruz County"
+  },
+  "95075": {
+    "county_fips": "06069",
+    "county_name": "San Benito County"
+  },
+  "95076": {
+    "county_fips": "06087",
+    "county_name": "Santa Cruz County"
+  },
+  "95110": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95111": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95112": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95113": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95116": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95117": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95118": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95119": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95120": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95121": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95122": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95123": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95124": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95125": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95126": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95127": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95128": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95129": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95130": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95131": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95132": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95133": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95134": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95135": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95136": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95138": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95139": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95140": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95148": {
+    "county_fips": "06085",
+    "county_name": "Santa Clara County"
+  },
+  "95202": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95203": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95204": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95205": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95206": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95207": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95209": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95210": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95211": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95212": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95215": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95219": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95220": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95221": {
+    "county_fips": "06009",
+    "county_name": "Calaveras County"
+  },
+  "95222": {
+    "county_fips": "06009",
+    "county_name": "Calaveras County"
+  },
+  "95223": {
+    "county_fips": "06003",
+    "county_name": "Alpine County"
+  },
+  "95224": {
+    "county_fips": "06009",
+    "county_name": "Calaveras County"
+  },
+  "95225": {
+    "county_fips": "06009",
+    "county_name": "Calaveras County"
+  },
+  "95226": {
+    "county_fips": "06009",
+    "county_name": "Calaveras County"
+  },
+  "95227": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95228": {
+    "county_fips": "06009",
+    "county_name": "Calaveras County"
+  },
+  "95230": {
+    "county_fips": "06099",
+    "county_name": "Stanislaus County"
+  },
+  "95231": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95232": {
+    "county_fips": "06009",
+    "county_name": "Calaveras County"
+  },
+  "95233": {
+    "county_fips": "06009",
+    "county_name": "Calaveras County"
+  },
+  "95236": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95237": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95240": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95242": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95245": {
+    "county_fips": "06009",
+    "county_name": "Calaveras County"
+  },
+  "95246": {
+    "county_fips": "06009",
+    "county_name": "Calaveras County"
+  },
+  "95247": {
+    "county_fips": "06009",
+    "county_name": "Calaveras County"
+  },
+  "95248": {
+    "county_fips": "06009",
+    "county_name": "Calaveras County"
+  },
+  "95249": {
+    "county_fips": "06009",
+    "county_name": "Calaveras County"
+  },
+  "95251": {
+    "county_fips": "06009",
+    "county_name": "Calaveras County"
+  },
+  "95252": {
+    "county_fips": "06009",
+    "county_name": "Calaveras County"
+  },
+  "95253": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95254": {
+    "county_fips": "06009",
+    "county_name": "Calaveras County"
+  },
+  "95255": {
+    "county_fips": "06009",
+    "county_name": "Calaveras County"
+  },
+  "95257": {
+    "county_fips": "06009",
+    "county_name": "Calaveras County"
+  },
+  "95258": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95301": {
+    "county_fips": "06047",
+    "county_name": "Merced County"
+  },
+  "95303": {
+    "county_fips": "06047",
+    "county_name": "Merced County"
+  },
+  "95304": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95305": {
+    "county_fips": "06109",
+    "county_name": "Tuolumne County"
+  },
+  "95306": {
+    "county_fips": "06043",
+    "county_name": "Mariposa County"
+  },
+  "95307": {
+    "county_fips": "06099",
+    "county_name": "Stanislaus County"
+  },
+  "95309": {
+    "county_fips": "06109",
+    "county_name": "Tuolumne County"
+  },
+  "95310": {
+    "county_fips": "06109",
+    "county_name": "Tuolumne County"
+  },
+  "95311": {
+    "county_fips": "06043",
+    "county_name": "Mariposa County"
+  },
+  "95312": {
+    "county_fips": "06047",
+    "county_name": "Merced County"
+  },
+  "95313": {
+    "county_fips": "06099",
+    "county_name": "Stanislaus County"
+  },
+  "95315": {
+    "county_fips": "06047",
+    "county_name": "Merced County"
+  },
+  "95316": {
+    "county_fips": "06099",
+    "county_name": "Stanislaus County"
+  },
+  "95317": {
+    "county_fips": "06047",
+    "county_name": "Merced County"
+  },
+  "95318": {
+    "county_fips": "06043",
+    "county_name": "Mariposa County"
+  },
+  "95319": {
+    "county_fips": "06099",
+    "county_name": "Stanislaus County"
+  },
+  "95320": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95321": {
+    "county_fips": "06109",
+    "county_name": "Tuolumne County"
+  },
+  "95322": {
+    "county_fips": "06047",
+    "county_name": "Merced County"
+  },
+  "95323": {
+    "county_fips": "06099",
+    "county_name": "Stanislaus County"
+  },
+  "95324": {
+    "county_fips": "06047",
+    "county_name": "Merced County"
+  },
+  "95325": {
+    "county_fips": "06043",
+    "county_name": "Mariposa County"
+  },
+  "95326": {
+    "county_fips": "06099",
+    "county_name": "Stanislaus County"
+  },
+  "95327": {
+    "county_fips": "06109",
+    "county_name": "Tuolumne County"
+  },
+  "95328": {
+    "county_fips": "06099",
+    "county_name": "Stanislaus County"
+  },
+  "95329": {
+    "county_fips": "06109",
+    "county_name": "Tuolumne County"
+  },
+  "95330": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95333": {
+    "county_fips": "06047",
+    "county_name": "Merced County"
+  },
+  "95334": {
+    "county_fips": "06047",
+    "county_name": "Merced County"
+  },
+  "95335": {
+    "county_fips": "06109",
+    "county_name": "Tuolumne County"
+  },
+  "95336": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95337": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95338": {
+    "county_fips": "06043",
+    "county_name": "Mariposa County"
+  },
+  "95340": {
+    "county_fips": "06047",
+    "county_name": "Merced County"
+  },
+  "95341": {
+    "county_fips": "06047",
+    "county_name": "Merced County"
+  },
+  "95345": {
+    "county_fips": "06043",
+    "county_name": "Mariposa County"
+  },
+  "95346": {
+    "county_fips": "06109",
+    "county_name": "Tuolumne County"
+  },
+  "95348": {
+    "county_fips": "06047",
+    "county_name": "Merced County"
+  },
+  "95350": {
+    "county_fips": "06099",
+    "county_name": "Stanislaus County"
+  },
+  "95351": {
+    "county_fips": "06099",
+    "county_name": "Stanislaus County"
+  },
+  "95354": {
+    "county_fips": "06099",
+    "county_name": "Stanislaus County"
+  },
+  "95355": {
+    "county_fips": "06099",
+    "county_name": "Stanislaus County"
+  },
+  "95356": {
+    "county_fips": "06099",
+    "county_name": "Stanislaus County"
+  },
+  "95357": {
+    "county_fips": "06099",
+    "county_name": "Stanislaus County"
+  },
+  "95358": {
+    "county_fips": "06099",
+    "county_name": "Stanislaus County"
+  },
+  "95360": {
+    "county_fips": "06099",
+    "county_name": "Stanislaus County"
+  },
+  "95361": {
+    "county_fips": "06099",
+    "county_name": "Stanislaus County"
+  },
+  "95363": {
+    "county_fips": "06099",
+    "county_name": "Stanislaus County"
+  },
+  "95364": {
+    "county_fips": "06109",
+    "county_name": "Tuolumne County"
+  },
+  "95365": {
+    "county_fips": "06047",
+    "county_name": "Merced County"
+  },
+  "95366": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95367": {
+    "county_fips": "06099",
+    "county_name": "Stanislaus County"
+  },
+  "95368": {
+    "county_fips": "06099",
+    "county_name": "Stanislaus County"
+  },
+  "95369": {
+    "county_fips": "06047",
+    "county_name": "Merced County"
+  },
+  "95370": {
+    "county_fips": "06109",
+    "county_name": "Tuolumne County"
+  },
+  "95372": {
+    "county_fips": "06109",
+    "county_name": "Tuolumne County"
+  },
+  "95374": {
+    "county_fips": "06047",
+    "county_name": "Merced County"
+  },
+  "95375": {
+    "county_fips": "06109",
+    "county_name": "Tuolumne County"
+  },
+  "95376": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95377": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95379": {
+    "county_fips": "06109",
+    "county_name": "Tuolumne County"
+  },
+  "95380": {
+    "county_fips": "06099",
+    "county_name": "Stanislaus County"
+  },
+  "95382": {
+    "county_fips": "06099",
+    "county_name": "Stanislaus County"
+  },
+  "95383": {
+    "county_fips": "06109",
+    "county_name": "Tuolumne County"
+  },
+  "95385": {
+    "county_fips": "06099",
+    "county_name": "Stanislaus County"
+  },
+  "95386": {
+    "county_fips": "06099",
+    "county_name": "Stanislaus County"
+  },
+  "95387": {
+    "county_fips": "06099",
+    "county_name": "Stanislaus County"
+  },
+  "95388": {
+    "county_fips": "06047",
+    "county_name": "Merced County"
+  },
+  "95389": {
+    "county_fips": "06043",
+    "county_name": "Mariposa County"
+  },
+  "95391": {
+    "county_fips": "06001",
+    "county_name": "Alameda County"
+  },
+  "95401": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95403": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95404": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95405": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95407": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95409": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95410": {
+    "county_fips": "06045",
+    "county_name": "Mendocino County"
+  },
+  "95412": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95415": {
+    "county_fips": "06045",
+    "county_name": "Mendocino County"
+  },
+  "95417": {
+    "county_fips": "06045",
+    "county_name": "Mendocino County"
+  },
+  "95419": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95420": {
+    "county_fips": "06045",
+    "county_name": "Mendocino County"
+  },
+  "95421": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95422": {
+    "county_fips": "06033",
+    "county_name": "Lake County"
+  },
+  "95423": {
+    "county_fips": "06033",
+    "county_name": "Lake County"
+  },
+  "95425": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95426": {
+    "county_fips": "06033",
+    "county_name": "Lake County"
+  },
+  "95427": {
+    "county_fips": "06045",
+    "county_name": "Mendocino County"
+  },
+  "95428": {
+    "county_fips": "06045",
+    "county_name": "Mendocino County"
+  },
+  "95429": {
+    "county_fips": "06045",
+    "county_name": "Mendocino County"
+  },
+  "95430": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95431": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95432": {
+    "county_fips": "06045",
+    "county_name": "Mendocino County"
+  },
+  "95435": {
+    "county_fips": "06033",
+    "county_name": "Lake County"
+  },
+  "95436": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95437": {
+    "county_fips": "06045",
+    "county_name": "Mendocino County"
+  },
+  "95439": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95441": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95442": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95443": {
+    "county_fips": "06033",
+    "county_name": "Lake County"
+  },
+  "95444": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95445": {
+    "county_fips": "06045",
+    "county_name": "Mendocino County"
+  },
+  "95446": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95448": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95449": {
+    "county_fips": "06045",
+    "county_name": "Mendocino County"
+  },
+  "95450": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95451": {
+    "county_fips": "06033",
+    "county_name": "Lake County"
+  },
+  "95452": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95453": {
+    "county_fips": "06033",
+    "county_name": "Lake County"
+  },
+  "95454": {
+    "county_fips": "06045",
+    "county_name": "Mendocino County"
+  },
+  "95456": {
+    "county_fips": "06045",
+    "county_name": "Mendocino County"
+  },
+  "95457": {
+    "county_fips": "06033",
+    "county_name": "Lake County"
+  },
+  "95458": {
+    "county_fips": "06033",
+    "county_name": "Lake County"
+  },
+  "95459": {
+    "county_fips": "06045",
+    "county_name": "Mendocino County"
+  },
+  "95460": {
+    "county_fips": "06045",
+    "county_name": "Mendocino County"
+  },
+  "95461": {
+    "county_fips": "06033",
+    "county_name": "Lake County"
+  },
+  "95462": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95463": {
+    "county_fips": "06045",
+    "county_name": "Mendocino County"
+  },
+  "95464": {
+    "county_fips": "06033",
+    "county_name": "Lake County"
+  },
+  "95465": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95466": {
+    "county_fips": "06045",
+    "county_name": "Mendocino County"
+  },
+  "95467": {
+    "county_fips": "06033",
+    "county_name": "Lake County"
+  },
+  "95468": {
+    "county_fips": "06045",
+    "county_name": "Mendocino County"
+  },
+  "95469": {
+    "county_fips": "06045",
+    "county_name": "Mendocino County"
+  },
+  "95470": {
+    "county_fips": "06045",
+    "county_name": "Mendocino County"
+  },
+  "95471": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95472": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95476": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95480": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95482": {
+    "county_fips": "06045",
+    "county_name": "Mendocino County"
+  },
+  "95485": {
+    "county_fips": "06033",
+    "county_name": "Lake County"
+  },
+  "95486": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95488": {
+    "county_fips": "06045",
+    "county_name": "Mendocino County"
+  },
+  "95490": {
+    "county_fips": "06045",
+    "county_name": "Mendocino County"
+  },
+  "95492": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95493": {
+    "county_fips": "06033",
+    "county_name": "Lake County"
+  },
+  "95494": {
+    "county_fips": "06045",
+    "county_name": "Mendocino County"
+  },
+  "95497": {
+    "county_fips": "06097",
+    "county_name": "Sonoma County"
+  },
+  "95501": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95503": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95511": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95514": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95519": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95521": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95524": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95525": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95526": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95527": {
+    "county_fips": "06105",
+    "county_name": "Trinity County"
+  },
+  "95528": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95531": {
+    "county_fips": "06015",
+    "county_name": "Del Norte County"
+  },
+  "95536": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95537": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95538": {
+    "county_fips": "06015",
+    "county_name": "Del Norte County"
+  },
+  "95540": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95542": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95543": {
+    "county_fips": "06015",
+    "county_name": "Del Norte County"
+  },
+  "95545": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95546": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95547": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95548": {
+    "county_fips": "06015",
+    "county_name": "Del Norte County"
+  },
+  "95549": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95550": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95551": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95552": {
+    "county_fips": "06105",
+    "county_name": "Trinity County"
+  },
+  "95553": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95554": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95555": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95556": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95558": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95559": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95560": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95562": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95563": {
+    "county_fips": "06105",
+    "county_name": "Trinity County"
+  },
+  "95564": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95565": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95567": {
+    "county_fips": "06015",
+    "county_name": "Del Norte County"
+  },
+  "95568": {
+    "county_fips": "06093",
+    "county_name": "Siskiyou County"
+  },
+  "95569": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95570": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95571": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95573": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95585": {
+    "county_fips": "06045",
+    "county_name": "Mendocino County"
+  },
+  "95587": {
+    "county_fips": "06045",
+    "county_name": "Mendocino County"
+  },
+  "95589": {
+    "county_fips": "06023",
+    "county_name": "Humboldt County"
+  },
+  "95595": {
+    "county_fips": "06105",
+    "county_name": "Trinity County"
+  },
+  "95601": {
+    "county_fips": "06005",
+    "county_name": "Amador County"
+  },
+  "95602": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "95603": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "95604": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "95605": {
+    "county_fips": "06113",
+    "county_name": "Yolo County"
+  },
+  "95606": {
+    "county_fips": "06113",
+    "county_name": "Yolo County"
+  },
+  "95607": {
+    "county_fips": "06113",
+    "county_name": "Yolo County"
+  },
+  "95608": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95610": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95612": {
+    "county_fips": "06113",
+    "county_name": "Yolo County"
+  },
+  "95613": {
+    "county_fips": "06017",
+    "county_name": "El Dorado County"
+  },
+  "95614": {
+    "county_fips": "06017",
+    "county_name": "El Dorado County"
+  },
+  "95615": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95616": {
+    "county_fips": "06113",
+    "county_name": "Yolo County"
+  },
+  "95618": {
+    "county_fips": "06113",
+    "county_name": "Yolo County"
+  },
+  "95619": {
+    "county_fips": "06017",
+    "county_name": "El Dorado County"
+  },
+  "95620": {
+    "county_fips": "06095",
+    "county_name": "Solano County"
+  },
+  "95621": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95623": {
+    "county_fips": "06017",
+    "county_name": "El Dorado County"
+  },
+  "95624": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95625": {
+    "county_fips": "06095",
+    "county_name": "Solano County"
+  },
+  "95626": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95627": {
+    "county_fips": "06113",
+    "county_name": "Yolo County"
+  },
+  "95628": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95629": {
+    "county_fips": "06005",
+    "county_name": "Amador County"
+  },
+  "95630": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95631": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "95632": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95633": {
+    "county_fips": "06017",
+    "county_name": "El Dorado County"
+  },
+  "95634": {
+    "county_fips": "06017",
+    "county_name": "El Dorado County"
+  },
+  "95635": {
+    "county_fips": "06017",
+    "county_name": "El Dorado County"
+  },
+  "95636": {
+    "county_fips": "06017",
+    "county_name": "El Dorado County"
+  },
+  "95637": {
+    "county_fips": "06113",
+    "county_name": "Yolo County"
+  },
+  "95638": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95639": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95640": {
+    "county_fips": "06005",
+    "county_name": "Amador County"
+  },
+  "95641": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95642": {
+    "county_fips": "06005",
+    "county_name": "Amador County"
+  },
+  "95645": {
+    "county_fips": "06113",
+    "county_name": "Yolo County"
+  },
+  "95646": {
+    "county_fips": "06003",
+    "county_name": "Alpine County"
+  },
+  "95648": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "95650": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "95651": {
+    "county_fips": "06017",
+    "county_name": "El Dorado County"
+  },
+  "95652": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95653": {
+    "county_fips": "06113",
+    "county_name": "Yolo County"
+  },
+  "95655": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95658": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "95659": {
+    "county_fips": "06101",
+    "county_name": "Sutter County"
+  },
+  "95660": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95661": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "95662": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95663": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "95664": {
+    "county_fips": "06017",
+    "county_name": "El Dorado County"
+  },
+  "95665": {
+    "county_fips": "06005",
+    "county_name": "Amador County"
+  },
+  "95666": {
+    "county_fips": "06005",
+    "county_name": "Amador County"
+  },
+  "95667": {
+    "county_fips": "06017",
+    "county_name": "El Dorado County"
+  },
+  "95668": {
+    "county_fips": "06101",
+    "county_name": "Sutter County"
+  },
+  "95669": {
+    "county_fips": "06005",
+    "county_name": "Amador County"
+  },
+  "95670": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95671": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95672": {
+    "county_fips": "06017",
+    "county_name": "El Dorado County"
+  },
+  "95673": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95674": {
+    "county_fips": "06101",
+    "county_name": "Sutter County"
+  },
+  "95675": {
+    "county_fips": "06005",
+    "county_name": "Amador County"
+  },
+  "95676": {
+    "county_fips": "06101",
+    "county_name": "Sutter County"
+  },
+  "95677": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "95678": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "95679": {
+    "county_fips": "06113",
+    "county_name": "Yolo County"
+  },
+  "95680": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95681": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "95682": {
+    "county_fips": "06017",
+    "county_name": "El Dorado County"
+  },
+  "95683": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95684": {
+    "county_fips": "06017",
+    "county_name": "El Dorado County"
+  },
+  "95685": {
+    "county_fips": "06005",
+    "county_name": "Amador County"
+  },
+  "95686": {
+    "county_fips": "06077",
+    "county_name": "San Joaquin County"
+  },
+  "95687": {
+    "county_fips": "06095",
+    "county_name": "Solano County"
+  },
+  "95688": {
+    "county_fips": "06095",
+    "county_name": "Solano County"
+  },
+  "95689": {
+    "county_fips": "06005",
+    "county_name": "Amador County"
+  },
+  "95690": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95691": {
+    "county_fips": "06113",
+    "county_name": "Yolo County"
+  },
+  "95692": {
+    "county_fips": "06115",
+    "county_name": "Yuba County"
+  },
+  "95693": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95694": {
+    "county_fips": "06113",
+    "county_name": "Yolo County"
+  },
+  "95695": {
+    "county_fips": "06113",
+    "county_name": "Yolo County"
+  },
+  "95697": {
+    "county_fips": "06113",
+    "county_name": "Yolo County"
+  },
+  "95698": {
+    "county_fips": "06113",
+    "county_name": "Yolo County"
+  },
+  "95699": {
+    "county_fips": "06005",
+    "county_name": "Amador County"
+  },
+  "95701": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "95703": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "95709": {
+    "county_fips": "06017",
+    "county_name": "El Dorado County"
+  },
+  "95713": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "95714": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "95715": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "95717": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "95720": {
+    "county_fips": "06017",
+    "county_name": "El Dorado County"
+  },
+  "95721": {
+    "county_fips": "06017",
+    "county_name": "El Dorado County"
+  },
+  "95722": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "95726": {
+    "county_fips": "06017",
+    "county_name": "El Dorado County"
+  },
+  "95728": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "95735": {
+    "county_fips": "06017",
+    "county_name": "El Dorado County"
+  },
+  "95736": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "95742": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95746": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "95747": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "95757": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95758": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95762": {
+    "county_fips": "06017",
+    "county_name": "El Dorado County"
+  },
+  "95765": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "95776": {
+    "county_fips": "06113",
+    "county_name": "Yolo County"
+  },
+  "95811": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95814": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95815": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95816": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95817": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95818": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95819": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95820": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95821": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95822": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95823": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95824": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95825": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95826": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95827": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95828": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95829": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95830": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95831": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95832": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95833": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95834": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95835": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95837": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95838": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95841": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95842": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95843": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95864": {
+    "county_fips": "06067",
+    "county_name": "Sacramento County"
+  },
+  "95901": {
+    "county_fips": "06115",
+    "county_name": "Yuba County"
+  },
+  "95903": {
+    "county_fips": "06115",
+    "county_name": "Yuba County"
+  },
+  "95910": {
+    "county_fips": "06091",
+    "county_name": "Sierra County"
+  },
+  "95912": {
+    "county_fips": "06011",
+    "county_name": "Colusa County"
+  },
+  "95913": {
+    "county_fips": "06021",
+    "county_name": "Glenn County"
+  },
+  "95914": {
+    "county_fips": "06007",
+    "county_name": "Butte County"
+  },
+  "95915": {
+    "county_fips": "06063",
+    "county_name": "Plumas County"
+  },
+  "95916": {
+    "county_fips": "06007",
+    "county_name": "Butte County"
+  },
+  "95917": {
+    "county_fips": "06007",
+    "county_name": "Butte County"
+  },
+  "95918": {
+    "county_fips": "06115",
+    "county_name": "Yuba County"
+  },
+  "95919": {
+    "county_fips": "06115",
+    "county_name": "Yuba County"
+  },
+  "95920": {
+    "county_fips": "06021",
+    "county_name": "Glenn County"
+  },
+  "95922": {
+    "county_fips": "06115",
+    "county_name": "Yuba County"
+  },
+  "95923": {
+    "county_fips": "06063",
+    "county_name": "Plumas County"
+  },
+  "95925": {
+    "county_fips": "06115",
+    "county_name": "Yuba County"
+  },
+  "95926": {
+    "county_fips": "06007",
+    "county_name": "Butte County"
+  },
+  "95928": {
+    "county_fips": "06007",
+    "county_name": "Butte County"
+  },
+  "95929": {
+    "county_fips": "06007",
+    "county_name": "Butte County"
+  },
+  "95930": {
+    "county_fips": "06007",
+    "county_name": "Butte County"
+  },
+  "95932": {
+    "county_fips": "06011",
+    "county_name": "Colusa County"
+  },
+  "95934": {
+    "county_fips": "06063",
+    "county_name": "Plumas County"
+  },
+  "95935": {
+    "county_fips": "06115",
+    "county_name": "Yuba County"
+  },
+  "95936": {
+    "county_fips": "06091",
+    "county_name": "Sierra County"
+  },
+  "95937": {
+    "county_fips": "06113",
+    "county_name": "Yolo County"
+  },
+  "95938": {
+    "county_fips": "06007",
+    "county_name": "Butte County"
+  },
+  "95939": {
+    "county_fips": "06021",
+    "county_name": "Glenn County"
+  },
+  "95941": {
+    "county_fips": "06007",
+    "county_name": "Butte County"
+  },
+  "95942": {
+    "county_fips": "06007",
+    "county_name": "Butte County"
+  },
+  "95943": {
+    "county_fips": "06021",
+    "county_name": "Glenn County"
+  },
+  "95944": {
+    "county_fips": "06091",
+    "county_name": "Sierra County"
+  },
+  "95945": {
+    "county_fips": "06057",
+    "county_name": "Nevada County"
+  },
+  "95946": {
+    "county_fips": "06057",
+    "county_name": "Nevada County"
+  },
+  "95947": {
+    "county_fips": "06063",
+    "county_name": "Plumas County"
+  },
+  "95948": {
+    "county_fips": "06007",
+    "county_name": "Butte County"
+  },
+  "95949": {
+    "county_fips": "06057",
+    "county_name": "Nevada County"
+  },
+  "95950": {
+    "county_fips": "06011",
+    "county_name": "Colusa County"
+  },
+  "95951": {
+    "county_fips": "06021",
+    "county_name": "Glenn County"
+  },
+  "95953": {
+    "county_fips": "06101",
+    "county_name": "Sutter County"
+  },
+  "95954": {
+    "county_fips": "06007",
+    "county_name": "Butte County"
+  },
+  "95955": {
+    "county_fips": "06011",
+    "county_name": "Colusa County"
+  },
+  "95956": {
+    "county_fips": "06063",
+    "county_name": "Plumas County"
+  },
+  "95957": {
+    "county_fips": "06101",
+    "county_name": "Sutter County"
+  },
+  "95958": {
+    "county_fips": "06007",
+    "county_name": "Butte County"
+  },
+  "95959": {
+    "county_fips": "06057",
+    "county_name": "Nevada County"
+  },
+  "95960": {
+    "county_fips": "06091",
+    "county_name": "Sierra County"
+  },
+  "95961": {
+    "county_fips": "06115",
+    "county_name": "Yuba County"
+  },
+  "95962": {
+    "county_fips": "06115",
+    "county_name": "Yuba County"
+  },
+  "95963": {
+    "county_fips": "06021",
+    "county_name": "Glenn County"
+  },
+  "95965": {
+    "county_fips": "06007",
+    "county_name": "Butte County"
+  },
+  "95966": {
+    "county_fips": "06007",
+    "county_name": "Butte County"
+  },
+  "95968": {
+    "county_fips": "06007",
+    "county_name": "Butte County"
+  },
+  "95969": {
+    "county_fips": "06007",
+    "county_name": "Butte County"
+  },
+  "95970": {
+    "county_fips": "06011",
+    "county_name": "Colusa County"
+  },
+  "95971": {
+    "county_fips": "06063",
+    "county_name": "Plumas County"
+  },
+  "95972": {
+    "county_fips": "06115",
+    "county_name": "Yuba County"
+  },
+  "95973": {
+    "county_fips": "06007",
+    "county_name": "Butte County"
+  },
+  "95974": {
+    "county_fips": "06007",
+    "county_name": "Butte County"
+  },
+  "95975": {
+    "county_fips": "06057",
+    "county_name": "Nevada County"
+  },
+  "95977": {
+    "county_fips": "06115",
+    "county_name": "Yuba County"
+  },
+  "95978": {
+    "county_fips": "06007",
+    "county_name": "Butte County"
+  },
+  "95979": {
+    "county_fips": "06011",
+    "county_name": "Colusa County"
+  },
+  "95981": {
+    "county_fips": "06063",
+    "county_name": "Plumas County"
+  },
+  "95982": {
+    "county_fips": "06101",
+    "county_name": "Sutter County"
+  },
+  "95983": {
+    "county_fips": "06063",
+    "county_name": "Plumas County"
+  },
+  "95984": {
+    "county_fips": "06063",
+    "county_name": "Plumas County"
+  },
+  "95986": {
+    "county_fips": "06057",
+    "county_name": "Nevada County"
+  },
+  "95987": {
+    "county_fips": "06011",
+    "county_name": "Colusa County"
+  },
+  "95988": {
+    "county_fips": "06021",
+    "county_name": "Glenn County"
+  },
+  "95991": {
+    "county_fips": "06101",
+    "county_name": "Sutter County"
+  },
+  "95993": {
+    "county_fips": "06101",
+    "county_name": "Sutter County"
+  },
+  "96001": {
+    "county_fips": "06089",
+    "county_name": "Shasta County"
+  },
+  "96002": {
+    "county_fips": "06089",
+    "county_name": "Shasta County"
+  },
+  "96003": {
+    "county_fips": "06089",
+    "county_name": "Shasta County"
+  },
+  "96006": {
+    "county_fips": "06035",
+    "county_name": "Lassen County"
+  },
+  "96007": {
+    "county_fips": "06089",
+    "county_name": "Shasta County"
+  },
+  "96008": {
+    "county_fips": "06089",
+    "county_name": "Shasta County"
+  },
+  "96009": {
+    "county_fips": "06035",
+    "county_name": "Lassen County"
+  },
+  "96010": {
+    "county_fips": "06105",
+    "county_name": "Trinity County"
+  },
+  "96011": {
+    "county_fips": "06089",
+    "county_name": "Shasta County"
+  },
+  "96013": {
+    "county_fips": "06089",
+    "county_name": "Shasta County"
+  },
+  "96014": {
+    "county_fips": "06093",
+    "county_name": "Siskiyou County"
+  },
+  "96015": {
+    "county_fips": "06049",
+    "county_name": "Modoc County"
+  },
+  "96016": {
+    "county_fips": "06089",
+    "county_name": "Shasta County"
+  },
+  "96017": {
+    "county_fips": "06089",
+    "county_name": "Shasta County"
+  },
+  "96019": {
+    "county_fips": "06089",
+    "county_name": "Shasta County"
+  },
+  "96020": {
+    "county_fips": "06063",
+    "county_name": "Plumas County"
+  },
+  "96021": {
+    "county_fips": "06103",
+    "county_name": "Tehama County"
+  },
+  "96022": {
+    "county_fips": "06103",
+    "county_name": "Tehama County"
+  },
+  "96023": {
+    "county_fips": "06093",
+    "county_name": "Siskiyou County"
+  },
+  "96024": {
+    "county_fips": "06105",
+    "county_name": "Trinity County"
+  },
+  "96025": {
+    "county_fips": "06093",
+    "county_name": "Siskiyou County"
+  },
+  "96027": {
+    "county_fips": "06093",
+    "county_name": "Siskiyou County"
+  },
+  "96028": {
+    "county_fips": "06089",
+    "county_name": "Shasta County"
+  },
+  "96029": {
+    "county_fips": "06103",
+    "county_name": "Tehama County"
+  },
+  "96031": {
+    "county_fips": "06093",
+    "county_name": "Siskiyou County"
+  },
+  "96032": {
+    "county_fips": "06093",
+    "county_name": "Siskiyou County"
+  },
+  "96033": {
+    "county_fips": "06089",
+    "county_name": "Shasta County"
+  },
+  "96034": {
+    "county_fips": "06093",
+    "county_name": "Siskiyou County"
+  },
+  "96035": {
+    "county_fips": "06103",
+    "county_name": "Tehama County"
+  },
+  "96037": {
+    "county_fips": "06093",
+    "county_name": "Siskiyou County"
+  },
+  "96038": {
+    "county_fips": "06093",
+    "county_name": "Siskiyou County"
+  },
+  "96039": {
+    "county_fips": "06093",
+    "county_name": "Siskiyou County"
+  },
+  "96040": {
+    "county_fips": "06089",
+    "county_name": "Shasta County"
+  },
+  "96041": {
+    "county_fips": "06105",
+    "county_name": "Trinity County"
+  },
+  "96044": {
+    "county_fips": "06093",
+    "county_name": "Siskiyou County"
+  },
+  "96046": {
+    "county_fips": "06105",
+    "county_name": "Trinity County"
+  },
+  "96047": {
+    "county_fips": "06089",
+    "county_name": "Shasta County"
+  },
+  "96048": {
+    "county_fips": "06105",
+    "county_name": "Trinity County"
+  },
+  "96050": {
+    "county_fips": "06093",
+    "county_name": "Siskiyou County"
+  },
+  "96051": {
+    "county_fips": "06089",
+    "county_name": "Shasta County"
+  },
+  "96052": {
+    "county_fips": "06105",
+    "county_name": "Trinity County"
+  },
+  "96054": {
+    "county_fips": "06049",
+    "county_name": "Modoc County"
+  },
+  "96055": {
+    "county_fips": "06103",
+    "county_name": "Tehama County"
+  },
+  "96056": {
+    "county_fips": "06035",
+    "county_name": "Lassen County"
+  },
+  "96057": {
+    "county_fips": "06093",
+    "county_name": "Siskiyou County"
+  },
+  "96058": {
+    "county_fips": "06093",
+    "county_name": "Siskiyou County"
+  },
+  "96059": {
+    "county_fips": "06103",
+    "county_name": "Tehama County"
+  },
+  "96061": {
+    "county_fips": "06103",
+    "county_name": "Tehama County"
+  },
+  "96062": {
+    "county_fips": "06089",
+    "county_name": "Shasta County"
+  },
+  "96063": {
+    "county_fips": "06103",
+    "county_name": "Tehama County"
+  },
+  "96064": {
+    "county_fips": "06093",
+    "county_name": "Siskiyou County"
+  },
+  "96065": {
+    "county_fips": "06089",
+    "county_name": "Shasta County"
+  },
+  "96067": {
+    "county_fips": "06093",
+    "county_name": "Siskiyou County"
+  },
+  "96068": {
+    "county_fips": "06035",
+    "county_name": "Lassen County"
+  },
+  "96069": {
+    "county_fips": "06089",
+    "county_name": "Shasta County"
+  },
+  "96071": {
+    "county_fips": "06089",
+    "county_name": "Shasta County"
+  },
+  "96073": {
+    "county_fips": "06089",
+    "county_name": "Shasta County"
+  },
+  "96074": {
+    "county_fips": "06103",
+    "county_name": "Tehama County"
+  },
+  "96075": {
+    "county_fips": "06103",
+    "county_name": "Tehama County"
+  },
+  "96076": {
+    "county_fips": "06105",
+    "county_name": "Trinity County"
+  },
+  "96078": {
+    "county_fips": "06103",
+    "county_name": "Tehama County"
+  },
+  "96080": {
+    "county_fips": "06103",
+    "county_name": "Tehama County"
+  },
+  "96084": {
+    "county_fips": "06089",
+    "county_name": "Shasta County"
+  },
+  "96085": {
+    "county_fips": "06093",
+    "county_name": "Siskiyou County"
+  },
+  "96086": {
+    "county_fips": "06093",
+    "county_name": "Siskiyou County"
+  },
+  "96087": {
+    "county_fips": "06089",
+    "county_name": "Shasta County"
+  },
+  "96088": {
+    "county_fips": "06089",
+    "county_name": "Shasta County"
+  },
+  "96090": {
+    "county_fips": "06103",
+    "county_name": "Tehama County"
+  },
+  "96091": {
+    "county_fips": "06105",
+    "county_name": "Trinity County"
+  },
+  "96092": {
+    "county_fips": "06103",
+    "county_name": "Tehama County"
+  },
+  "96093": {
+    "county_fips": "06105",
+    "county_name": "Trinity County"
+  },
+  "96094": {
+    "county_fips": "06093",
+    "county_name": "Siskiyou County"
+  },
+  "96096": {
+    "county_fips": "06089",
+    "county_name": "Shasta County"
+  },
+  "96097": {
+    "county_fips": "06093",
+    "county_name": "Siskiyou County"
+  },
+  "96101": {
+    "county_fips": "06049",
+    "county_name": "Modoc County"
+  },
+  "96103": {
+    "county_fips": "06063",
+    "county_name": "Plumas County"
+  },
+  "96104": {
+    "county_fips": "06049",
+    "county_name": "Modoc County"
+  },
+  "96105": {
+    "county_fips": "06063",
+    "county_name": "Plumas County"
+  },
+  "96106": {
+    "county_fips": "06063",
+    "county_name": "Plumas County"
+  },
+  "96107": {
+    "county_fips": "06051",
+    "county_name": "Mono County"
+  },
+  "96108": {
+    "county_fips": "06049",
+    "county_name": "Modoc County"
+  },
+  "96109": {
+    "county_fips": "06035",
+    "county_name": "Lassen County"
+  },
+  "96110": {
+    "county_fips": "06049",
+    "county_name": "Modoc County"
+  },
+  "96111": {
+    "county_fips": "06057",
+    "county_name": "Nevada County"
+  },
+  "96112": {
+    "county_fips": "06049",
+    "county_name": "Modoc County"
+  },
+  "96113": {
+    "county_fips": "06035",
+    "county_name": "Lassen County"
+  },
+  "96114": {
+    "county_fips": "06035",
+    "county_name": "Lassen County"
+  },
+  "96115": {
+    "county_fips": "06049",
+    "county_name": "Modoc County"
+  },
+  "96116": {
+    "county_fips": "06049",
+    "county_name": "Modoc County"
+  },
+  "96117": {
+    "county_fips": "06035",
+    "county_name": "Lassen County"
+  },
+  "96118": {
+    "county_fips": "06091",
+    "county_name": "Sierra County"
+  },
+  "96119": {
+    "county_fips": "06035",
+    "county_name": "Lassen County"
+  },
+  "96120": {
+    "county_fips": "06003",
+    "county_name": "Alpine County"
+  },
+  "96121": {
+    "county_fips": "06035",
+    "county_name": "Lassen County"
+  },
+  "96122": {
+    "county_fips": "06063",
+    "county_name": "Plumas County"
+  },
+  "96123": {
+    "county_fips": "06035",
+    "county_name": "Lassen County"
+  },
+  "96124": {
+    "county_fips": "06091",
+    "county_name": "Sierra County"
+  },
+  "96125": {
+    "county_fips": "06091",
+    "county_name": "Sierra County"
+  },
+  "96126": {
+    "county_fips": "06091",
+    "county_name": "Sierra County"
+  },
+  "96128": {
+    "county_fips": "06035",
+    "county_name": "Lassen County"
+  },
+  "96129": {
+    "county_fips": "06063",
+    "county_name": "Plumas County"
+  },
+  "96130": {
+    "county_fips": "06035",
+    "county_name": "Lassen County"
+  },
+  "96132": {
+    "county_fips": "06035",
+    "county_name": "Lassen County"
+  },
+  "96133": {
+    "county_fips": "06051",
+    "county_name": "Mono County"
+  },
+  "96134": {
+    "county_fips": "06049",
+    "county_name": "Modoc County"
+  },
+  "96135": {
+    "county_fips": "06063",
+    "county_name": "Plumas County"
+  },
+  "96136": {
+    "county_fips": "06035",
+    "county_name": "Lassen County"
+  },
+  "96137": {
+    "county_fips": "06035",
+    "county_name": "Lassen County"
+  },
+  "96140": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "96141": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "96142": {
+    "county_fips": "06017",
+    "county_name": "El Dorado County"
+  },
+  "96143": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "96145": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "96146": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "96148": {
+    "county_fips": "06061",
+    "county_name": "Placer County"
+  },
+  "96150": {
+    "county_fips": "06017",
+    "county_name": "El Dorado County"
+  },
+  "96155": {
+    "county_fips": "06017",
+    "county_name": "El Dorado County"
+  },
+  "96161": {
+    "county_fips": "06057",
+    "county_name": "Nevada County"
+  },
+  "97635": {
+    "county_fips": "06049",
+    "county_name": "Modoc County"
+  }
+}

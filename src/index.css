@@ -1,0 +1,34 @@
+:root {
+  color-scheme: dark;
+  --bg: #0a0f1a;
+  --fg: #e6edf3;
+  --accent: #00e676;
+  --warn: #ffab00;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+}
+
+.main-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 2rem;
+  align-items: start;
+}
+
+.main-layout.with-drilldown {
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+}
+
+@media (max-width: 900px) {
+  .main-layout.with-drilldown {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
