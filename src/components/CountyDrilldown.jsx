@@ -23,7 +23,7 @@ export default function CountyDrilldown({ fips }) {
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '0.75rem', marginBottom: '1rem' }}>
-        <Stat label="EVs / port" value={formatRatio(county.driver_to_plug_ratio)} />
+        <Stat label="EVs / port" value={county.zero_charging_ports ? 'No ports' : formatRatio(county.driver_to_plug_ratio)} />
         <Stat label="Latest registrations" value={formatNumber(county.registrations?.latest_registrations)} />
         <Stat label="L2 + DC fast ports" value={formatNumber((county.chargers?.level2_ports ?? 0) + (county.chargers?.dc_fast_ports ?? 0))} />
         <Stat label="Underserved" value={county.underserved ? 'Yes' : 'No'} />
@@ -43,13 +43,12 @@ export default function CountyDrilldown({ fips }) {
       {gf && (
         <div style={{ background: '#0f1522', border: '1px solid #1c2536', borderRadius: 8, padding: '1rem', marginBottom: '1rem' }}>
           <h3 style={{ margin: '0 0 0.5rem', fontSize: '1rem' }}>
-            Grid feasibility (at {gf.sampled_at.type === 'demand_centroid' ? 'demand-weighted point' : 'county centroid'})
+            Grid feasibility (at {gf.sampled_at.type === 'population_center' ? 'population center' : 'county internal point'})
           </h3>
-          {gf.used_demand_centroid && (
+          {gf.used_population_center && (
             <p style={{ margin: '0 0 0.75rem', fontSize: '0.8rem', color: '#ffab00' }}>
-              This county's geographic centroid diverges too far from where charging demand actually concentrates
-              (see README "Known blind spots"), so a demand-weighted point — the mean location of every charger in
-              the county — decides the bucket instead.
+              The Census mean center of population decides this county's bucket, avoiding bias toward places where
+              chargers already happen to exist.
             </p>
           )}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0.5rem', fontSize: '0.9rem' }}>
@@ -83,7 +82,7 @@ export default function CountyDrilldown({ fips }) {
       {primaryPoint && (
         <details style={{ marginBottom: '1rem', fontSize: '0.85rem' }}>
           <summary style={{ cursor: 'pointer', color: '#8899aa' }}>
-            Raw cited fields at {primaryPoint.type === 'demand_centroid' ? 'demand-weighted point' : 'centroid'} ({primaryPoint.lat}, {primaryPoint.lng})
+            Raw cited fields at {primaryPoint.type === 'population_center' ? 'population center' : 'county internal point'} ({primaryPoint.lat}, {primaryPoint.lng})
           </summary>
           <div style={{ marginTop: '0.5rem' }}>
             <FieldCitations fields={primaryPoint.grid_fields} />

@@ -1,9 +1,9 @@
-import { writeFile, mkdir } from 'node:fs/promises';
+import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from '../config.js';
 import { zipToCounty } from '../lib/zip-county.js';
-import { meanPoint } from '../lib/geo.js';
+import { writeJsonAtomic } from '../lib/atomic-json.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CACHE_DIR = path.join(__dirname, '../data/cache');
@@ -99,13 +99,7 @@ export function pickEvenlySpaced(list, max) {
  * Reduces raw AFDC station records to per-county charger counts, splitting
  * Level 2 vs DC fast, plus:
  *   - up to CORRIDOR_SAMPLE_SIZE representative station coordinates per
- *     county for the join pipeline's county sampling step, and
- *   - `demand_centroid`, the arithmetic mean lat/lng of EVERY station in
- *     the county (not just the truncated corridor sample) — a proxy for
- *     where charging demand actually concentrates geographically, used to
- *     detect when a county's Census-gazetteer centroid is a poor stand-in
- *     for that (orchestrator.js's CENTROID_DIVERGENCE_THRESHOLD_M). null
- *     for a county with zero geocoded stations.
+ *     county for informational corridor context.
  * Stations whose ZIP isn't in the state's crosswalk (bad ZIP, PO box,
  * data entry error) are counted separately rather than silently dropped.
  */
@@ -151,7 +145,6 @@ export function aggregateStationsByCounty(stations, { state = config.pilotState 
     .map(({ stationsWithCoords, ...county }) => ({
       ...county,
       corridor_points: pickEvenlySpaced(stationsWithCoords, CORRIDOR_SAMPLE_SIZE),
-      demand_centroid: meanPoint(stationsWithCoords),
     }))
     .sort((a, b) => a.county_fips.localeCompare(b.county_fips));
 
@@ -174,7 +167,7 @@ export async function ingestAfdc({ state = config.pilotState } = {}) {
 
   await mkdir(CACHE_DIR, { recursive: true });
   const outPath = path.join(CACHE_DIR, `afdc-${state}.json`);
-  await writeFile(outPath, JSON.stringify(output, null, 2));
+  await writeJsonAtomic(outPath, output);
   return { outPath, ...output };
 }
 

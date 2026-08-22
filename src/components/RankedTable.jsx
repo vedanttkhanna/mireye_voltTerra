@@ -7,6 +7,7 @@ const FILTERS = [
   { key: 'underserved', label: 'Underserved only' },
   { key: 'fund_charger_now', label: 'Fund charger now' },
   { key: 'fund_grid_upgrade_first', label: 'Fund grid upgrade first' },
+  { key: 'insufficient_data', label: 'Needs data review' },
 ];
 
 export default function RankedTable({ counties, selectedFips, onSelect }) {
@@ -63,7 +64,7 @@ export default function RankedTable({ counties, selectedFips, onSelect }) {
                 }}
               >
                 <td style={{ padding: '0.5rem', fontWeight: 500 }}>{c.county_name}</td>
-                <td style={{ padding: '0.5rem' }}>{formatRatio(c.driver_to_plug_ratio)}</td>
+                <td style={{ padding: '0.5rem' }}>{c.zero_charging_ports ? 'No ports' : formatRatio(c.driver_to_plug_ratio)}</td>
                 <td style={{ padding: '0.5rem' }}>{formatNumber(c.latest_registrations)}</td>
                 <td style={{ padding: '0.5rem' }}>{formatNumber(c.charger_count)}</td>
                 <td style={{ padding: '0.5rem' }}>

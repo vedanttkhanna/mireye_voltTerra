@@ -16,6 +16,7 @@
     "ingest:registrations": "node server/services/registrations.js",
     "ingest:centroids": "node server/services/county-centroids.js",
     "ingest:boundaries": "node server/services/county-boundaries.js",
+    "ingest:population-centers": "node server/services/population-centers.js",
     "pipeline:run": "node server/services/orchestrator.js",
     "pipeline:score": "node server/services/scoring.js",
     "pipeline:memos": "node server/services/memo-generator.js",

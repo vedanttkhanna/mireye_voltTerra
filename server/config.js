@@ -10,6 +10,7 @@ function required(name) {
 
 export const config = {
   port: Number(process.env.PORT) || 3000,
+  host: process.env.HOST || '127.0.0.1',
 
   mireyeApiKey: required('MIREYE_API_KEY'),
   mireyeBaseUrl: process.env.MIREYE_BASE_URL || 'https://api.mireye.com',
@@ -26,4 +27,9 @@ export const config = {
   // misconfigured field list or sample size accidentally burning the whole
   // monthly allowance (25,000 on the build plan) in one run.
   maxSweepCredits: Number(process.env.MAX_SWEEP_CREDITS) || 15000,
+
+  // Separate from the Mireye credential: browser operators never need the
+  // upstream API key. Unsafe endpoints remain disabled when this is unset.
+  operatorKey: process.env.VOLTERRA_OPERATOR_KEY || null,
+  operatorRateLimitPerMinute: Number(process.env.OPERATOR_RATE_LIMIT_PER_MINUTE) || 10,
 };

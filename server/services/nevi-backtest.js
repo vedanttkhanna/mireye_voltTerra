@@ -12,10 +12,11 @@
 // disagreements — it does not (and cannot) prove VOLT-TERRA's ratio-based
 // signal is "the same as" NEVI's corridor-based one. See summarizeBacktest.
 
-import { writeFile, mkdir, readFile } from 'node:fs/promises';
+import { mkdir, readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from '../config.js';
+import { writeJsonAtomic } from '../lib/atomic-json.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CACHE_DIR = path.join(__dirname, '../data/cache');
@@ -76,7 +77,7 @@ export async function ingestNeviAwards({ state = config.pilotState, fetchImpl = 
 
   await mkdir(CACHE_DIR, { recursive: true });
   const outPath = path.join(CACHE_DIR, `nevi-awards-${state}.json`);
-  await writeFile(outPath, JSON.stringify(output, null, 2));
+  await writeJsonAtomic(outPath, output);
   return { outPath, ...output };
 }
 
@@ -155,7 +156,7 @@ export async function runNeviBacktest({ state = config.pilotState } = {}) {
 
   await mkdir(CACHE_DIR, { recursive: true });
   const outPath = path.join(CACHE_DIR, `backtest-${state}.json`);
-  await writeFile(outPath, JSON.stringify(output, null, 2));
+  await writeJsonAtomic(outPath, output);
   return { outPath, ...output };
 }
 

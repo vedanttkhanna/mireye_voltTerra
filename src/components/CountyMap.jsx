@@ -13,6 +13,7 @@ const CA_ZOOM = 6;
 const BUCKET_FILL = {
   fund_charger_now: '#00e676',
   fund_grid_upgrade_first: '#ffab00',
+  insufficient_data: '#5fb3ff',
 };
 const NOT_FLAGGED_FILL = '#2a3548';
 
@@ -207,7 +208,7 @@ export default function CountyMap() {
                 <Marker position={[gf.sampled_at.lat, gf.sampled_at.lng]} icon={gf.passes_gates ? PASS_ICON : FAIL_ICON}>
                   <Popup>
                     <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '0.85rem' }}>
-                      <strong>{c.county_name}</strong> — {gf.sampled_at.type === 'demand_centroid' ? 'demand-weighted point' : 'centroid'}
+                      <strong>{c.county_name}</strong> — {gf.sampled_at.type === 'population_center' ? 'population center' : 'county internal point'}
                       <br />
                       {formatBucket(c.bucket)}, score {gf.score}/100
                     </div>
@@ -240,7 +241,7 @@ export default function CountyMap() {
 
       <p style={{ fontSize: '0.78rem', color: '#8899aa', marginTop: '0.5rem' }}>
         Filled boundaries are VOLT-TERRA's county-level recommendation (green = fund charger now, amber = fund grid
-        upgrade first). Dots mark the specific points behind each flagged county's verdict — pale blue dots are
+        upgrade first, blue = insufficient data). Dots mark the specific points behind each flagged county's verdict — pale blue dots are
         informational alternatives, not part of the decision. This map answers "does a point clear the same physical
         screen a flagged county did," not "where is the best site" — VOLT-TERRA ranks counties, not addresses.
       </p>
@@ -253,6 +254,7 @@ function Legend() {
     <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', fontSize: '0.78rem', color: '#8899aa' }}>
       <LegendItem color={BUCKET_FILL.fund_charger_now} label="Fund charger now" />
       <LegendItem color={BUCKET_FILL.fund_grid_upgrade_first} label="Fund grid upgrade first" />
+      <LegendItem color={BUCKET_FILL.insufficient_data} label="Needs data review" />
       <LegendItem color={NOT_FLAGGED_FILL} label="Not flagged" />
     </div>
   );

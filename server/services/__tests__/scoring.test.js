@@ -47,6 +47,12 @@ test('flagUnderservedCounties returns nulls for an all-null input', () => {
   assert.deepEqual(flagged, []);
 });
 
+test('flagUnderservedCounties always flags EV counties with zero charging ports', () => {
+  const zeroPort = { county_fips: 'zero', ratio: null, chargerCount: 0, latestRegistrations: 50 };
+  const { flagged } = flagUnderservedCounties([zeroPort, { ratio: 10, chargerCount: 10, latestRegistrations: 100 }]);
+  assert.deepEqual(flagged.map((county) => county.county_fips), ['zero']);
+});
+
 // --- computeGridFeasibilityScore ---
 
 function gridFields({ distance, voltage, status, redundant, osmDistance, osmVoltage } = {}) {
@@ -109,6 +115,7 @@ test('computeGridFeasibilityScore fails outright when neither EIA nor OSM found 
   assert.equal(result.score, 0);
   assert.equal(result.inputs.substation_source, null);
   assert.ok(result.gate_failures.includes('no_substation_found'));
+  assert.equal(result.data_status, 'insufficient');
 });
 
 test('computeGridFeasibilityScore disqualifies an explicitly non-in-service substation', () => {
@@ -171,28 +178,24 @@ test('scoreCountyGridFeasibility handles an empty sample point list', () => {
   assert.equal(usedFallback, true);
 });
 
-test('scoreCountyGridFeasibility prefers demand_centroid over the plain centroid when both are present', () => {
-  // Regression test for the Riverside/San Bernardino/San Francisco cases:
-  // when the geographic centroid diverged too far from where demand
-  // actually concentrates, orchestrator.js adds a demand_centroid point,
-  // and it should decide the bucket instead of the geographic centroid.
+test('scoreCountyGridFeasibility prefers the population center over the county internal point', () => {
   const desertCentroid = { type: 'centroid', grid_fields: gridFields({}) }; // no substation found
-  const demandCentroid = {
-    type: 'demand_centroid',
+  const populationCenter = {
+    type: 'population_center',
     grid_fields: gridFields({ distance: 1000, voltage: 115, status: 'IN SERVICE' }),
   };
 
-  const { primary, usedDemandCentroid } = scoreCountyGridFeasibility([desertCentroid, demandCentroid]);
+  const { primary, usedPopulationCenter } = scoreCountyGridFeasibility([desertCentroid, populationCenter]);
 
-  assert.equal(usedDemandCentroid, true);
-  assert.equal(primary.point, demandCentroid);
+  assert.equal(usedPopulationCenter, true);
+  assert.equal(primary.point, populationCenter);
   assert.equal(primary.feasibility.passes_gates, true);
 });
 
-test('scoreCountyGridFeasibility uses the plain centroid when no demand_centroid point is present', () => {
+test('scoreCountyGridFeasibility uses the internal point when no population center is present', () => {
   const centroid = { type: 'centroid', grid_fields: gridFields({ distance: 500, voltage: 230, status: 'IN SERVICE' }) };
-  const { primary, usedDemandCentroid } = scoreCountyGridFeasibility([centroid]);
-  assert.equal(usedDemandCentroid, false);
+  const { primary, usedPopulationCenter } = scoreCountyGridFeasibility([centroid]);
+  assert.equal(usedPopulationCenter, false);
   assert.equal(primary.point, centroid);
 });
 
@@ -203,7 +206,11 @@ test('bucketCounty maps passing gates to fund_charger_now', () => {
 });
 
 test('bucketCounty maps failing gates to fund_grid_upgrade_first', () => {
-  assert.equal(bucketCounty({ passes_gates: false }), 'fund_grid_upgrade_first');
+  assert.equal(bucketCounty({ passes_gates: false, data_status: 'sufficient' }), 'fund_grid_upgrade_first');
+});
+
+test('bucketCounty sends missing decision data to review', () => {
+  assert.equal(bucketCounty({ passes_gates: false, data_status: 'insufficient' }), 'insufficient_data');
 });
 
 test('bucketCounty throws without a feasibility result', () => {

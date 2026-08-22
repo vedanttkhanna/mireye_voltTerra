@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { formatTimestamp } from '../utils/format.js';
+import { operatorFetch } from '../utils/operatorFetch.js';
 
 export default function PipelineControls({ status, onRerun }) {
   const [running, setRunning] = useState(false);
@@ -21,7 +22,7 @@ export default function PipelineControls({ status, onRerun }) {
     setError(null);
     setResult(null);
     try {
-      const res = await fetch('/api/pipeline/run', { method: 'POST' });
+      const res = await operatorFetch('/api/pipeline/run', { method: 'POST' });
       const body = await res.json();
       if (!res.ok) throw new Error(body.detail || 'Sweep failed');
       setResult(body);
@@ -44,7 +45,7 @@ export default function PipelineControls({ status, onRerun }) {
           <div>
             Last scored: {formatTimestamp(lastScore?.scored_at)}
             {lastScore &&
-              ` (${lastScore.counties_underserved} underserved — ${lastScore.counties_fund_charger_now} charger now, ${lastScore.counties_fund_grid_upgrade_first} grid upgrade first)`}
+              ` (${lastScore.counties_underserved} underserved — ${lastScore.counties_fund_charger_now} charger now, ${lastScore.counties_fund_grid_upgrade_first} grid upgrade first, ${lastScore.counties_insufficient_data ?? 0} need review)`}
           </div>
         </div>
         <button

@@ -3,6 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Router } from 'express';
 import { config } from '../config.js';
+import { tryAcquireOperation } from '../lib/operation-lock.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CACHE_DIR = path.join(__dirname, '../data/cache');
@@ -17,6 +18,8 @@ let lastScoreStatus = null;
 // fetch (/v1/fetch/batch), then scoring (Days 8-9) on top of that output.
 // Memo generation (Days 10-11) still needs to run separately, per county.
 pipelineRouter.post('/run', async (_req, res) => {
+  const release = tryAcquireOperation('pipeline');
+  if (!release) return res.status(409).json({ error: 'operation_busy', detail: 'A pipeline operation is already running.' });
   try {
     const { runFullSweep } = await import('../services/orchestrator.js');
     const result = await runFullSweep({ state: config.pilotState });
@@ -37,12 +40,15 @@ pipelineRouter.post('/run', async (_req, res) => {
       counties_underserved: scoreResult.counties_underserved,
       counties_fund_charger_now: scoreResult.counties_fund_charger_now,
       counties_fund_grid_upgrade_first: scoreResult.counties_fund_grid_upgrade_first,
+      counties_insufficient_data: scoreResult.counties_insufficient_data,
     };
 
     res.json({ sweep: lastRunStatus, scoring: lastScoreStatus });
   } catch (err) {
     lastRunStatus = { ok: false, message: err.message, at: new Date().toISOString() };
     res.status(500).json({ error: 'sweep_failed', detail: err.message });
+  } finally {
+    release();
   }
 });
 
@@ -56,6 +62,8 @@ pipelineRouter.post('/run/:fips', (_req, res) => {
 // join-pipeline cache, without spending any Mireye credits. Useful for
 // iterating on scoring.js's thresholds without re-fetching grid data.
 pipelineRouter.post('/score', async (_req, res) => {
+  const release = tryAcquireOperation('pipeline');
+  if (!release) return res.status(409).json({ error: 'operation_busy', detail: 'A pipeline operation is already running.' });
   try {
     const { runScoring } = await import('../services/scoring.js');
     const result = await runScoring({ state: config.pilotState });
@@ -65,11 +73,14 @@ pipelineRouter.post('/score', async (_req, res) => {
       counties_underserved: result.counties_underserved,
       counties_fund_charger_now: result.counties_fund_charger_now,
       counties_fund_grid_upgrade_first: result.counties_fund_grid_upgrade_first,
+      counties_insufficient_data: result.counties_insufficient_data,
     };
     res.json(lastScoreStatus);
   } catch (err) {
     lastScoreStatus = { ok: false, message: err.message, at: new Date().toISOString() };
     res.status(500).json({ error: 'scoring_failed', detail: err.message });
+  } finally {
+    release();
   }
 });
 
@@ -99,6 +110,7 @@ pipelineRouter.get('/status', async (_req, res) => {
       counties_underserved: data.counties_underserved,
       counties_fund_charger_now: data.counties_fund_charger_now,
       counties_fund_grid_upgrade_first: data.counties_fund_grid_upgrade_first,
+      counties_insufficient_data: data.counties_insufficient_data,
     };
   } catch {
     // No scoring run yet — leave null.

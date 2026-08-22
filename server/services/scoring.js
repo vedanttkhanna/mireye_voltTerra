@@ -2,10 +2,11 @@
 // the fund-now/fund-grid-upgrade split, built on top of the join pipeline's
 // output (server/data/cache/join-pipeline-<state>.json, Days 5-7).
 
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { readFile, mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from '../config.js';
+import { writeJsonAtomic } from '../lib/atomic-json.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CACHE_DIR = path.join(__dirname, '../data/cache');
@@ -33,12 +34,15 @@ export function flagUnderservedCounties(
   { multiplier = config.underservedThresholdMultiplier } = {}
 ) {
   const ratios = countiesWithRatio.map((c) => c.ratio).filter((r) => r != null).sort((a, b) => a - b);
-  if (ratios.length === 0) return { median: null, flagged: [] };
+  const zeroPortCounties = countiesWithRatio.filter((c) => c.chargerCount === 0 && c.latestRegistrations > 0);
+  if (ratios.length === 0) return { median: null, flagged: zeroPortCounties };
 
   const mid = Math.floor(ratios.length / 2);
   const median = ratios.length % 2 === 0 ? (ratios[mid - 1] + ratios[mid]) / 2 : ratios[mid];
 
-  const flagged = countiesWithRatio.filter((c) => c.ratio != null && c.ratio >= median * multiplier);
+  const flagged = countiesWithRatio.filter(
+    (c) => (c.chargerCount === 0 && c.latestRegistrations > 0) || (c.ratio != null && c.ratio >= median * multiplier)
+  );
   return { median, flagged };
 }
 
@@ -131,6 +135,7 @@ export function computeGridFeasibilityScore(gridFields) {
 
   const substationFound = distance != null;
   const statusDisqualifies = !usingOsmFallback && status != null && status !== 'IN SERVICE';
+  const hasDecisionData = substationFound && voltage != null;
 
   const distanceScore = distance == null ? 0 : Math.round(60 * clamp01(1 - distance / SUBSTATION_DISTANCE_CONSTRAINED_M));
   const voltageScore = voltage == null ? 0 : voltage >= SUBSTATION_VOLTAGE_HIGH_KV ? 40 : voltage >= SUBSTATION_VOLTAGE_MIN_KV ? 25 : 0;
@@ -155,6 +160,7 @@ export function computeGridFeasibilityScore(gridFields) {
   return {
     score,
     passes_gates: passesGates,
+    data_status: hasDecisionData ? 'sufficient' : 'insufficient',
     gate_failures: gateFailures,
     inputs: {
       substation_distance_m: distance,
@@ -171,7 +177,8 @@ export function computeGridFeasibilityScore(gridFields) {
  * site, with the best-scoring remaining point carried along as
  * informational context only.
  *
- * Primary point priority: demand_centroid > centroid > best remaining point.
+ * Primary point priority: Census population center > county internal point
+ * fallback > best remaining point.
  *
  * Earlier version of this function picked whichever sample point scored
  * highest, corridor points included, on the reasoning that "is there a
@@ -191,25 +198,15 @@ export function computeGridFeasibilityScore(gridFields) {
  * nearest existing charger — is the fairer, unbiased read on county-wide
  * demand geography, so it became primary instead.
  *
- * That fix assumed the geographic centroid itself is always representative
- * of a county's demand geography, which doesn't hold for a handful of
- * large or oddly-shaped counties: Riverside's centroid sits 84km from
- * where its chargers actually cluster (a remote desert vs. the urban
- * Inland Empire), San Bernardino's is 125km off, and San Francisco's
- * official land area includes the Farallon Islands ~55km offshore, pulling
- * its Census internal point away from the entirely urban mainland where
- * all its infrastructure sits. orchestrator.js's buildCountySamplePoints
- * only adds a `demand_centroid` point (the mean location of every charger
- * in the county — an aggregate, not a cherry-picked "best" single site, so
- * it doesn't reintroduce the self-selection bias above) when that
- * divergence exceeds CENTROID_DIVERGENCE_THRESHOLD_M. When present, it
- * takes priority over the plain centroid as primary; the geographic
- * centroid then becomes informational context alongside corridor points.
+ * A county's Census mean center of population is now the primary point.
+ * Unlike an average of existing charger locations, it is independent of
+ * historic charging supply and remains representative for large or oddly
+ * shaped counties. The Gazetteer internal point is only a data fallback.
  */
 export function scoreCountyGridFeasibility(samplePoints = []) {
-  const demandCentroid = samplePoints.find((p) => p.type === 'demand_centroid') ?? null;
+  const populationCenter = samplePoints.find((p) => p.type === 'population_center') ?? null;
   const centroid = samplePoints.find((p) => p.type === 'centroid') ?? null;
-  const primaryPoint = demandCentroid ?? centroid;
+  const primaryPoint = populationCenter ?? centroid;
 
   const others = samplePoints.filter((p) => p !== primaryPoint).map((point) => ({
     point,
@@ -230,12 +227,13 @@ export function scoreCountyGridFeasibility(samplePoints = []) {
 
   const bestAlternative = others.length ? others.reduce((a, b) => (b.feasibility.score > a.feasibility.score ? b : a)) : null;
 
-  return { primary: primaryEntry, bestAlternative, usedFallback, usedDemandCentroid: demandCentroid != null };
+  return { primary: primaryEntry, bestAlternative, usedFallback, usedPopulationCenter: populationCenter != null };
 }
 
-/** Turns a computeGridFeasibilityScore result into the two funding buckets. */
+/** Turns a feasibility result into a funding bucket or an explicit review state. */
 export function bucketCounty(feasibility) {
   if (!feasibility) throw new Error('bucketCounty requires a feasibility result');
+  if (feasibility.data_status === 'insufficient') return 'insufficient_data';
   return feasibility.passes_gates ? 'fund_charger_now' : 'fund_grid_upgrade_first';
 }
 
@@ -263,18 +261,15 @@ export function scoreAllCounties(joinPipelineOutput) {
     let bucket = null;
 
     if (underserved) {
-      const { primary, bestAlternative, usedFallback, usedDemandCentroid } = scoreCountyGridFeasibility(c.sample_points);
+      const { primary, bestAlternative, usedFallback, usedPopulationCenter } = scoreCountyGridFeasibility(c.sample_points);
       if (primary) {
         gridFeasibility = {
           ...primary.feasibility,
           sampled_at: { type: primary.point.type, lat: primary.point.lat, lng: primary.point.lng },
           used_fallback_site: usedFallback,
-          // true when the plain geographic centroid diverged too far from
-          // where charging demand actually concentrates and a demand-
-          // weighted point took over as primary instead — see
-          // scoreCountyGridFeasibility's comment for the Riverside/San
-          // Bernardino/San Francisco cases that motivated this.
-          used_demand_centroid: usedDemandCentroid,
+          // True when the independent Census population center was used;
+          // false only for a Gazetteer/corridor fallback.
+          used_population_center: usedPopulationCenter,
           grid_context: {
             interconnection_queue_active_capacity_caiso_mw: fieldValue(
               primary.point.grid_fields,
@@ -305,6 +300,7 @@ export function scoreAllCounties(joinPipelineOutput) {
       county_name: c.county_name,
       latest_registrations: c.latestRegistrations,
       charger_count: c.chargerCount,
+      zero_charging_ports: c.chargerCount === 0,
       driver_to_plug_ratio: c.ratio,
       underserved,
       grid_feasibility: gridFeasibility,
@@ -312,7 +308,10 @@ export function scoreAllCounties(joinPipelineOutput) {
     };
   });
 
-  counties.sort((a, b) => (b.driver_to_plug_ratio ?? -1) - (a.driver_to_plug_ratio ?? -1));
+  counties.sort((a, b) => {
+    if (a.zero_charging_ports !== b.zero_charging_ports) return a.zero_charging_ports ? -1 : 1;
+    return (b.driver_to_plug_ratio ?? -1) - (a.driver_to_plug_ratio ?? -1);
+  });
 
   return {
     state: joinPipelineOutput.state,
@@ -322,6 +321,7 @@ export function scoreAllCounties(joinPipelineOutput) {
     counties_underserved: flagged.length,
     counties_fund_charger_now: counties.filter((c) => c.bucket === 'fund_charger_now').length,
     counties_fund_grid_upgrade_first: counties.filter((c) => c.bucket === 'fund_grid_upgrade_first').length,
+    counties_insufficient_data: counties.filter((c) => c.bucket === 'insufficient_data').length,
     counties,
   };
 }
@@ -333,7 +333,7 @@ export async function runScoring({ state = config.pilotState } = {}) {
 
   await mkdir(CACHE_DIR, { recursive: true });
   const outPath = path.join(CACHE_DIR, `scored-counties-${state}.json`);
-  await writeFile(outPath, JSON.stringify(result, null, 2));
+  await writeJsonAtomic(outPath, result);
   return { outPath, ...result };
 }
 

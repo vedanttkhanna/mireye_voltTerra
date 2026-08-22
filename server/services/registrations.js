@@ -1,9 +1,10 @@
-import { writeFile, mkdir } from 'node:fs/promises';
+import { mkdir } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse } from 'csv-parse/sync';
 import { config } from '../config.js';
 import { zipToCounty } from '../lib/zip-county.js';
+import { writeJsonAtomic } from '../lib/atomic-json.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CACHE_DIR = path.join(__dirname, '../data/cache');
@@ -140,7 +141,7 @@ export async function ingestRegistrations({
 
   await mkdir(CACHE_DIR, { recursive: true });
   const outPath = path.join(CACHE_DIR, `ev-registrations-${state}.json`);
-  await writeFile(outPath, JSON.stringify(output, null, 2));
+  await writeJsonAtomic(outPath, output);
   return { outPath, ...output };
 }
 

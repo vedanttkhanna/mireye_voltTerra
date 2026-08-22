@@ -68,6 +68,7 @@ countiesRouter.get('/', async (_req, res) => {
           driver_to_plug_ratio: s?.driver_to_plug_ratio ?? null,
           underserved: s?.underserved ?? null,
           bucket: s?.bucket ?? null,
+          zero_charging_ports: s?.zero_charging_ports ?? false,
         };
       }),
     });
@@ -98,6 +99,7 @@ countiesRouter.get('/boundaries', async (_req, res) => {
             driver_to_plug_ratio: s?.driver_to_plug_ratio ?? null,
             underserved: s?.underserved ?? null,
             bucket: s?.bucket ?? null,
+            zero_charging_ports: s?.zero_charging_ports ?? false,
           },
         };
       }),
@@ -141,6 +143,7 @@ countiesRouter.get('/:fips', async (req, res) => {
       driver_to_plug_ratio: scoredCounty?.driver_to_plug_ratio ?? null,
       underserved: scoredCounty?.underserved ?? null,
       bucket: scoredCounty?.bucket ?? null,
+      zero_charging_ports: scoredCounty?.zero_charging_ports ?? false,
       grid_feasibility: scoredCounty?.grid_feasibility ?? null,
       nevi_stations_awarded: backtestCounty?.nevi_stations_awarded ?? null,
       nevi_awardee_count: backtestCounty?.nevi_awardee_count ?? null,
@@ -171,6 +174,9 @@ countiesRouter.post('/:fips/memo', async (req, res) => {
     const memo = await generateMemoForCounty(req.params.fips, { state: config.pilotState });
     res.json(memo);
   } catch (err) {
+    if (err.code === 'operation_busy') {
+      return res.status(409).json({ error: err.code, detail: err.message });
+    }
     res.status(500).json({ error: 'memo_generation_failed', detail: err.message });
   }
 });
