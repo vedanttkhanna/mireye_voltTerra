@@ -14,6 +14,10 @@ export const config = {
   mireyeApiKey: required('MIREYE_API_KEY'),
   mireyeBaseUrl: process.env.MIREYE_BASE_URL || 'https://api.mireye.com',
 
+  // Optional LLM API keys for autonomous decision agent
+  geminiApiKey: process.env.GEMINI_API_KEY || '',
+  anthropicApiKey: process.env.ANTHROPIC_API_KEY || '',
+
   // developer.nrel.gov retired May 2026; AFDC now serves from developer.nlr.gov.
   nrelApiKey: process.env.NREL_API_KEY || 'DEMO_KEY',
   afdcBaseUrl: process.env.AFDC_BASE_URL || 'https://developer.nlr.gov',

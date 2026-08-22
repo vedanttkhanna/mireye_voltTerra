@@ -16,14 +16,16 @@ const BUCKET_FILL = {
 };
 const NOT_FLAGGED_FILL = '#e2e8f0';
 
-function boundaryStyle(feature) {
+function getBoundaryStyle(feature, selectedFips) {
   const bucket = feature.properties.bucket;
   const isUnderserved = feature.properties.underserved;
+  const isSelected = selectedFips === feature.properties.county_fips;
+
   return {
     fillColor: BUCKET_FILL[bucket] ?? NOT_FLAGGED_FILL,
-    fillOpacity: isUnderserved ? 0.6 : 0.25,
-    color: isUnderserved ? (BUCKET_FILL[bucket] ?? '#94a3b8') : '#cbd5e1',
-    weight: isUnderserved ? 2 : 1,
+    fillOpacity: isSelected ? 0.75 : isUnderserved ? 0.55 : 0.2,
+    color: isSelected ? '#047857' : isUnderserved ? (BUCKET_FILL[bucket] ?? '#94a3b8') : '#cbd5e1',
+    weight: isSelected ? 3.5 : isUnderserved ? 2 : 1,
   };
 }
 
@@ -50,7 +52,7 @@ function ClickCapture({ active, onPick }) {
   return null;
 }
 
-function CheckPointPopup({ point, onClose }) {
+function CheckPointPopup({ point, onClose, onSelectPoint }) {
   const { run, loading, error } = usePostJson('/api/explore/check-point');
   const [result, setResult] = useState(null);
   const [confirmed, setConfirmed] = useState(false);
@@ -58,7 +60,11 @@ function CheckPointPopup({ point, onClose }) {
   const check = async () => {
     setConfirmed(true);
     try {
-      setResult(await run({ lat: point.lat, lng: point.lng }));
+      const res = await run({ lat: point.lat, lng: point.lng });
+      setResult(res);
+      if (res.resolved_county?.county_fips && onSelectPoint) {
+        onSelectPoint(res.resolved_county.county_fips);
+      }
     } catch {
       // error is already captured by usePostJson
     }
@@ -132,7 +138,7 @@ function CheckPointPopup({ point, onClose }) {
   );
 }
 
-export default function CountyMap() {
+export default function CountyMap({ selectedFips, onSelectCounty }) {
   const { data: boundaries, error: boundariesError } = useApi('/api/counties/boundaries');
   const { data: stats } = useApi('/api/counties/stats');
   const [exploreMode, setExploreMode] = useState(false);
@@ -141,7 +147,7 @@ export default function CountyMap() {
   const flaggedCounties = useMemo(() => (stats?.counties ?? []).filter((c) => c.underserved && c.grid_feasibility), [stats]);
 
   return (
-    <div>
+    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.75rem' }}>
         <Legend />
         <button
@@ -150,19 +156,19 @@ export default function CountyMap() {
             setCheckedPoint(null);
           }}
           style={{
-            padding: '0.45rem 0.95rem',
+            padding: '0.4rem 0.85rem',
             borderRadius: 7,
             border: exploreMode ? '1px solid var(--accent)' : '1px solid var(--card-border)',
             background: exploreMode ? 'var(--accent-light)' : '#ffffff',
             color: exploreMode ? 'var(--accent-darker)' : 'var(--fg)',
             fontWeight: 600,
             cursor: 'pointer',
-            fontSize: '0.85rem',
+            fontSize: '0.8rem',
             boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
             transition: 'all 0.15s ease',
           }}
         >
-          {exploreMode ? '● Checking points (click map)' : 'Check a specific point'}
+          {exploreMode ? '● Checking points (click map)' : 'Check a point'}
         </button>
       </div>
 
@@ -172,8 +178,8 @@ export default function CountyMap() {
         </p>
       )}
 
-      <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid var(--card-border)', height: 560, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-        <MapContainer center={CA_CENTER} zoom={CA_ZOOM} style={{ width: '100%', height: '100%', background: '#e2e8f0' }}>
+      <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid var(--card-border)', flex: 1, minHeight: 520, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+        <MapContainer center={CA_CENTER} zoom={CA_ZOOM} style={{ width: '100%', height: '100%', minHeight: 520, background: '#e2e8f0' }}>
           <TileLayer
             url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
@@ -181,16 +187,23 @@ export default function CountyMap() {
 
           {boundaries && (
             <GeoJSON
+              key={selectedFips ?? 'all'}
               data={boundaries}
-              style={boundaryStyle}
+              style={(feature) => getBoundaryStyle(feature, selectedFips)}
               onEachFeature={(feature, layer) => {
                 const p = feature.properties;
                 layer.bindTooltip(
                   `<strong>${p.county_name}</strong><br/>${p.driver_to_plug_ratio != null ? formatRatio(p.driver_to_plug_ratio) + ' EVs/port' : 'not flagged'}${
                     p.bucket ? '<br/>' + formatBucket(p.bucket) : ''
-                  }`,
+                  }<br/><span style="color:#059669;font-weight:600">Click to select for AI chat</span>`,
                   { sticky: true }
                 );
+
+                layer.on('click', () => {
+                  if (!exploreMode && onSelectCounty) {
+                    onSelectCounty(p.county_fips);
+                  }
+                });
               }}
             />
           )}
@@ -200,7 +213,13 @@ export default function CountyMap() {
             const alt = gf.grid_context?.best_alternative_site;
             return (
               <Fragment key={c.county_fips}>
-                <Marker position={[gf.sampled_at.lat, gf.sampled_at.lng]} icon={gf.passes_gates ? PASS_ICON : FAIL_ICON}>
+                <Marker
+                  position={[gf.sampled_at.lat, gf.sampled_at.lng]}
+                  icon={gf.passes_gates ? PASS_ICON : FAIL_ICON}
+                  eventHandlers={{
+                    click: () => onSelectCounty?.(c.county_fips),
+                  }}
+                >
                   <Popup>
                     <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '0.85rem', color: '#0f172a' }}>
                       <strong>{c.county_name}</strong> ({gf.sampled_at.type === 'demand_centroid' ? 'demand-weighted point' : 'centroid'})
@@ -228,16 +247,18 @@ export default function CountyMap() {
           {checkedPoint && (
             <Fragment key={`${checkedPoint.lat},${checkedPoint.lng}`}>
               <Marker position={[checkedPoint.lat, checkedPoint.lng]} icon={CHECK_ICON} />
-              <CheckPointPopup point={checkedPoint} onClose={() => setCheckedPoint(null)} />
+              <CheckPointPopup
+                point={checkedPoint}
+                onClose={() => setCheckedPoint(null)}
+                onSelectPoint={onSelectCounty}
+              />
             </Fragment>
           )}
         </MapContainer>
       </div>
 
-      <p style={{ fontSize: '0.8rem', color: 'var(--fg-muted)', marginTop: '0.65rem' }}>
-        Filled boundaries are VOLT-TERRA's county-level recommendation (green = fund charger now, amber = fund grid
-        upgrade first). Dots mark the specific points behind each flagged county's verdict. Blue dots are
-        informational alternatives.
+      <p style={{ fontSize: '0.78rem', color: 'var(--fg-muted)', marginTop: '0.5rem' }}>
+        Click any county boundary to focus the AI Agent on that county. Green = fund charger now, Amber = fund grid upgrade first.
       </p>
     </div>
   );
@@ -245,7 +266,7 @@ export default function CountyMap() {
 
 function Legend() {
   return (
-    <div style={{ display: 'flex', gap: '1.25rem', flexWrap: 'wrap', fontSize: '0.8rem', color: 'var(--fg-muted)' }}>
+    <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', fontSize: '0.78rem', color: 'var(--fg-muted)' }}>
       <LegendItem color={BUCKET_FILL.fund_charger_now} label="Fund charger now" />
       <LegendItem color={BUCKET_FILL.fund_grid_upgrade_first} label="Fund grid upgrade first" />
       <LegendItem color="#cbd5e1" label="Not flagged" />
@@ -255,15 +276,15 @@ function Legend() {
 
 function LegendItem({ color, label }) {
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', fontWeight: 500 }}>
-      <span style={{ width: 12, height: 12, borderRadius: 3, background: color, display: 'inline-block', border: '1px solid rgba(0,0,0,0.1)' }} />
+    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontWeight: 500 }}>
+      <span style={{ width: 11, height: 11, borderRadius: 3, background: color, display: 'inline-block', border: '1px solid rgba(0,0,0,0.1)' }} />
       {label}
     </span>
   );
 }
 
 const popupButtonStyle = {
-  padding: '0.45rem 0.9rem',
+  padding: '0.4rem 0.8rem',
   borderRadius: 6,
   border: '1px solid var(--accent)',
   background: 'var(--accent)',

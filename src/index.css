@@ -13,7 +13,7 @@
   --accent-darker: #047857;
   --accent-light: #ecfdf5;
   --accent-border: #a7f3d0;
-  --accent-shadow: rgba(16, 185, 129, 0.2);
+  --accent-shadow: rgba(16, 185, 129, 0.18);
 
   /* Amber / Warning */
   --warn: #d97706;
@@ -50,7 +50,181 @@ body {
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
 }
 
-/* Responsive Grid Layout */
+/* Side-by-Side Dual-Pane Workspace */
+.workspace-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+  gap: 1.5rem;
+  align-items: stretch;
+}
+
+.workspace-map-pane {
+  display: flex;
+  flex-direction: column;
+}
+
+.workspace-chat-pane {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 1024px) {
+  .workspace-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Chat Panel */
+.chat-panel-container {
+  display: flex;
+  flex-direction: column;
+  height: 610px;
+  overflow: hidden;
+}
+
+.chat-header {
+  padding: 0.85rem 1.1rem;
+  border-bottom: 1px solid var(--card-border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  background: #ffffff;
+}
+
+.chat-messages-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  background: #fbfcfd;
+}
+
+.chat-bubble-row {
+  display: flex;
+  width: 100%;
+}
+
+.chat-bubble-row.user-row {
+  justify-content: flex-end;
+}
+
+.chat-bubble-row.agent-row {
+  justify-content: flex-start;
+}
+
+.chat-bubble {
+  max-width: 88%;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+}
+
+.chat-bubble.user-bubble {
+  background: var(--accent-light);
+  border: 1px solid var(--accent-border);
+  color: var(--accent-darker);
+  border-bottom-right-radius: 2px;
+  font-weight: 500;
+}
+
+.chat-bubble.agent-bubble {
+  background: #ffffff;
+  border: 1px solid var(--card-border);
+  color: var(--fg);
+  border-bottom-left-radius: 2px;
+}
+
+.chat-quick-prompts {
+  padding: 0.6rem 1rem;
+  border-top: 1px solid var(--card-border);
+  background: #ffffff;
+}
+
+.chat-prompt-pill,
+.chat-followup-pill {
+  border: 1px solid var(--card-border);
+  background: #ffffff;
+  color: var(--fg-muted);
+  font-size: 0.73rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.12s ease;
+}
+
+.chat-prompt-pill:hover,
+.chat-followup-pill:hover {
+  background: var(--accent-light);
+  border-color: var(--accent-border);
+  color: var(--accent-darker);
+}
+
+.chat-input-area {
+  padding: 0.75rem 1rem;
+  border-top: 1px solid var(--card-border);
+  background: #ffffff;
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-end;
+}
+
+.chat-textarea {
+  flex: 1;
+  resize: none;
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.86rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+
+.chat-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-shadow);
+}
+
+.chat-send-button {
+  padding: 0.55rem 1.1rem;
+  border-radius: 8px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  height: 38px;
+}
+
+.chat-send-button:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+/* Loading Spinner */
+.loading-spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--accent-border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.75s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Table & Drilldown Layout */
 .main-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
@@ -59,7 +233,7 @@ body {
 }
 
 .main-layout.with-drilldown {
-  grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
 }
 
 @media (max-width: 960px) {
@@ -120,4 +294,85 @@ body {
 .leaflet-tooltip-right:before {
   border-top-color: #ffffff !important;
   border-bottom-color: #ffffff !important;
+}
+
+/* ── Citation Chip Pills ─────────────────────────────────────── */
+.citation-chip-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--card-border);
+  background: #ffffff;
+  color: var(--fg-muted);
+  font-size: 0.73rem;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.14s ease;
+  white-space: nowrap;
+  font-family: inherit;
+}
+
+.citation-chip-pill:hover {
+  background: var(--accent-light);
+  border-color: var(--accent-border);
+  color: var(--accent-darker);
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.14);
+  transform: translateY(-1px);
+}
+
+.citation-chip-pill .chip-icon {
+  font-size: 0.8rem;
+}
+
+.citation-chip-pill .chip-name {
+  max-width: 180px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.citation-chip-pill .chip-arrow {
+  font-size: 0.75rem;
+  opacity: 0.65;
+}
+
+/* ── Autonomous Decision Badge ───────────────────────────────── */
+.decision-badge-now {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  background: var(--accent-light);
+  border: 1px solid var(--accent-border);
+  color: var(--accent-darker);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.decision-badge-upgrade {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  background: var(--warn-light);
+  border: 1px solid var(--warn-border);
+  color: var(--warn-dark);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+/* ── Agent Tool Step Trace ───────────────────────────────────── */
+.agent-tool-step {
+  font-size: 0.74rem;
+  color: var(--fg-muted);
+  padding: 0.2rem 0.5rem;
+  background: var(--bg);
+  border-left: 2px solid var(--accent-border);
+  border-radius: 0 4px 4px 0;
+  margin-bottom: 0.15rem;
+  font-family: 'SF Mono', 'Fira Code', monospace;
 }
