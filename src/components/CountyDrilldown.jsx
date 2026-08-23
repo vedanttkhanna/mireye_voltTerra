@@ -62,9 +62,9 @@ export default function CountyDrilldown({ fips }) {
 
           {gf.grid_context?.best_alternative_site && (
             <p style={{ marginTop: '0.85rem', fontSize: '0.8rem', color: 'var(--fg-muted)' }}>
-              Best alternative site nearby (context only):{' '}
-              <strong>{gf.grid_context.best_alternative_site.station_name ?? 'existing charger'}</strong>, score{' '}
-              {gf.grid_context.best_alternative_site.score}/100.
+              <strong>{gf.grid_context.best_alternative_site.station_name ?? 'Existing charger'}</strong> (score{' '}
+              {gf.grid_context.best_alternative_site.score}/100), nearby existing station, stronger grid access,
+              expandable, but not sufficient for the county.
             </p>
           )}
 

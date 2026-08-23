@@ -78,6 +78,25 @@ body,
   backdrop-filter: blur(8px);
 }
 
+.map-zoom-button {
+  display: grid;
+  place-items: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  border: 1px solid var(--card-border);
+  border-radius: 6px;
+  background: #ffffff;
+  color: var(--fg);
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.map-zoom-button:hover {
+  background: var(--card-hover);
+}
+
 .map-brand-overlay h1 {
   margin: 0;
   color: var(--fg);
@@ -196,6 +215,23 @@ body,
   height: min(32rem, calc(100vh - 2.5rem));
   animation-name: chat-window-in;
   transform-origin: bottom right;
+
+  /* No outer chrome here — ChatPanel's own .card already draws the box.
+     This wrapper only positions it and holds the title/close controls. */
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  backdrop-filter: none;
+}
+
+.map-side-panel.chat-panel .map-side-panel-heading {
+  border-bottom: none;
+  background: transparent;
+  padding: 0 0 0.5rem;
+}
+
+.map-side-panel.chat-panel .map-side-panel-body {
+  padding: 0;
 }
 
 .map-side-panel.chat-panel.expanded {

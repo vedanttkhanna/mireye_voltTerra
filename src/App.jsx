@@ -85,25 +85,24 @@ export default function App() {
           key={activePanel}
           className={`map-side-panel ${activePanel === 'demand' ? 'demand-panel' : `chat-panel ${chatExpanded ? 'expanded' : 'compact'}`}${panelClosing ? ' closing' : ''}`}
         >
-          <div className="map-side-panel-heading">
-            <strong>{activePanel === 'demand' ? 'County Demand' : 'Autonomous Agent'}</strong>
-            <div className="map-side-panel-actions">
-              {activePanel === 'chat' && (
-                <button
-                  onClick={() => setChatExpanded((value) => !value)}
-                  aria-label={chatExpanded ? 'Restore compact chat' : 'Expand chat'}
-                  title={chatExpanded ? 'Restore compact chat' : 'Expand chat'}
-                >
-                  {chatExpanded ? '↙' : '⛶'}
-                </button>
-              )}
-              <button onClick={closePanel} aria-label="Close panel" title="Close">✕</button>
+          {activePanel === 'demand' && (
+            <div className="map-side-panel-heading">
+              <strong>County Demand</strong>
+              <div className="map-side-panel-actions">
+                <button onClick={closePanel} aria-label="Close panel" title="Close">✕</button>
+              </div>
             </div>
-          </div>
+          )}
 
           {activePanel === 'chat' ? (
             <div className="map-side-panel-body chat-body">
-              <ChatPanel selectedCounty={selectedCounty} onSelectCounty={setSelectedFips} />
+              <ChatPanel
+                selectedCounty={selectedCounty}
+                onSelectCounty={setSelectedFips}
+                chatExpanded={chatExpanded}
+                onToggleExpand={() => setChatExpanded((value) => !value)}
+                onClose={closePanel}
+              />
             </div>
           ) : (
             <div className="map-side-panel-body demand-body">

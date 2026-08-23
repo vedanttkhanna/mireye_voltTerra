@@ -62,6 +62,33 @@ function ResizeMap({ expanded }) {
   return null;
 }
 
+// Captures the Leaflet map instance so zoom buttons rendered in the
+// toolbar (outside MapContainer) can drive it directly.
+function MapRefSetter({ onReady }) {
+  const map = useMap();
+  useEffect(() => {
+    onReady(map);
+  }, [map, onReady]);
+  return null;
+}
+
+// The default Leaflet zoom control sits at (10px, 10px) — directly under
+// the VOLT-TERRA title overlay in map-first mode, so it was never visible.
+// These render inline in the toolbar row instead.
+function ZoomButtons({ map }) {
+  if (!map) return null;
+  return (
+    <div style={{ display: 'flex', gap: '0.35rem' }}>
+      <button onClick={() => map.zoomIn()} aria-label="Zoom in" title="Zoom in" className="map-zoom-button">
+        +
+      </button>
+      <button onClick={() => map.zoomOut()} aria-label="Zoom out" title="Zoom out" className="map-zoom-button">
+        −
+      </button>
+    </div>
+  );
+}
+
 function CheckPointPopup({ point, onClose, onSelectPoint }) {
   const { run, loading, error } = usePostJson('/api/explore/check-point');
   const [result, setResult] = useState(null);
@@ -154,6 +181,7 @@ export default function CountyMap({ selectedFips, onSelectCounty, toolbarAction,
   const [exploreMode, setExploreMode] = useState(false);
   const [checkedPoint, setCheckedPoint] = useState(null);
   const [expanded, setExpanded] = useState(false);
+  const [mapInstance, setMapInstance] = useState(null);
 
   const flaggedCounties = useMemo(() => (stats?.counties ?? []).filter((c) => c.underserved && c.grid_feasibility), [stats]);
 
@@ -184,6 +212,7 @@ export default function CountyMap({ selectedFips, onSelectCounty, toolbarAction,
         boxShadow: '0 4px 16px rgba(15, 23, 42, 0.12)',
       } : { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.75rem' }}>
         <Legend />
+        {backgroundMode && <ZoomButtons map={mapInstance} />}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           {toolbarAction}
           {!backgroundMode && (
@@ -233,8 +262,9 @@ export default function CountyMap({ selectedFips, onSelectCounty, toolbarAction,
       )}
 
       <div style={backgroundMode ? { position: 'absolute', inset: 0, overflow: 'hidden' } : { borderRadius: 10, overflow: 'hidden', border: '1px solid var(--card-border)', flex: 1, minHeight: 520, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-        <MapContainer center={CA_CENTER} zoom={CA_ZOOM} style={{ width: '100%', height: '100%', minHeight: backgroundMode ? 0 : 520, background: '#e2e8f0' }}>
+        <MapContainer center={CA_CENTER} zoom={CA_ZOOM} zoomControl={!backgroundMode} style={{ width: '100%', height: '100%', minHeight: backgroundMode ? 0 : 520, background: '#e2e8f0' }}>
           <ResizeMap expanded={expanded} />
+          {backgroundMode && <MapRefSetter onReady={setMapInstance} />}
           <TileLayer
             url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
@@ -287,7 +317,9 @@ export default function CountyMap({ selectedFips, onSelectCounty, toolbarAction,
                   <Marker position={[alt.lat, alt.lng]} icon={ALT_ICON}>
                     <Popup>
                       <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '0.85rem', color: '#0f172a' }}>
-                        <strong>{alt.station_name ?? 'Existing charger'}</strong> (alternative site)
+                        <strong>{alt.station_name ?? 'Existing charger'}</strong>
+                        <br />
+                        Nearby existing station, stronger grid access, expandable, but not sufficient for the county
                         <br />
                         score {alt.score}/100, {alt.passes_gates ? 'passes gates' : 'fails gates'}
                       </div>

@@ -22,13 +22,13 @@ function formatProvider(provider) {
   return 'deterministic fallback';
 }
 
-export default function ChatPanel({ selectedCounty, onSelectCounty }) {
+export default function ChatPanel({ selectedCounty, onSelectCounty, chatExpanded, onToggleExpand, onClose }) {
   const [messages, setMessages] = useState([
     {
       id: 'welcome',
       role: 'assistant',
       content:
-        'Hello! I am your **Autonomous Feasibility Agent**, powered by Mireye physical grid tools and California DMV/DOE infrastructure models.\n\nAsk me to evaluate any county or location, and I will inspect real physical constraints and formulate justifiable funding decisions.',
+        'Hello! I can evaluate California counties for EV charging funding using Mireye physical grid tools and California DMV/DOE infrastructure models.\n\nAsk me about any county or location, and I will inspect real physical constraints and formulate justifiable funding decisions.',
       citations: [
         { source: 'EIA Substation Dataset', source_url: 'https://www.eia.gov/electricity/data.php', confidence: 'high' },
         { source: 'DOE AFDC Charging Data', source_url: 'https://developer.nlr.gov', confidence: 'high' },
@@ -148,17 +148,8 @@ export default function ChatPanel({ selectedCounty, onSelectCounty }) {
 
   return (
     <div className="card chat-panel-container">
-      {/* Header with Active Context */}
+      {/* Active county context, plus the panel's own expand/close controls */}
       <div className="chat-header">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: '#ffffff' }}>
-            Autonomous Feasibility Agent
-          </h3>
-          <span style={{ fontSize: '0.72rem', background: 'rgba(255, 255, 255, 0.16)', color: '#ffffff', padding: '0.1rem 0.45rem', borderRadius: 999, fontWeight: 600, border: '1px solid rgba(255, 255, 255, 0.4)' }}>
-            MCP Tools &amp; Mireye
-          </span>
-        </div>
-
         {selectedCounty ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem' }}>
             <span style={{ color: '#ffffff' }}>Focus:</span>
@@ -175,6 +166,29 @@ export default function ChatPanel({ selectedCounty, onSelectCounty }) {
         ) : (
           <span style={{ fontSize: '0.78rem', color: '#ffffff' }}>California Statewide Context</span>
         )}
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+          {onToggleExpand && (
+            <button
+              onClick={onToggleExpand}
+              aria-label={chatExpanded ? 'Restore compact chat' : 'Expand chat'}
+              title={chatExpanded ? 'Restore compact chat' : 'Expand chat'}
+              style={{ border: 'none', background: 'none', color: '#ffffff', cursor: 'pointer', fontSize: '0.9rem', padding: '0 0.2rem' }}
+            >
+              {chatExpanded ? '↙' : '⛶'}
+            </button>
+          )}
+          {onClose && (
+            <button
+              onClick={onClose}
+              aria-label="Close panel"
+              title="Close"
+              style={{ border: 'none', background: 'none', color: '#ffffff', cursor: 'pointer', fontSize: '0.85rem', padding: '0 0.2rem' }}
+            >
+              ✕
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Message Stream */}
