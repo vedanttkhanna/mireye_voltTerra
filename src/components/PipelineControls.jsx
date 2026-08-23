@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { authorizedFetch } from '../utils/authorizedFetch.js';
 
 export default function PipelineControls({ status, onRerun, compact = false }) {
   const [running, setRunning] = useState(false);
@@ -20,7 +19,7 @@ export default function PipelineControls({ status, onRerun, compact = false }) {
     setError(null);
     setResult(null);
     try {
-      const res = await authorizedFetch('/api/pipeline/run', { method: 'POST' });
+      const res = await fetch('/api/pipeline/run', { method: 'POST' });
       const body = await res.json();
       if (!res.ok) throw new Error(body.detail || 'Sweep failed');
       setResult(body);

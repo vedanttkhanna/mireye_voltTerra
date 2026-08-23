@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useApi } from './hooks/useApi.js';
 import RankedTable from './components/RankedTable.jsx';
 import CountyDrilldown from './components/CountyDrilldown.jsx';
@@ -11,6 +11,11 @@ export default function App() {
   const { data: statusData, refetch: refetchStatus } = useApi('/api/pipeline/status');
   const [selectedFips, setSelectedFips] = useState(null);
   const [activePanel, setActivePanel] = useState(null);
+  const [panelClosing, setPanelClosing] = useState(false);
+  const [chatExpanded, setChatExpanded] = useState(false);
+  const closeTimer = useRef(null);
+
+  useEffect(() => () => window.clearTimeout(closeTimer.current), []);
 
   const handleRerun = () => {
     refetchStats();
@@ -18,7 +23,25 @@ export default function App() {
   };
 
   const selectedCounty = statsData?.counties?.find((c) => c.county_fips === selectedFips) ?? null;
-  const togglePanel = (panel) => setActivePanel((current) => current === panel ? null : panel);
+  const closePanel = () => {
+    if (!activePanel || panelClosing) return;
+    setPanelClosing(true);
+    closeTimer.current = window.setTimeout(() => {
+      setActivePanel(null);
+      setPanelClosing(false);
+      setChatExpanded(false);
+    }, 220);
+  };
+  const togglePanel = (panel) => {
+    window.clearTimeout(closeTimer.current);
+    if (activePanel === panel) {
+      closePanel();
+      return;
+    }
+    setPanelClosing(false);
+    if (panel !== 'chat') setChatExpanded(false);
+    setActivePanel(panel);
+  };
 
   return (
     <main className="map-first-app">
@@ -58,10 +81,24 @@ export default function App() {
       )}
 
       {statsData && activePanel && (
-        <aside className={`map-side-panel ${activePanel === 'demand' ? 'demand-panel' : 'chat-panel'}`}>
+        <aside
+          key={activePanel}
+          className={`map-side-panel ${activePanel === 'demand' ? 'demand-panel' : `chat-panel ${chatExpanded ? 'expanded' : 'compact'}`}${panelClosing ? ' closing' : ''}`}
+        >
           <div className="map-side-panel-heading">
             <strong>{activePanel === 'demand' ? 'County Demand' : 'Autonomous Agent'}</strong>
-            <button onClick={() => setActivePanel(null)} aria-label="Close panel">✕</button>
+            <div className="map-side-panel-actions">
+              {activePanel === 'chat' && (
+                <button
+                  onClick={() => setChatExpanded((value) => !value)}
+                  aria-label={chatExpanded ? 'Restore compact chat' : 'Expand chat'}
+                  title={chatExpanded ? 'Restore compact chat' : 'Expand chat'}
+                >
+                  {chatExpanded ? '↙' : '⛶'}
+                </button>
+              )}
+              <button onClick={closePanel} aria-label="Close panel" title="Close">✕</button>
+            </div>
           </div>
 
           {activePanel === 'chat' ? (

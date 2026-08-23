@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Router } from 'express';
 import { config } from '../config.js';
-import { conflictWhileRunning, rateLimit, requireOperationKey } from '../lib/operation-guard.js';
+import { conflictWhileRunning, rateLimit } from '../lib/operation-guard.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CACHE_DIR = path.join(__dirname, '../data/cache');
@@ -17,7 +17,7 @@ let lastScoreStatus = null;
 // canonical join (/v1/lookup), cost check (/v1/fetch/quote), grid data
 // fetch (/v1/fetch/batch), then scoring (Days 8-9) on top of that output.
 // Memo generation (Days 10-11) still needs to run separately, per county.
-pipelineRouter.post('/run', requireOperationKey, rateLimit({ name: 'pipeline-run', max: 1, windowMs: 60 * 60_000 }), conflictWhileRunning('pipeline', async (_req, res) => {
+pipelineRouter.post('/run', rateLimit({ name: 'pipeline-run', max: 1, windowMs: 60 * 60_000 }), conflictWhileRunning('pipeline', async (_req, res) => {
   try {
     const { runFullSweep } = await import('../services/orchestrator.js');
     const result = await runFullSweep({ state: config.pilotState });
@@ -59,7 +59,7 @@ pipelineRouter.post('/run/:fips', (_req, res) => {
 // POST /api/pipeline/score — re-run scoring alone against the existing
 // join-pipeline cache, without spending any Mireye credits. Useful for
 // iterating on scoring.js's thresholds without re-fetching grid data.
-pipelineRouter.post('/score', requireOperationKey, rateLimit({ name: 'pipeline-score', max: 6, windowMs: 60 * 60_000 }), conflictWhileRunning('pipeline', async (_req, res) => {
+pipelineRouter.post('/score', rateLimit({ name: 'pipeline-score', max: 6, windowMs: 60 * 60_000 }), conflictWhileRunning('pipeline', async (_req, res) => {
   try {
     const { runScoring } = await import('../services/scoring.js');
     const result = await runScoring({ state: config.pilotState });

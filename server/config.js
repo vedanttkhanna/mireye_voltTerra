@@ -13,9 +13,6 @@ export const config = {
 
   mireyeApiKey: required('MIREYE_API_KEY'),
   mireyeBaseUrl: process.env.MIREYE_BASE_URL || 'https://api.mireye.com',
-  // Never reuse or expose the upstream Mireye credential in browser code.
-  operationApiKey: process.env.OPERATION_API_KEY || '',
-
   // Optional LLM API keys for autonomous decision agent
   llmProvider: process.env.LLM_PROVIDER || 'auto',
   geminiApiKey: process.env.GEMINI_API_KEY || '',

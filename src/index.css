@@ -134,10 +134,78 @@ body,
   background: rgba(255, 255, 255, 0.97);
   box-shadow: 0 12px 36px rgba(15, 23, 42, 0.2);
   backdrop-filter: blur(10px);
+  animation: map-side-panel-in 220ms ease-out both;
+  will-change: transform, opacity;
+}
+
+.map-side-panel.closing {
+  pointer-events: none;
+  animation: map-side-panel-out 220ms ease-in both;
+}
+
+@keyframes map-side-panel-in {
+  from {
+    opacity: 0;
+    transform: translateX(-2rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes map-side-panel-out {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-2rem);
+  }
+}
+
+@keyframes chat-window-in {
+  from {
+    opacity: 0;
+    transform: translateY(1rem) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes chat-window-out {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(1rem) scale(0.96);
+  }
 }
 
 .map-side-panel.chat-panel {
-  width: min(35rem, calc(100vw - 12rem));
+  top: auto;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  left: auto;
+  width: min(24rem, calc(100vw - 2.5rem));
+  height: min(32rem, calc(100vh - 2.5rem));
+  animation-name: chat-window-in;
+  transform-origin: bottom right;
+}
+
+.map-side-panel.chat-panel.expanded {
+  top: 1.25rem;
+  width: min(56rem, calc(100vw - 2.5rem));
+  height: auto;
+}
+
+.map-side-panel.chat-panel.closing {
+  animation-name: chat-window-out;
 }
 
 .map-side-panel-heading {
@@ -156,6 +224,25 @@ body,
   color: var(--fg-muted);
   font-size: 0.9rem;
   cursor: pointer;
+}
+
+.map-side-panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.map-side-panel-actions button {
+  display: grid;
+  width: 1.75rem;
+  height: 1.75rem;
+  place-items: center;
+  border-radius: 6px;
+}
+
+.map-side-panel-actions button:hover {
+  background: var(--card-hover);
+  color: var(--fg);
 }
 
 .map-side-panel-body {
@@ -217,13 +304,33 @@ body,
     width: auto;
   }
 
-  .map-side-panel,
-  .map-side-panel.chat-panel {
+  .map-side-panel.demand-panel {
     top: 8.25rem;
     right: 0.75rem;
     bottom: 0.75rem;
     left: 0.75rem;
     width: auto;
+  }
+
+  .map-side-panel.chat-panel {
+    top: auto;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    left: 0.75rem;
+    width: auto;
+    height: min(32rem, calc(100vh - 6rem));
+  }
+
+  .map-side-panel.chat-panel.expanded {
+    top: 0.75rem;
+    height: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .map-side-panel,
+  .map-side-panel.closing {
+    animation-duration: 1ms;
   }
 }
 

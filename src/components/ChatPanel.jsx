@@ -3,7 +3,6 @@ import { renderMarkdownLite } from '../utils/markdownLite.jsx';
 import CitationChip from './CitationChip.jsx';
 import BucketBadge from './BucketBadge.jsx';
 import { formatRatio } from '../utils/format.js';
-import { authorizedFetch } from '../utils/authorizedFetch.js';
 
 function formatDataGap(gap) {
   if (typeof gap === 'string') return gap;
@@ -74,7 +73,7 @@ export default function ChatPanel({ selectedCounty, onSelectCounty }) {
       .map(({ role, content }) => ({ role, content: content.slice(0, 1500) }));
 
     try {
-      const res = await authorizedFetch('/api/chat', {
+      const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

@@ -6,7 +6,7 @@ VOLT-TERRA answers one question: *which California counties have EV registration
 
 It's an agent, not a dashboard: it pulls EV registration data (state DMV) and existing charger locations (DOE), joins them against cited physical grid data from Mireye (substation distance, voltage, interconnection capacity), computes a peer-relative demand signal, runs that signal through a physical feasibility screen, and sorts every flagged county into a funding or data-review outcome — with a plain-English, cited justification memo generated per county via Mireye's `/v1/ask`. Every decision traces back to the exact fields and sources that drove it.
 
-By the numbers (live California pilot, one full statewide run): **58/58 counties analyzed, 6 flagged as underserved, 123 automated tests passing, cross-checked against 114 real state EV-infrastructure funding records.** See [`docs/write-up.md`](docs/write-up.md) for the full day-by-day build narrative, including every bug found and fixed against live data.
+By the numbers (live California pilot, one full statewide run): **58/58 counties analyzed, 6 flagged as underserved, 121 automated tests passing, cross-checked against 114 real state EV-infrastructure funding records.** See [`docs/write-up.md`](docs/write-up.md) for the full day-by-day build narrative, including every bug found and fixed against live data.
 
 ## What it does
 
@@ -21,17 +21,16 @@ By the numbers (live California pilot, one full statewide run): **58/58 counties
 
 - **Node.js ≥ 20**
 - A [Mireye API key](https://www.mireye.com) (free tier works for light use; the Build plan is what this project was developed against — 25,000 credits/month)
-- A long, random `OPERATION_API_KEY`, separate from the Mireye key, for protected POST actions
 - macOS/Linux shell with `unzip` available (used to unpack two Census data downloads on first ingest — present by default on macOS and most Linux distros)
 
 ## Setup
 
 ```bash
 npm install
-cp .env.example .env   # then fill in MIREYE_API_KEY and OPERATION_API_KEY
+cp .env.example .env   # then fill in MIREYE_API_KEY
 ```
 
-`.env.example` documents every variable. Both `MIREYE_API_KEY` and `OPERATION_API_KEY` must be configured for live operations.
+`.env.example` documents every variable; only `MIREYE_API_KEY` is required for Mireye operations.
 
 The chat agent supports Gemini or Groq. Set one provider and its server-side key:
 
@@ -105,7 +104,7 @@ Chosen because it's the demo example in the project's own spec (Madera County), 
 
 Client implementation (rate limiting, batching, retry-with-backoff) lives in [`server/services/mireye.js`](server/services/mireye.js).
 
-Credit-spending and cache-mutating HTTP operations require `X-Operation-Key`, are rate-limited, and are mutually exclusive. The dashboard asks for the operator key once per browser session and never embeds it in the client bundle. The Mireye key remains server-side and must never be exposed through Vite client variables.
+Credit-spending and cache-mutating HTTP operations are rate-limited and mutually exclusive. The Mireye key remains server-side and must never be exposed through Vite client variables. Deploy the server only behind a trusted network boundary because these routes intentionally have no caller authentication.
 
 ## Data sources
 

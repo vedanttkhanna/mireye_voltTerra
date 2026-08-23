@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Router } from 'express';
 import { config } from '../config.js';
-import { conflictWhileRunning, rateLimit, requireOperationKey } from '../lib/operation-guard.js';
+import { conflictWhileRunning, rateLimit } from '../lib/operation-guard.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CACHE_DIR = path.join(__dirname, '../data/cache');
@@ -181,7 +181,7 @@ countiesRouter.get('/:fips/memo', async (req, res) => {
 // exactly one county, ~10 Mireye credits. Deliberately per-county rather
 // than automatic for every flagged county, so a dashboard click spends
 // credits on purpose, not as a side effect of some other action.
-countiesRouter.post('/:fips/memo', requireOperationKey, rateLimit({ name: 'memo', max: 6, windowMs: 60 * 60_000 }), conflictWhileRunning('memo', async (req, res) => {
+countiesRouter.post('/:fips/memo', rateLimit({ name: 'memo', max: 6, windowMs: 60 * 60_000 }), conflictWhileRunning('memo', async (req, res) => {
   try {
     const { generateMemoForCounty } = await import('../services/memo-generator.js');
     const memo = await generateMemoForCounty(req.params.fips, { state: config.pilotState });

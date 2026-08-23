@@ -7,7 +7,7 @@ import { mireye } from '../services/mireye.js';
 import { GRID_FEASIBILITY_FIELDS } from '../services/orchestrator.js';
 import { computeGridFeasibilityScore } from '../services/scoring.js';
 import { findContainingFeature } from '../lib/geo.js';
-import { conflictWhileRunning, rateLimit, requireOperationKey } from '../lib/operation-guard.js';
+import { conflictWhileRunning, rateLimit } from '../lib/operation-guard.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.join(__dirname, '../data');
@@ -65,7 +65,7 @@ async function loadCountyBoundaries() {
  * and already known, and quoting a single ad-hoc point on every click would
  * only add latency, not new cost information.
  */
-exploreRouter.post('/check-point', requireOperationKey, rateLimit({ name: 'point-check', max: 10, windowMs: 60 * 60_000 }), conflictWhileRunning('point-check', async (req, res) => {
+exploreRouter.post('/check-point', rateLimit({ name: 'point-check', max: 10, windowMs: 60 * 60_000 }), conflictWhileRunning('point-check', async (req, res) => {
   const lat = Number(req.body?.lat);
   const lng = Number(req.body?.lng);
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) {

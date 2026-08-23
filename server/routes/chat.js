@@ -1,11 +1,11 @@
 import { Router } from 'express';
 import { runAutonomousAgent } from '../services/llm-agent.js';
-import { conflictWhileRunning, rateLimit, requireOperationKey } from '../lib/operation-guard.js';
+import { conflictWhileRunning, rateLimit } from '../lib/operation-guard.js';
 
 export const chatRouter = Router();
 
 // POST /api/chat — autonomous agent feasibility inquiry with MCP tools and cited evidence
-chatRouter.post('/', requireOperationKey, rateLimit({ name: 'chat', max: 12, windowMs: 60 * 60_000 }), conflictWhileRunning('chat', async (req, res) => {
+chatRouter.post('/', rateLimit({ name: 'chat', max: 12, windowMs: 60 * 60_000 }), conflictWhileRunning('chat', async (req, res) => {
   const { message, county_fips, coordinates, history = [] } = req.body ?? {};
 
   if (!message || typeof message !== 'string' || !message.trim()) {
