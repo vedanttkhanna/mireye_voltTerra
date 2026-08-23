@@ -30,7 +30,7 @@ export function buildMemoQuestion(scoredCounty) {
       ? `${(inputs.substation_distance_m / METERS_PER_MILE).toFixed(1)} mi away at ` +
         `${inputs.substation_voltage_kv != null ? `${inputs.substation_voltage_kv}kV` : 'an unpublished voltage'}, ` +
         `status ${inputs.substation_status ?? 'not published'}`
-      : 'no substation found within the search radius of the county centroid';
+      : 'no substation found within the search radius of the county population center';
 
   return (
     `${county_name} shows ${driver_to_plug_ratio.toFixed(1)} registered EVs per public charging port ` +
@@ -42,7 +42,7 @@ export function buildMemoQuestion(scoredCounty) {
 }
 
 /**
- * Calls /v1/ask at the county's centroid (the same point scoring.js used
+ * Calls /v1/ask at the county's population center (the same point scoring.js used
  * to decide the bucket, so the memo and the bucket are talking about the
  * same location) and returns a memo record. Requires the county to have
  * gone through scoring — `bucketCounty` runs on flagged counties only, and
@@ -59,6 +59,9 @@ export async function generateCountyMemo(scoredCounty, { askImpl = mireye.ask.bi
   const { lat, lng } = scoredCounty.grid_feasibility.sampled_at;
   const question = buildMemoQuestion(scoredCounty);
   const response = await askImpl({ lat, lng, question, includeTrace: false });
+  if (!response || typeof response.answer !== 'string' || !Array.isArray(response.citations) || !Array.isArray(response.data_gaps)) {
+    throw new Error('Mireye ask response has an invalid schema');
+  }
 
   return {
     county_fips: scoredCounty.county_fips,
@@ -82,9 +85,12 @@ async function loadScoredCounties(state) {
 async function loadExistingMemos(state) {
   try {
     const raw = await readFile(path.join(CACHE_DIR, `memos-${state}.json`), 'utf8');
-    return JSON.parse(raw).memos ?? [];
-  } catch {
-    return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed.memos)) throw new Error(`Invalid memos-${state}.json schema`);
+    return parsed.memos;
+  } catch (err) {
+    if (err.code === 'ENOENT') return [];
+    throw err;
   }
 }
 

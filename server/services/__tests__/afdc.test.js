@@ -42,6 +42,14 @@ test('missing EVSE-count fields default to zero rather than NaN', () => {
   assert.equal(la.level1_ports, 0);
 });
 
+test('numeric port-count strings are normalized before aggregation', () => {
+  const { counties } = aggregateStationsByCounty([
+    { id: 5, zip: '90001', ev_level2_evse_num: '2' },
+    { id: 6, zip: '90002', ev_level2_evse_num: '3' },
+  ], { state: 'CA' });
+  assert.equal(counties[0].level2_ports, 5);
+});
+
 test('collects corridor_points from stations that carry coordinates', () => {
   const withCoords = [
     { id: 1, zip: '90001', latitude: 34.0, longitude: -118.2 },

@@ -1,13 +1,12 @@
 import { useState } from 'react';
-import { formatTimestamp } from '../utils/format.js';
+import { authorizedFetch } from '../utils/authorizedFetch.js';
 
-export default function PipelineControls({ status, onRerun }) {
+export default function PipelineControls({ status, onRerun, compact = false }) {
   const [running, setRunning] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState(null);
 
   const lastJoin = status?.last_join_pipeline_run;
-  const lastScore = status?.last_scored_counties_run;
 
   const rerun = async () => {
     const confirmed = window.confirm(
@@ -21,7 +20,7 @@ export default function PipelineControls({ status, onRerun }) {
     setError(null);
     setResult(null);
     try {
-      const res = await fetch('/api/pipeline/run', { method: 'POST' });
+      const res = await authorizedFetch('/api/pipeline/run', { method: 'POST' });
       const body = await res.json();
       if (!res.ok) throw new Error(body.detail || 'Sweep failed');
       setResult(body);
@@ -33,39 +32,40 @@ export default function PipelineControls({ status, onRerun }) {
     }
   };
 
+  const button = (
+    <button
+      onClick={rerun}
+      disabled={running}
+      style={{
+        padding: compact ? '0.4rem 0.85rem' : '0.55rem 1.15rem',
+        borderRadius: 7,
+        border: '1px solid var(--accent)',
+        background: running ? 'var(--accent-light)' : 'var(--accent)',
+        color: running ? 'var(--accent-darker)' : '#ffffff',
+        fontWeight: 600,
+        cursor: running ? 'default' : 'pointer',
+        fontSize: compact ? '0.8rem' : '0.875rem',
+        whiteSpace: 'nowrap',
+        boxShadow: running ? 'none' : '0 2px 6px var(--accent-shadow)',
+        transition: 'all 0.15s ease',
+      }}
+    >
+      {running ? 'Running sweep...' : 'Re-run full sweep'}
+    </button>
+  );
+
+  if (compact) {
+    return (
+      <div title={error || (result ? 'Sweep completed successfully' : undefined)}>
+        {button}
+      </div>
+    );
+  }
+
   return (
     <div className="card" style={{ padding: '1.25rem', marginBottom: '1.5rem' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-        <div style={{ fontSize: '0.875rem', color: 'var(--fg-muted)', lineHeight: 1.5 }}>
-          <div>
-            <strong style={{ color: 'var(--fg)' }}>Last sweep:</strong> {formatTimestamp(lastJoin?.generated_at)}
-            {lastJoin && ` (${lastJoin.counties_processed} counties, ${lastJoin.credits_spent} credits, ${lastJoin.lookup_mismatches} lookup mismatches)`}
-          </div>
-          <div>
-            <strong style={{ color: 'var(--fg)' }}>Last scored:</strong> {formatTimestamp(lastScore?.scored_at)}
-            {lastScore &&
-              ` (${lastScore.counties_underserved} underserved: ${lastScore.counties_fund_charger_now} charger now, ${lastScore.counties_fund_grid_upgrade_first} grid upgrade first, ${lastScore.counties_insufficient_data ?? 0} review)`}
-          </div>
-        </div>
-        <button
-          onClick={rerun}
-          disabled={running}
-          style={{
-            padding: '0.55rem 1.15rem',
-            borderRadius: 7,
-            border: '1px solid var(--accent)',
-            background: running ? 'var(--accent-light)' : 'var(--accent)',
-            color: running ? 'var(--accent-darker)' : '#ffffff',
-            fontWeight: 600,
-            cursor: running ? 'default' : 'pointer',
-            fontSize: '0.875rem',
-            whiteSpace: 'nowrap',
-            boxShadow: running ? 'none' : '0 2px 6px var(--accent-shadow)',
-            transition: 'all 0.15s ease',
-          }}
-        >
-          {running ? 'Running sweep...' : 'Re-run full sweep'}
-        </button>
+      <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+        {button}
       </div>
       {error && <p style={{ color: 'var(--danger)', marginTop: '0.75rem', marginBottom: 0, fontSize: '0.85rem' }}>{error}</p>}
       {result && (

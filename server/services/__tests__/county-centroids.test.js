@@ -1,28 +1,25 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { parseGazetteerText } from '../county-centroids.js';
-
-const HEADER = 'USPS\tGEOID\tANSICODE\tNAME\tALAND\tAWATER\tALAND_SQMI\tAWATER_SQMI\tINTPTLAT\tINTPTLONG                ';
+import { parsePopulationCentersCsv } from '../county-centroids.js';
 
 test('parses CA rows and skips other states', () => {
-  const text = [
-    HEADER,
-    'CA\t06039\t01675868\tMadera County\t1\t1\t1\t1\t37.209821\t-119.749802     ',
-    'NY\t36001\t00974104\tAlbany County\t1\t1\t1\t1\t42.601168\t-73.972866       ',
-  ].join('\n');
+  const text = 'STATEFP,COUNTYFP,COUNAME,STNAME,POPULATION,LATITUDE,LONGITUDE\n' +
+    '06,039,Madera,California,156255,+37.037074,-120.009796\n' +
+    '36,001,Albany,New York,314848,+42.600000,-73.970000\n';
 
-  const rows = parseGazetteerText(text, { usps: 'CA' });
+  const rows = parsePopulationCentersCsv(text, { stateFips: '06' });
 
   assert.equal(rows.length, 1);
   assert.deepEqual(rows[0], {
     county_fips: '06039',
     county_name: 'Madera County',
-    lat: 37.209821,
-    lng: -119.749802,
+    population: 156255,
+    lat: 37.037074,
+    lng: -120.009796,
   });
 });
 
 test('throws if an expected column is missing', () => {
-  const text = 'USPS\tGEOID\tNAME\n' + 'CA\t06039\tMadera County';
-  assert.throws(() => parseGazetteerText(text, { usps: 'CA' }), /missing expected column/);
+  const text = 'STATEFP,COUNTYFP,COUNAME\n06,039,Madera';
+  assert.throws(() => parsePopulationCentersCsv(text, { stateFips: '06' }), /missing required columns/);
 });

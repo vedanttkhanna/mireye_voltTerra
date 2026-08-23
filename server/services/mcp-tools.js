@@ -13,8 +13,9 @@ async function loadScoredData(state = config.pilotState) {
   try {
     const raw = await readFile(path.join(CACHE_DIR, `scored-counties-${state}.json`), 'utf8');
     return JSON.parse(raw);
-  } catch {
-    return null;
+  } catch (err) {
+    if (err.code === 'ENOENT') return null;
+    throw err;
   }
 }
 
@@ -22,8 +23,9 @@ async function loadJoinData(state = config.pilotState) {
   try {
     const raw = await readFile(path.join(CACHE_DIR, `join-pipeline-${state}.json`), 'utf8');
     return JSON.parse(raw);
-  } catch {
-    return null;
+  } catch (err) {
+    if (err.code === 'ENOENT') return null;
+    throw err;
   }
 }
 
@@ -190,7 +192,8 @@ export async function executeMcpTool(toolName, args, { askImpl = mireye.ask.bind
     case 'get_grid_infrastructure': {
       const county = resolveCounty(args.county_name_or_fips, scoredData);
       const joinCounty = joinData?.counties?.find((c) => c.county_fips === county?.county_fips);
-      const cachedPoint = joinCounty?.sample_points?.find((p) => p.type === 'centroid') ?? joinCounty?.sample_points?.[0];
+      const cachedPoint = joinCounty?.sample_points?.find((p) => p.type === 'population_center') ??
+        joinCounty?.sample_points?.find((p) => p.type === 'centroid') ?? joinCounty?.sample_points?.[0];
       const computed = cachedPoint?.grid_fields ? computeGridFeasibilityScore(cachedPoint.grid_fields) : null;
       const gf = county?.grid_feasibility ?? (computed ? {
         ...computed,

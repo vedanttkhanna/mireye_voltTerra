@@ -13,6 +13,8 @@ export const config = {
 
   mireyeApiKey: required('MIREYE_API_KEY'),
   mireyeBaseUrl: process.env.MIREYE_BASE_URL || 'https://api.mireye.com',
+  // Never reuse or expose the upstream Mireye credential in browser code.
+  operationApiKey: process.env.OPERATION_API_KEY || '',
 
   // Optional LLM API keys for autonomous decision agent
   llmProvider: process.env.LLM_PROVIDER || 'auto',
@@ -37,4 +39,5 @@ export const config = {
   // misconfigured field list or sample size accidentally burning the whole
   // monthly allowance (25,000 on the build plan) in one run.
   maxSweepCredits: Number(process.env.MAX_SWEEP_CREDITS) || 15000,
+  maxPointCheckCredits: Number(process.env.MAX_POINT_CHECK_CREDITS) || 50,
 };

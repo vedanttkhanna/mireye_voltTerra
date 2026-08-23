@@ -13,8 +13,9 @@ async function loadScoredCounties(state = config.pilotState) {
   try {
     const raw = await readFile(path.join(CACHE_DIR, `scored-counties-${state}.json`), 'utf8');
     return JSON.parse(raw);
-  } catch {
-    return null;
+  } catch (err) {
+    if (err.code === 'ENOENT') return null;
+    throw err;
   }
 }
 
@@ -22,8 +23,9 @@ async function loadJoinPipeline(state = config.pilotState) {
   try {
     const raw = await readFile(path.join(CACHE_DIR, `join-pipeline-${state}.json`), 'utf8');
     return JSON.parse(raw);
-  } catch {
-    return null;
+  } catch (err) {
+    if (err.code === 'ENOENT') return null;
+    throw err;
   }
 }
 

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { authorizedFetch } from '../utils/authorizedFetch.js';
 
 /** Fetches a GET endpoint on mount and exposes a manual refetch. */
 export function useApi(path) {
@@ -37,7 +38,7 @@ export function usePostAction(path) {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(path, { method: 'POST' });
+      const res = await authorizedFetch(path, { method: 'POST' });
       const body = await res.json();
       if (!res.ok) throw new Error(body.detail || `${res.status} ${res.statusText}`);
       return body;
@@ -62,7 +63,7 @@ export function usePostJson(path) {
       setLoading(true);
       setError(null);
       try {
-        const res = await fetch(path, {
+        const res = await authorizedFetch(path, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),

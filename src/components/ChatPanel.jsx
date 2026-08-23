@@ -3,13 +3,7 @@ import { renderMarkdownLite } from '../utils/markdownLite.jsx';
 import CitationChip from './CitationChip.jsx';
 import BucketBadge from './BucketBadge.jsx';
 import { formatRatio } from '../utils/format.js';
-
-const INITIAL_PROMPTS = [
-  'Decide if Sutter County should fund chargers or grid upgrades',
-  'What are the electrical substation constraints in Riverside County?',
-  'Analyze Contra Costa EV infrastructure deficit and grid proximity',
-  'Which California counties have the highest charging stress?',
-];
+import { authorizedFetch } from '../utils/authorizedFetch.js';
 
 function formatDataGap(gap) {
   if (typeof gap === 'string') return gap;
@@ -80,7 +74,7 @@ export default function ChatPanel({ selectedCounty, onSelectCounty }) {
       .map(({ role, content }) => ({ role, content: content.slice(0, 1500) }));
 
     try {
-      const res = await fetch('/api/chat', {
+      const res = await authorizedFetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -147,41 +141,40 @@ export default function ChatPanel({ selectedCounty, onSelectCounty }) {
 
   const dynamicPrompts = selectedCounty
     ? [
-        `Evaluate feasibility and make funding decision for ${selectedCounty.county_name}`,
-        `Inspect substation capacity & distance in ${selectedCounty.county_name}`,
-        `Compare ${selectedCounty.county_name} (${formatRatio(selectedCounty.driver_to_plug_ratio)} EVs/port) against state median`,
-      ]
-    : INITIAL_PROMPTS;
+      `Evaluate feasibility and make funding decision for ${selectedCounty.county_name}`,
+      `Inspect substation capacity & distance in ${selectedCounty.county_name}`,
+      `Compare ${selectedCounty.county_name} (${formatRatio(selectedCounty.driver_to_plug_ratio)} EVs/port) against state median`,
+    ]
+    : [];
 
   return (
     <div className="card chat-panel-container">
       {/* Header with Active Context */}
       <div className="chat-header">
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <div style={{ width: 10, height: 10, borderRadius: '50%', background: 'var(--accent)', boxShadow: '0 0 8px var(--accent)' }} />
-          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: 'var(--fg)' }}>
+          <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700, color: '#ffffff' }}>
             Autonomous Feasibility Agent
           </h3>
-          <span style={{ fontSize: '0.72rem', background: 'var(--accent-light)', color: 'var(--accent-darker)', padding: '0.1rem 0.45rem', borderRadius: 999, fontWeight: 600, border: '1px solid var(--accent-border)' }}>
+          <span style={{ fontSize: '0.72rem', background: 'rgba(255, 255, 255, 0.16)', color: '#ffffff', padding: '0.1rem 0.45rem', borderRadius: 999, fontWeight: 600, border: '1px solid rgba(255, 255, 255, 0.4)' }}>
             MCP Tools &amp; Mireye
           </span>
         </div>
 
         {selectedCounty ? (
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem' }}>
-            <span style={{ color: 'var(--fg-muted)' }}>Focus:</span>
-            <strong style={{ color: 'var(--accent-darker)' }}>{selectedCounty.county_name}</strong>
+            <span style={{ color: '#ffffff' }}>Focus:</span>
+            <strong style={{ color: '#ffffff' }}>{selectedCounty.county_name}</strong>
             <BucketBadge bucket={selectedCounty.bucket} />
             <button
               onClick={() => onSelectCounty(null)}
-              style={{ border: 'none', background: 'none', color: 'var(--fg-muted)', cursor: 'pointer', fontSize: '0.75rem', padding: '0 0.2rem' }}
+              style={{ border: 'none', background: 'none', color: '#ffffff', cursor: 'pointer', fontSize: '0.75rem', padding: '0 0.2rem' }}
               title="Clear county focus"
             >
               ✕
             </button>
           </div>
         ) : (
-          <span style={{ fontSize: '0.78rem', color: 'var(--fg-muted)' }}>California Statewide Context</span>
+          <span style={{ fontSize: '0.78rem', color: '#ffffff' }}>California Statewide Context</span>
         )}
       </div>
 
@@ -317,23 +310,25 @@ export default function ChatPanel({ selectedCounty, onSelectCounty }) {
       </div>
 
       {/* Suggested Quick Prompts */}
-      <div className="chat-quick-prompts">
-        <div style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--fg-muted)', marginBottom: '0.35rem' }}>
-          Suggested actions:
+      {dynamicPrompts.length > 0 && (
+        <div className="chat-quick-prompts">
+          <div style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--fg-muted)', marginBottom: '0.35rem' }}>
+            Suggested actions:
+          </div>
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+            {dynamicPrompts.slice(0, 3).map((prompt, idx) => (
+              <button
+                key={idx}
+                onClick={() => sendQuery(prompt)}
+                disabled={loading}
+                className="chat-prompt-pill"
+              >
+                {prompt}
+              </button>
+            ))}
+          </div>
         </div>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
-          {dynamicPrompts.slice(0, 3).map((prompt, idx) => (
-            <button
-              key={idx}
-              onClick={() => sendQuery(prompt)}
-              disabled={loading}
-              className="chat-prompt-pill"
-            >
-              {prompt}
-            </button>
-          ))}
-        </div>
-      </div>
+      )}
 
       {/* Input Box */}
       <div className="chat-input-area">

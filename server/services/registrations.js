@@ -63,9 +63,9 @@ export function parseRegistrationsCsv(csvText) {
     const fuel = r.Fuel?.trim();
     if (!EV_FUEL_TYPES.has(fuel)) continue;
     const vehicles = Number(r.Vehicles);
-    if (!Number.isFinite(vehicles) || vehicles < 0) continue;
+    if (!Number.isFinite(vehicles) || vehicles < 0) throw new Error('Registration CSV contains an invalid EV vehicle count');
     const dateMs = Date.parse(r.Date);
-    if (!Number.isFinite(dateMs)) continue;
+    if (!Number.isFinite(dateMs)) throw new Error('Registration CSV contains an invalid EV record date');
     const year = new Date(dateMs).getUTCFullYear();
     rows.push({ zip: r['ZIP Code'], year, fuel, vehicles });
   }

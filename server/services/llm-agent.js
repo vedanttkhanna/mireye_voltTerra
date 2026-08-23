@@ -71,7 +71,8 @@ export async function buildAgentContext({ message, countyFips } = {}) {
     ? resolveCounty(countyFips, scored)
     : findCountyFromText(message, scored.counties);
   const joinedCounty = joined.counties.find((county) => county.county_fips === selected?.county_fips);
-  const primaryPoint = joinedCounty?.sample_points?.find((point) => point.type === 'centroid') ?? joinedCounty?.sample_points?.[0];
+  const primaryPoint = joinedCounty?.sample_points?.find((point) => point.type === 'population_center') ??
+    joinedCounty?.sample_points?.find((point) => point.type === 'centroid') ?? joinedCounty?.sample_points?.[0];
 
   return {
     schema_version: 'volt-terra.agent-context.v1',
@@ -381,7 +382,9 @@ async function callDeterministicAgent({ message, countyFips, coordinates, histor
   try {
     const raw = await readFile(path.join(CACHE_DIR, `scored-counties-${config.pilotState}.json`), 'utf8');
     scoredData = JSON.parse(raw);
-  } catch {}
+  } catch (err) {
+    if (err.code !== 'ENOENT') throw err;
+  }
 
   const counties = scoredData?.counties ?? [];
   let county = countyFips ? resolveCounty(countyFips, scoredData) : null;

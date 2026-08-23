@@ -6,7 +6,7 @@ import {
   GRID_FEASIBILITY_FIELDS,
 } from '../orchestrator.js';
 
-test('buildCountySamplePoints puts the centroid first, then corridor points', () => {
+test('buildCountySamplePoints puts the population center first, then corridor points', () => {
   const points = buildCountySamplePoints({
     centroid: { lat: 37.2, lng: -119.7 },
     corridorPoints: [
@@ -16,7 +16,7 @@ test('buildCountySamplePoints puts the centroid first, then corridor points', ()
   });
 
   assert.equal(points.length, 3);
-  assert.deepEqual(points[0], { type: 'centroid', lat: 37.2, lng: -119.7, source: 'census_gazetteer_2020' });
+  assert.deepEqual(points[0], { type: 'population_center', lat: 37.2, lng: -119.7, source: 'census_mean_population_center_2020' });
   assert.equal(points[1].type, 'corridor');
   assert.equal(points[1].station_name, 'Station A');
   assert.equal(points[2].station_name, 'Station B');
@@ -25,7 +25,7 @@ test('buildCountySamplePoints puts the centroid first, then corridor points', ()
 test('buildCountySamplePoints handles a county with no chargers (centroid only)', () => {
   const points = buildCountySamplePoints({ centroid: { lat: 37.2, lng: -119.7 }, corridorPoints: [] });
   assert.equal(points.length, 1);
-  assert.equal(points[0].type, 'centroid');
+  assert.equal(points[0].type, 'population_center');
 });
 
 test('buildCountySamplePoints omits the centroid if none is found', () => {

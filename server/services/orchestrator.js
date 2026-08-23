@@ -1,6 +1,6 @@
 // The agentic loop, per docs/volt-terra-spec.pdf:
 //   1. Data ingest       -> afdc.js + registrations.js            [done]
-//   2. County sampling   -> centroid + corridor points per county [done]
+//   2. County sampling   -> population center + corridor context [done]
 //   3. Canonical join    -> mireye.lookup                          [done]
 //   4. Cost check        -> mireye.fetchQuote                      [done]
 //   5. Grid data fetch   -> mireye.fetchBatchChunked                [done]
@@ -11,7 +11,7 @@
 //
 // Deviation from the spec's step list: no /v1/geocode call. Geocode
 // resolves an address string to a coordinate, but every sample point here
-// already has one — the county's Census-gazetteer centroid, or an AFDC
+// already has one — the county's Census population center, or an AFDC
 // station's own lat/lng — so there's no address in the loop to resolve.
 
 import path from 'node:path';
@@ -73,9 +73,17 @@ export const GRID_FEASIBILITY_FIELDS = [
 
 export const LOOKUP_CREDITS_PER_POINT = 1;
 
+export class CreditCapError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = 'CreditCapError';
+    this.code = 'credit_cap_exceeded';
+  }
+}
+
 /**
- * Step 2, county sampling: one fixed point per county (its Census-gazetteer
- * centroid) plus up to a few "corridor" points — existing charger
+ * Step 2, county sampling: one fixed point per county (its Census mean
+ * center of population) plus up to a few "corridor" points — existing charger
  * locations from the AFDC ingest, standing in for a highway-corridor
  * dataset this project doesn't have in scope. A county with zero chargers
  * still gets sampled via its centroid alone.
@@ -83,7 +91,7 @@ export const LOOKUP_CREDITS_PER_POINT = 1;
 export function buildCountySamplePoints({ centroid, corridorPoints = [] }) {
   const points = [];
   if (centroid) {
-    points.push({ type: 'centroid', lat: centroid.lat, lng: centroid.lng, source: 'census_gazetteer_2020' });
+    points.push({ type: 'population_center', lat: centroid.lat, lng: centroid.lng, source: 'census_mean_population_center_2020' });
   }
   // A mean of existing chargers measures supply placement, not demand. Do
   // not let it become the bucket-deciding point. Corridor samples remain
@@ -141,11 +149,14 @@ export async function runFullSweep({ state = config.pilotState, maxSweepCredits 
 
   // Complete preflight before any metered lookup or fetch operation.
   const perLocationQuote = await mireye.fetchQuote({ fields: GRID_FEASIBILITY_FIELDS, locations: 1 });
+  if (!Number.isFinite(perLocationQuote?.credits_total) || perLocationQuote.credits_total < 0) {
+    throw new Error('Mireye quote returned an invalid credits_total; refusing all metered operations');
+  }
   const fetchCredits = perLocationQuote.credits_total * flatPoints.length;
   const lookupCredits = LOOKUP_CREDITS_PER_POINT * flatPoints.length;
   const estimatedCredits = fetchCredits + lookupCredits;
   if (estimatedCredits > maxSweepCredits) {
-    throw new Error(
+    throw new CreditCapError(
       `Sweep would cost ~${estimatedCredits} credits (${fetchCredits} fetch + ${lookupCredits} lookup), ` +
         `over the ${maxSweepCredits}-credit safety cap (MAX_SWEEP_CREDITS).`
     );
@@ -157,21 +168,30 @@ export async function runFullSweep({ state = config.pilotState, maxSweepCredits 
   const lookupResults = [];
   for (const point of flatPoints) {
     const result = await mireye.lookup(`${point.lat},${point.lng}`, { kind: 'coord', includeParcel: false });
+    if (!result || typeof result !== 'object' || Array.isArray(result)) {
+      throw new Error('Mireye lookup returned an invalid response schema');
+    }
     lookupResults.push(result);
   }
 
-  // Step 4: cost check. Quote before every real sweep, per the build brief.
+  // Step 4's cost check completed above, before the metered lookups.
   // /v1/fetch/quote caps `locations` at 25 (mirroring /v1/fetch/batch), so
   // this quotes one location and scales linearly — billing is deterministic
   // (fetch_per_field x fields x locations, per GET /v1/meta/plans), and a
-  // 1-location quote still catches a stale/renamed field before it costs
-  // anything for real.
+  // A 1-location quote still catches a stale/renamed field before it costs
+  // anything for real, and the result is scaled across every sample point.
   // Step 5: grid data fetch, batched (<=25 locations/call) and rate-limited
   // inside MireyeClient.
   const gridResults = await mireye.fetchBatchChunked({
     locations: flatPoints.map((p) => ({ lat: p.lat, lng: p.lng })),
     fields: GRID_FEASIBILITY_FIELDS,
   });
+  if (!Array.isArray(gridResults) || gridResults.length !== flatPoints.length || gridResults.some((r) =>
+    !r?.fields || typeof r.fields !== 'object' || Array.isArray(r.fields) ||
+    GRID_FEASIBILITY_FIELDS.some((field) => !(field in r.fields))
+  )) {
+    throw new Error(`Mireye batch returned ${gridResults?.length ?? 'invalid'} results for ${flatPoints.length} locations`);
+  }
 
   const enrichedPoints = flatPoints.map((point, i) => ({
     ...checkLookupAgreement(point, lookupResults[i], point.county_fips),
@@ -205,6 +225,11 @@ export async function runFullSweep({ state = config.pilotState, maxSweepCredits 
     state,
     generated_at: new Date().toISOString(),
     fields_fetched: GRID_FEASIBILITY_FIELDS,
+    data_vintages: {
+      afdc: afdc.data_vintage,
+      registrations: registrations.data_vintages,
+      county_population_centers: '2020 Census',
+    },
     credits_spent: estimatedCredits,
     counties_processed: joinedCounties.length,
     sample_points_total: flatPoints.length,

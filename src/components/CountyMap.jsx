@@ -1,5 +1,5 @@
-import { Fragment, useMemo, useState } from 'react';
-import { MapContainer, TileLayer, GeoJSON, Marker, Popup, useMapEvents } from 'react-leaflet';
+import { Fragment, useEffect, useMemo, useState } from 'react';
+import { MapContainer, TileLayer, GeoJSON, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useApi, usePostJson } from '../hooks/useApi.js';
@@ -50,6 +50,15 @@ function ClickCapture({ active, onPick }) {
       if (active) onPick({ lat: e.latlng.lat, lng: e.latlng.lng });
     },
   });
+  return null;
+}
+
+function ResizeMap({ expanded }) {
+  const map = useMap();
+  useEffect(() => {
+    const timer = window.setTimeout(() => map.invalidateSize(), 0);
+    return () => window.clearTimeout(timer);
+  }, [expanded, map]);
   return null;
 }
 
@@ -139,38 +148,82 @@ function CheckPointPopup({ point, onClose, onSelectPoint }) {
   );
 }
 
-export default function CountyMap({ selectedFips, onSelectCounty }) {
+export default function CountyMap({ selectedFips, onSelectCounty, toolbarAction, backgroundMode = false }) {
   const { data: boundaries, error: boundariesError } = useApi('/api/counties/boundaries');
   const { data: stats } = useApi('/api/counties/stats');
   const [exploreMode, setExploreMode] = useState(false);
   const [checkedPoint, setCheckedPoint] = useState(null);
+  const [expanded, setExpanded] = useState(false);
 
   const flaggedCounties = useMemo(() => (stats?.counties ?? []).filter((c) => c.underserved && c.grid_feasibility), [stats]);
 
   return (
-    <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.75rem' }}>
+    <div style={expanded ? {
+      position: 'fixed',
+      inset: 0,
+      zIndex: 2000,
+      height: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      padding: '1rem',
+      background: '#ffffff',
+    } : { height: '100%', display: 'flex', flexDirection: 'column', position: 'relative' }}>
+      <div style={backgroundMode ? {
+        position: 'absolute',
+        top: '1rem',
+        right: '1rem',
+        zIndex: 1000,
+        display: 'flex',
+        alignItems: 'center',
+        flexWrap: 'wrap',
+        gap: '0.75rem',
+        padding: '0.55rem',
+        border: '1px solid var(--card-border)',
+        borderRadius: 10,
+        background: 'rgba(255, 255, 255, 0.94)',
+        boxShadow: '0 4px 16px rgba(15, 23, 42, 0.12)',
+      } : { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.75rem' }}>
         <Legend />
-        <button
-          onClick={() => {
-            setExploreMode((v) => !v);
-            setCheckedPoint(null);
-          }}
-          style={{
-            padding: '0.4rem 0.85rem',
-            borderRadius: 7,
-            border: exploreMode ? '1px solid var(--accent)' : '1px solid var(--card-border)',
-            background: exploreMode ? 'var(--accent-light)' : '#ffffff',
-            color: exploreMode ? 'var(--accent-darker)' : 'var(--fg)',
-            fontWeight: 600,
-            cursor: 'pointer',
-            fontSize: '0.8rem',
-            boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
-            transition: 'all 0.15s ease',
-          }}
-        >
-          {exploreMode ? '● Checking points (click map)' : 'Check a point'}
-        </button>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          {toolbarAction}
+          {!backgroundMode && (
+            <button
+              onClick={() => setExpanded((value) => !value)}
+              style={{
+                padding: '0.4rem 0.85rem',
+                borderRadius: 7,
+                border: '1px solid var(--card-border)',
+                background: '#ffffff',
+                color: 'var(--fg)',
+                fontWeight: 600,
+                cursor: 'pointer',
+                fontSize: '0.8rem',
+              }}
+            >
+              {expanded ? 'Exit expanded view' : 'Expand map'}
+            </button>
+          )}
+          <button
+            onClick={() => {
+              setExploreMode((v) => !v);
+              setCheckedPoint(null);
+            }}
+            style={{
+              padding: '0.4rem 0.85rem',
+              borderRadius: 7,
+              border: exploreMode ? '1px solid var(--accent)' : '1px solid var(--card-border)',
+              background: exploreMode ? 'var(--accent-light)' : '#ffffff',
+              color: exploreMode ? 'var(--accent-darker)' : 'var(--fg)',
+              fontWeight: 600,
+              cursor: 'pointer',
+              fontSize: '0.8rem',
+              boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
+              transition: 'all 0.15s ease',
+            }}
+          >
+            {exploreMode ? '● Checking points (click map)' : 'Check a point'}
+          </button>
+        </div>
       </div>
 
       {boundariesError && (
@@ -179,8 +232,9 @@ export default function CountyMap({ selectedFips, onSelectCounty }) {
         </p>
       )}
 
-      <div style={{ borderRadius: 10, overflow: 'hidden', border: '1px solid var(--card-border)', flex: 1, minHeight: 520, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
-        <MapContainer center={CA_CENTER} zoom={CA_ZOOM} style={{ width: '100%', height: '100%', minHeight: 520, background: '#e2e8f0' }}>
+      <div style={backgroundMode ? { position: 'absolute', inset: 0, overflow: 'hidden' } : { borderRadius: 10, overflow: 'hidden', border: '1px solid var(--card-border)', flex: 1, minHeight: 520, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
+        <MapContainer center={CA_CENTER} zoom={CA_ZOOM} style={{ width: '100%', height: '100%', minHeight: backgroundMode ? 0 : 520, background: '#e2e8f0' }}>
+          <ResizeMap expanded={expanded} />
           <TileLayer
             url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
@@ -258,9 +312,6 @@ export default function CountyMap({ selectedFips, onSelectCounty }) {
         </MapContainer>
       </div>
 
-      <p style={{ fontSize: '0.78rem', color: 'var(--fg-muted)', marginTop: '0.5rem' }}>
-        Click any county boundary to focus the AI Agent on that county. Green = fund charger now, Amber = fund grid upgrade first.
-      </p>
     </div>
   );
 }

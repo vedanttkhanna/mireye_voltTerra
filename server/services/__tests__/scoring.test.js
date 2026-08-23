@@ -47,6 +47,16 @@ test('flagUnderservedCounties returns nulls for an all-null input', () => {
   assert.deepEqual(flagged, []);
 });
 
+test('zero-port counties are always flagged without distorting the finite peer median', () => {
+  const { median, flagged } = flagUnderservedCounties([
+    { county_fips: 'zero', ratio: Infinity },
+    { county_fips: 'a', ratio: 10 },
+    { county_fips: 'b', ratio: 20 },
+  ], { multiplier: 2 });
+  assert.equal(median, 15);
+  assert.deepEqual(flagged.map((c) => c.county_fips), ['zero']);
+});
+
 // --- computeGridFeasibilityScore ---
 
 function gridFields({ distance, voltage, status, redundant, osmDistance, osmVoltage } = {}) {
@@ -190,6 +200,14 @@ test('scoreCountyGridFeasibility uses the plain centroid when no demand_centroid
   const { primary, usedDemandCentroid } = scoreCountyGridFeasibility([centroid]);
   assert.equal(usedDemandCentroid, false);
   assert.equal(primary.point, centroid);
+});
+
+test('scoreCountyGridFeasibility prioritizes the Census population center over a legacy centroid', () => {
+  const legacy = { type: 'centroid', grid_fields: gridFields({ distance: 100, voltage: 230, status: 'IN SERVICE' }) };
+  const populationCenter = { type: 'population_center', grid_fields: gridFields({ distance: 9000, voltage: 230, status: 'IN SERVICE' }) };
+  const { primary, usedPopulationCenter } = scoreCountyGridFeasibility([legacy, populationCenter]);
+  assert.equal(primary.point, populationCenter);
+  assert.equal(usedPopulationCenter, true);
 });
 
 // --- bucketCounty ---
