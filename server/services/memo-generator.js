@@ -2,13 +2,12 @@
 // English, cited justification memo via Mireye's /v1/ask — "ready to
 // attach to a BEAD or NEVI funding request," per the spec.
 
-import { readFile, mkdir } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from '../config.js';
 import { mireye } from './mireye.js';
-import { writeJsonAtomic } from '../lib/atomic-json.js';
-import { withOperationLock } from '../lib/operation-lock.js';
+import { writeJsonAtomic } from '../lib/safe-persistence.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CACHE_DIR = path.join(__dirname, '../data/cache');
@@ -31,28 +30,19 @@ export function buildMemoQuestion(scoredCounty) {
       ? `${(inputs.substation_distance_m / METERS_PER_MILE).toFixed(1)} mi away at ` +
         `${inputs.substation_voltage_kv != null ? `${inputs.substation_voltage_kv}kV` : 'an unpublished voltage'}, ` +
         `status ${inputs.substation_status ?? 'not published'}`
-      : 'no substation found within the search radius of the county centroid';
-
-  const requestedOutcome = scoredCounty.bucket === 'insufficient_data'
-    ? `The available substation evidence is insufficient for a funding verdict. Identify the missing evidence and ` +
-      `recommend the next verification step; do not infer that a grid upgrade is required from missing data alone.`
-    : `Based on this, is the local electrical grid infrastructure adequate to support a new DC fast charging ` +
-      `deployment here without a utility upgrade first, or does this location need grid capacity work before a ` +
-      `charger can be sited? Give a clear recommendation.`;
-
-  const ratioDescription = scoredCounty.zero_charging_ports
-    ? 'registered EV demand but no public Level 2 or DC-fast charging ports'
-    : `${driver_to_plug_ratio.toFixed(1)} registered EVs per public charging port`;
+      : 'no substation found within the search radius of the county population center';
 
   return (
-    `${county_name} shows ${ratioDescription} ` +
+    `${county_name} shows ${driver_to_plug_ratio.toFixed(1)} registered EVs per public charging port ` +
     `(Level 2 + DC fast). The nearest electric substation to the county's population center is ${substationDesc}. ` +
-    `${requestedOutcome} Cite your sources.`
+    `Based on this, is the local electrical grid infrastructure adequate to support a new DC fast charging ` +
+    `deployment here without a utility upgrade first, or does this location need grid capacity work before a ` +
+    `charger can be sited? Give a clear recommendation and cite your sources.`
   );
 }
 
 /**
- * Calls /v1/ask at the county's centroid (the same point scoring.js used
+ * Calls /v1/ask at the county's population center (the same point scoring.js used
  * to decide the bucket, so the memo and the bucket are talking about the
  * same location) and returns a memo record. Requires the county to have
  * gone through scoring — `bucketCounty` runs on flagged counties only, and
@@ -69,6 +59,9 @@ export async function generateCountyMemo(scoredCounty, { askImpl = mireye.ask.bi
   const { lat, lng } = scoredCounty.grid_feasibility.sampled_at;
   const question = buildMemoQuestion(scoredCounty);
   const response = await askImpl({ lat, lng, question, includeTrace: false });
+  if (!response || typeof response.answer !== 'string' || !Array.isArray(response.citations) || !Array.isArray(response.data_gaps)) {
+    throw new Error('Mireye ask response has an invalid schema');
+  }
 
   return {
     county_fips: scoredCounty.county_fips,
@@ -92,9 +85,12 @@ async function loadScoredCounties(state) {
 async function loadExistingMemos(state) {
   try {
     const raw = await readFile(path.join(CACHE_DIR, `memos-${state}.json`), 'utf8');
-    return JSON.parse(raw).memos ?? [];
-  } catch {
-    return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed.memos)) throw new Error(`Invalid memos-${state}.json schema`);
+    return parsed.memos;
+  } catch (err) {
+    if (err.code === 'ENOENT') return [];
+    throw err;
   }
 }
 
@@ -105,7 +101,6 @@ async function persistMemos(state, memos) {
     memo_count: memos.length,
     memos,
   };
-  await mkdir(CACHE_DIR, { recursive: true });
   const outPath = path.join(CACHE_DIR, `memos-${state}.json`);
   await writeJsonAtomic(outPath, output);
   return { outPath, ...output };
@@ -120,43 +115,39 @@ async function persistMemos(state, memos) {
  * across every flagged county on every request.
  */
 export async function generateMemoForCounty(fips, { state = config.pilotState } = {}) {
-  return withOperationLock(`memos:${state}`, async () => {
-    const scored = await loadScoredCounties(state);
-    const county = scored.counties.find((c) => c.county_fips === fips);
-    if (!county) throw new Error(`No county with FIPS ${fips} in scored-counties-${state}.json`);
+  const scored = await loadScoredCounties(state);
+  const county = scored.counties.find((c) => c.county_fips === fips);
+  if (!county) throw new Error(`No county with FIPS ${fips} in scored-counties-${state}.json`);
 
-    const memo = await generateCountyMemo(county);
-    const existing = await loadExistingMemos(state);
-    const merged = [...existing.filter((m) => m.county_fips !== fips), memo].sort((a, b) =>
-      a.county_fips.localeCompare(b.county_fips)
-    );
+  const memo = await generateCountyMemo(county);
+  const existing = await loadExistingMemos(state);
+  const merged = [...existing.filter((m) => m.county_fips !== fips), memo].sort((a, b) =>
+    a.county_fips.localeCompare(b.county_fips)
+  );
 
-    await persistMemos(state, merged);
-    return memo;
-  });
+  await persistMemos(state, merged);
+  return memo;
 }
 
 /** Generates memos for every currently-flagged county that doesn't already have one. */
 export async function generateAllMemos({ state = config.pilotState, regenerate = false } = {}) {
-  return withOperationLock(`memos:${state}`, async () => {
-    const scored = await loadScoredCounties(state);
-    const flagged = scored.counties.filter((c) => c.underserved && c.grid_feasibility);
-    const existing = await loadExistingMemos(state);
-    const existingFips = new Set(existing.map((m) => m.county_fips));
+  const scored = await loadScoredCounties(state);
+  const flagged = scored.counties.filter((c) => c.underserved && c.grid_feasibility);
+  const existing = await loadExistingMemos(state);
+  const existingFips = new Set(existing.map((m) => m.county_fips));
 
-    const toGenerate = regenerate ? flagged : flagged.filter((c) => !existingFips.has(c.county_fips));
+  const toGenerate = regenerate ? flagged : flagged.filter((c) => !existingFips.has(c.county_fips));
 
-    const newMemos = [];
-    for (const county of toGenerate) {
-      newMemos.push(await generateCountyMemo(county));
-    }
+  const newMemos = [];
+  for (const county of toGenerate) {
+    newMemos.push(await generateCountyMemo(county));
+  }
 
-    const merged = [...existing.filter((m) => !toGenerate.some((c) => c.county_fips === m.county_fips)), ...newMemos].sort(
-      (a, b) => a.county_fips.localeCompare(b.county_fips)
-    );
+  const merged = [...existing.filter((m) => regenerate || !toGenerate.some((c) => c.county_fips === m.county_fips)), ...newMemos].sort(
+    (a, b) => a.county_fips.localeCompare(b.county_fips)
+  );
 
-    return persistMemos(state, merged);
-  });
+  return persistMemos(state, merged);
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {

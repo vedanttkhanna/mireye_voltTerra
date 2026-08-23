@@ -1,356 +1,416 @@
 {
   "state": "CA",
-  "fetched_at": "2026-08-20T14:33:57.016Z",
-  "source": "US Census Bureau 2020 Gazetteer Files — county internal points",
-  "source_url": "https://www2.census.gov/geo/docs/maps-data/data/gazetteer/2020_Gazetteer/2020_Gaz_counties_national.zip",
+  "fetched_at": "2026-08-22T20:17:50.857Z",
+  "data_vintage": "2020 Census",
+  "weighting": "population",
+  "source": "US Census Bureau 2020 Mean Centers of Population by County",
+  "source_url": "https://www2.census.gov/geo/docs/reference/cenpop2020/county/CenPop2020_Mean_CO06.txt",
   "counties": [
     {
       "county_fips": "06001",
       "county_name": "Alameda County",
-      "lat": 37.647139,
-      "lng": -121.912488
+      "population": 1682353,
+      "lat": 37.706599,
+      "lng": -122.098766
     },
     {
       "county_fips": "06003",
       "county_name": "Alpine County",
-      "lat": 38.621783,
-      "lng": -119.798352
+      "population": 1204,
+      "lat": 38.728485,
+      "lng": -119.847822
     },
     {
       "county_fips": "06005",
       "county_name": "Amador County",
-      "lat": 38.443549,
-      "lng": -120.653858
+      "population": 40474,
+      "lat": 38.395906,
+      "lng": -120.778038
     },
     {
       "county_fips": "06007",
       "county_name": "Butte County",
-      "lat": 39.665336,
-      "lng": -121.603209
+      "population": 211632,
+      "lat": 39.658926,
+      "lng": -121.72651
     },
     {
       "county_fips": "06009",
       "county_name": "Calaveras County",
-      "lat": 38.191068,
-      "lng": -120.554107
+      "population": 45292,
+      "lat": 38.157342,
+      "lng": -120.645222
     },
     {
       "county_fips": "06011",
       "county_name": "Colusa County",
-      "lat": 39.177739,
-      "lng": -122.237563
+      "population": 21839,
+      "lat": 39.153446,
+      "lng": -122.083801
     },
     {
       "county_fips": "06013",
       "county_name": "Contra Costa County",
-      "lat": 37.919479,
-      "lng": -121.951543
+      "population": 1165927,
+      "lat": 37.93501,
+      "lng": -122.024961
     },
     {
       "county_fips": "06015",
       "county_name": "Del Norte County",
-      "lat": 41.749903,
-      "lng": -123.980998
+      "population": 27743,
+      "lat": 41.790833,
+      "lng": -124.164236
     },
     {
       "county_fips": "06017",
       "county_name": "El Dorado County",
-      "lat": 38.785612,
-      "lng": -120.534225
+      "population": 191185,
+      "lat": 38.741021,
+      "lng": -120.761446
     },
     {
       "county_fips": "06019",
       "county_name": "Fresno County",
-      "lat": 36.761006,
-      "lng": -119.655019
+      "population": 1008654,
+      "lat": 36.743848,
+      "lng": -119.765291
     },
     {
       "county_fips": "06021",
       "county_name": "Glenn County",
-      "lat": 39.602546,
-      "lng": -122.4017
+      "population": 28917,
+      "lat": 39.665777,
+      "lng": -122.179287
     },
     {
       "county_fips": "06023",
       "county_name": "Humboldt County",
-      "lat": 40.706655,
-      "lng": -123.926176
+      "population": 136463,
+      "lat": 40.757636,
+      "lng": -124.088127
     },
     {
       "county_fips": "06025",
       "county_name": "Imperial County",
-      "lat": 33.040814,
-      "lng": -115.3554
+      "population": 179702,
+      "lat": 32.841599,
+      "lng": -115.540049
     },
     {
       "county_fips": "06027",
       "county_name": "Inyo County",
-      "lat": 36.56216,
-      "lng": -117.404209
+      "population": 19016,
+      "lat": 37.171422,
+      "lng": -118.268567
     },
     {
       "county_fips": "06029",
       "county_name": "Kern County",
-      "lat": 35.346629,
-      "lng": -118.729506
+      "population": 909235,
+      "lat": 35.369809,
+      "lng": -118.941786
     },
     {
       "county_fips": "06031",
       "county_name": "Kings County",
-      "lat": 36.072478,
-      "lng": -119.81553
+      "population": 152486,
+      "lat": 36.252657,
+      "lng": -119.726922
     },
     {
       "county_fips": "06033",
       "county_name": "Lake County",
-      "lat": 39.094802,
-      "lng": -122.746757
+      "population": 68163,
+      "lat": 38.976233,
+      "lng": -122.732922
     },
     {
       "county_fips": "06035",
       "county_name": "Lassen County",
-      "lat": 40.715287,
-      "lng": -120.621223
+      "population": 32730,
+      "lat": 40.393749,
+      "lng": -120.584467
     },
     {
       "county_fips": "06037",
       "county_name": "Los Angeles County",
-      "lat": 34.196398,
-      "lng": -118.261862
+      "population": 10014009,
+      "lat": 34.067886,
+      "lng": -118.24599
     },
     {
       "county_fips": "06039",
       "county_name": "Madera County",
-      "lat": 37.209821,
-      "lng": -119.749802
+      "population": 156255,
+      "lat": 37.037074,
+      "lng": -120.009796
     },
     {
       "county_fips": "06041",
       "county_name": "Marin County",
-      "lat": 38.051367,
-      "lng": -122.746396
+      "population": 262321,
+      "lat": 37.986474,
+      "lng": -122.546657
     },
     {
       "county_fips": "06043",
       "county_name": "Mariposa County",
-      "lat": 37.574343,
-      "lng": -119.911721
+      "population": 17131,
+      "lat": 37.532076,
+      "lng": -119.971401
     },
     {
       "county_fips": "06045",
       "county_name": "Mendocino County",
-      "lat": 39.432388,
-      "lng": -123.442881
+      "population": 91601,
+      "lat": 39.285646,
+      "lng": -123.394154
     },
     {
       "county_fips": "06047",
       "county_name": "Merced County",
-      "lat": 37.194806,
-      "lng": -120.722802
+      "population": 281202,
+      "lat": 37.274812,
+      "lng": -120.628944
     },
     {
       "county_fips": "06049",
       "county_name": "Modoc County",
-      "lat": 41.592918,
-      "lng": -120.71837
+      "population": 8700,
+      "lat": 41.521665,
+      "lng": -120.631201
     },
     {
       "county_fips": "06051",
       "county_name": "Mono County",
-      "lat": 37.915836,
-      "lng": -118.875167
+      "population": 13195,
+      "lat": 37.773016,
+      "lng": -118.970627
     },
     {
       "county_fips": "06053",
       "county_name": "Monterey County",
-      "lat": 36.240104,
-      "lng": -121.315578
+      "population": 439035,
+      "lat": 36.614681,
+      "lng": -121.646692
     },
     {
       "county_fips": "06055",
       "county_name": "Napa County",
-      "lat": 38.5071,
-      "lng": -122.325904
+      "population": 138019,
+      "lat": 38.325108,
+      "lng": -122.319983
     },
     {
       "county_fips": "06057",
       "county_name": "Nevada County",
-      "lat": 39.297508,
-      "lng": -120.771343
+      "population": 102241,
+      "lat": 39.220021,
+      "lng": -120.915206
     },
     {
       "county_fips": "06059",
       "county_name": "Orange County",
-      "lat": 33.675687,
-      "lng": -117.777207
+      "population": 3186989,
+      "lat": 33.732683,
+      "lng": -117.858773
     },
     {
       "county_fips": "06061",
       "county_name": "Placer County",
-      "lat": 39.062032,
-      "lng": -120.722718
+      "population": 404739,
+      "lat": 38.839708,
+      "lng": -121.198379
     },
     {
       "county_fips": "06063",
       "county_name": "Plumas County",
-      "lat": 39.992295,
-      "lng": -120.824371
+      "population": 19790,
+      "lat": 39.981152,
+      "lng": -120.821957
     },
     {
       "county_fips": "06065",
       "county_name": "Riverside County",
-      "lat": 33.729828,
-      "lng": -116.002239
+      "population": 2418185,
+      "lat": 33.799274,
+      "lng": -117.076969
     },
     {
       "county_fips": "06067",
       "county_name": "Sacramento County",
-      "lat": 38.450136,
-      "lng": -121.344329
+      "population": 1585055,
+      "lat": 38.568337,
+      "lng": -121.381235
     },
     {
       "county_fips": "06069",
       "county_name": "San Benito County",
-      "lat": 36.611651,
-      "lng": -121.085811
+      "population": 64209,
+      "lat": 36.843074,
+      "lng": -121.402614
     },
     {
       "county_fips": "06071",
       "county_name": "San Bernardino County",
-      "lat": 34.856661,
-      "lng": -116.181571
+      "population": 2181654,
+      "lat": 34.190969,
+      "lng": -117.359766
     },
     {
       "county_fips": "06073",
       "county_name": "San Diego County",
-      "lat": 33.023604,
-      "lng": -116.776117
+      "population": 3298634,
+      "lat": 32.884418,
+      "lng": -117.112348
     },
     {
       "county_fips": "06075",
       "county_name": "San Francisco County",
-      "lat": 37.727239,
-      "lng": -123.032229
+      "population": 873965,
+      "lat": 37.760569,
+      "lng": -122.436499
     },
     {
       "county_fips": "06077",
       "county_name": "San Joaquin County",
-      "lat": 37.934982,
-      "lng": -121.272244
+      "population": 779233,
+      "lat": 37.924541,
+      "lng": -121.302289
     },
     {
       "county_fips": "06079",
       "county_name": "San Luis Obispo County",
-      "lat": 35.388189,
-      "lng": -120.448897
+      "population": 282424,
+      "lat": 35.341822,
+      "lng": -120.665804
     },
     {
       "county_fips": "06081",
       "county_name": "San Mateo County",
-      "lat": 37.414672,
-      "lng": -122.371546
+      "population": 764442,
+      "lat": 37.563575,
+      "lng": -122.339869
     },
     {
       "county_fips": "06083",
       "county_name": "Santa Barbara County",
-      "lat": 34.536677,
-      "lng": -120.038364
+      "population": 448229,
+      "lat": 34.645128,
+      "lng": -120.1029
     },
     {
       "county_fips": "06085",
       "county_name": "Santa Clara County",
-      "lat": 37.221614,
-      "lng": -121.68954
+      "population": 1936259,
+      "lat": 37.315518,
+      "lng": -121.91109
     },
     {
       "county_fips": "06087",
       "county_name": "Santa Cruz County",
-      "lat": 37.012347,
-      "lng": -122.007789
+      "population": 270861,
+      "lat": 36.986338,
+      "lng": -121.938739
     },
     {
       "county_fips": "06089",
       "county_name": "Shasta County",
-      "lat": 40.760514,
-      "lng": -122.043556
+      "population": 182155,
+      "lat": 40.578348,
+      "lng": -122.300147
     },
     {
       "county_fips": "06091",
       "county_name": "Sierra County",
-      "lat": 39.576925,
-      "lng": -120.521993
+      "population": 3236,
+      "lat": 39.607184,
+      "lng": -120.421856
     },
     {
       "county_fips": "06093",
       "county_name": "Siskiyou County",
-      "lat": 41.587986,
-      "lng": -122.533287
+      "population": 44076,
+      "lat": 41.572743,
+      "lng": -122.493725
     },
     {
       "county_fips": "06095",
       "county_name": "Solano County",
-      "lat": 38.267226,
-      "lng": -121.939594
+      "population": 453491,
+      "lat": 38.236295,
+      "lng": -122.067272
     },
     {
       "county_fips": "06097",
       "county_name": "Sonoma County",
-      "lat": 38.525182,
-      "lng": -122.92611
+      "population": 488863,
+      "lat": 38.412281,
+      "lng": -122.720368
     },
     {
       "county_fips": "06099",
       "county_name": "Stanislaus County",
-      "lat": 37.562316,
-      "lng": -121.002831
+      "population": 552878,
+      "lat": 37.618447,
+      "lng": -120.955882
     },
     {
       "county_fips": "06101",
       "county_name": "Sutter County",
-      "lat": 39.03619,
-      "lng": -121.70394
+      "population": 99633,
+      "lat": 39.137197,
+      "lng": -121.643973
     },
     {
       "county_fips": "06103",
       "county_name": "Tehama County",
-      "lat": 40.126157,
-      "lng": -122.232274
+      "population": 65829,
+      "lat": 40.114795,
+      "lng": -122.219057
     },
     {
       "county_fips": "06105",
       "county_name": "Trinity County",
-      "lat": 40.647858,
-      "lng": -123.114666
+      "population": 16112,
+      "lat": 40.629982,
+      "lng": -123.096608
     },
     {
       "county_fips": "06107",
       "county_name": "Tulare County",
-      "lat": 36.228834,
-      "lng": -118.781055
+      "population": 473117,
+      "lat": 36.254134,
+      "lng": -119.23454
     },
     {
       "county_fips": "06109",
       "county_name": "Tuolumne County",
-      "lat": 38.021434,
-      "lng": -119.964733
+      "population": 55620,
+      "lat": 37.972006,
+      "lng": -120.325224
     },
     {
       "county_fips": "06111",
       "county_name": "Ventura County",
-      "lat": 34.358748,
-      "lng": -119.133145
+      "population": 843843,
+      "lat": 34.242809,
+      "lng": -119.025486
     },
     {
       "county_fips": "06113",
       "county_name": "Yolo County",
-      "lat": 38.679609,
-      "lng": -121.90275
+      "population": 216403,
+      "lat": 38.598163,
+      "lng": -121.718874
     },
     {
       "county_fips": "06115",
       "county_name": "Yuba County",
-      "lat": 39.27013,
-      "lng": -121.344259
+      "population": 81575,
+      "lat": 39.131905,
+      "lng": -121.510607
     }
   ]
 }

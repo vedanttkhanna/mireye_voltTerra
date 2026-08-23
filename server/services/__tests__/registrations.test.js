@@ -42,3 +42,8 @@ test('a county with only one year of data has null yoy_growth_rate', () => {
   const { counties } = aggregateRegistrationsByCounty(rows, { state: 'CA' });
   assert.equal(counties[0].yoy_growth_rate, null);
 });
+
+test('parseRegistrationsCsv rejects invalid dates in EV records', () => {
+  const csv = 'Date,ZIP Code,Fuel,Vehicles\nnot-a-date,90001,Battery Electric,10\n';
+  assert.throws(() => parseRegistrationsCsv(csv), /invalid EV record date/);
+});

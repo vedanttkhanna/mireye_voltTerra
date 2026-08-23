@@ -12,11 +12,11 @@
 // disagreements — it does not (and cannot) prove VOLT-TERRA's ratio-based
 // signal is "the same as" NEVI's corridor-based one. See summarizeBacktest.
 
-import { mkdir, readFile } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from '../config.js';
-import { writeJsonAtomic } from '../lib/atomic-json.js';
+import { writeJsonAtomic } from '../lib/safe-persistence.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CACHE_DIR = path.join(__dirname, '../data/cache');
@@ -61,6 +61,9 @@ export async function ingestNeviAwards({ state = config.pilotState, fetchImpl = 
   if (!res.ok) throw new Error(`NEVI FeatureServer query failed: ${res.status}`);
   const data = await res.json();
   if (data.error) throw new Error(`NEVI FeatureServer error: ${JSON.stringify(data.error)}`);
+  if (!Array.isArray(data.features) || data.features.some((f) => !f?.attributes || typeof f.attributes.County !== 'string')) {
+    throw new Error('NEVI FeatureServer returned an invalid feature schema');
+  }
 
   const rows = data.features.map((f) => f.attributes);
   const counties = aggregateNeviAwardsByCounty(rows);
@@ -75,7 +78,6 @@ export async function ingestNeviAwards({ state = config.pilotState, fetchImpl = 
     counties,
   };
 
-  await mkdir(CACHE_DIR, { recursive: true });
   const outPath = path.join(CACHE_DIR, `nevi-awards-${state}.json`);
   await writeJsonAtomic(outPath, output);
   return { outPath, ...output };
@@ -154,7 +156,6 @@ export async function runNeviBacktest({ state = config.pilotState } = {}) {
     counties: joined,
   };
 
-  await mkdir(CACHE_DIR, { recursive: true });
   const outPath = path.join(CACHE_DIR, `backtest-${state}.json`);
   await writeJsonAtomic(outPath, output);
   return { outPath, ...output };

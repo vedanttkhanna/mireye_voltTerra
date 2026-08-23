@@ -1,10 +1,10 @@
-import { readFile, mkdir } from 'node:fs/promises';
+import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from '../config.js';
-import { writeJsonAtomic } from '../lib/atomic-json.js';
 import { mireye } from './mireye.js';
 import { listCountiesForState } from '../lib/zip-county.js';
+import { writeJsonAtomic } from '../lib/safe-persistence.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CACHE_DIR = path.join(__dirname, '../data/cache');
@@ -110,7 +110,6 @@ export async function verifyPilotSetup({ state = config.pilotState } = {}) {
     ok: authCheck.ok && presetCheck.ok && sampleCheck.ok && coverageCheck.ok,
   };
 
-  await mkdir(CACHE_DIR, { recursive: true });
   const outPath = path.join(CACHE_DIR, `pilot-setup-verification-${state}.json`);
   await writeJsonAtomic(outPath, report);
 

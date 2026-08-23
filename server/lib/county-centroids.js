@@ -5,8 +5,7 @@ import path from 'node:path';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 // Built by server/services/county-centroids.js from the Census Bureau's
-// 2020 county gazetteer file. See that file for the "internal point vs.
-// bounding-box centroid" rationale.
+// 2020 county mean centers of population.
 const CENTROID_PATHS = {
   CA: path.join(__dirname, '../data/county-centroids-CA.json'),
 };
@@ -25,7 +24,7 @@ function loadCentroids(state) {
   return byFips;
 }
 
-/** Returns {county_fips, county_name, lat, lng} for a county, or null if unknown. */
+/** Returns a county's population-weighted center, or null if unknown. */
 export function getCountyCentroid(fips, state = 'CA') {
   return loadCentroids(state).get(fips) ?? null;
 }

@@ -17,8 +17,8 @@ test('computeDriverToPlugRatio divides registrations by charger count', () => {
   assert.equal(computeDriverToPlugRatio({ registrations: 3326, chargerCount: 183 }), 3326 / 183);
 });
 
-test('computeDriverToPlugRatio returns null when chargerCount is zero', () => {
-  assert.equal(computeDriverToPlugRatio({ registrations: 100, chargerCount: 0 }), null);
+test('computeDriverToPlugRatio marks registered EVs with zero public ports as unbounded demand', () => {
+  assert.equal(computeDriverToPlugRatio({ registrations: 100, chargerCount: 0 }), Infinity);
 });
 
 // --- flagUnderservedCounties ---
@@ -47,10 +47,14 @@ test('flagUnderservedCounties returns nulls for an all-null input', () => {
   assert.deepEqual(flagged, []);
 });
 
-test('flagUnderservedCounties always flags EV counties with zero charging ports', () => {
-  const zeroPort = { county_fips: 'zero', ratio: null, chargerCount: 0, latestRegistrations: 50 };
-  const { flagged } = flagUnderservedCounties([zeroPort, { ratio: 10, chargerCount: 10, latestRegistrations: 100 }]);
-  assert.deepEqual(flagged.map((county) => county.county_fips), ['zero']);
+test('zero-port counties are always flagged without distorting the finite peer median', () => {
+  const { median, flagged } = flagUnderservedCounties([
+    { county_fips: 'zero', ratio: Infinity },
+    { county_fips: 'a', ratio: 10 },
+    { county_fips: 'b', ratio: 20 },
+  ], { multiplier: 2 });
+  assert.equal(median, 15);
+  assert.deepEqual(flagged.map((c) => c.county_fips), ['zero']);
 });
 
 // --- computeGridFeasibilityScore ---
@@ -115,7 +119,6 @@ test('computeGridFeasibilityScore fails outright when neither EIA nor OSM found 
   assert.equal(result.score, 0);
   assert.equal(result.inputs.substation_source, null);
   assert.ok(result.gate_failures.includes('no_substation_found'));
-  assert.equal(result.data_status, 'insufficient');
 });
 
 test('computeGridFeasibilityScore disqualifies an explicitly non-in-service substation', () => {
@@ -178,25 +181,33 @@ test('scoreCountyGridFeasibility handles an empty sample point list', () => {
   assert.equal(usedFallback, true);
 });
 
-test('scoreCountyGridFeasibility prefers the population center over the county internal point', () => {
+test('scoreCountyGridFeasibility does not treat the existing-charger mean as demand', () => {
   const desertCentroid = { type: 'centroid', grid_fields: gridFields({}) }; // no substation found
-  const populationCenter = {
-    type: 'population_center',
+  const demandCentroid = {
+    type: 'demand_centroid',
     grid_fields: gridFields({ distance: 1000, voltage: 115, status: 'IN SERVICE' }),
   };
 
-  const { primary, usedPopulationCenter } = scoreCountyGridFeasibility([desertCentroid, populationCenter]);
+  const { primary, usedDemandCentroid } = scoreCountyGridFeasibility([desertCentroid, demandCentroid]);
 
-  assert.equal(usedPopulationCenter, true);
-  assert.equal(primary.point, populationCenter);
-  assert.equal(primary.feasibility.passes_gates, true);
+  assert.equal(usedDemandCentroid, false);
+  assert.equal(primary.point, desertCentroid);
+  assert.equal(primary.feasibility.passes_gates, false);
 });
 
-test('scoreCountyGridFeasibility uses the internal point when no population center is present', () => {
+test('scoreCountyGridFeasibility uses the plain centroid when no demand_centroid point is present', () => {
   const centroid = { type: 'centroid', grid_fields: gridFields({ distance: 500, voltage: 230, status: 'IN SERVICE' }) };
-  const { primary, usedPopulationCenter } = scoreCountyGridFeasibility([centroid]);
-  assert.equal(usedPopulationCenter, false);
+  const { primary, usedDemandCentroid } = scoreCountyGridFeasibility([centroid]);
+  assert.equal(usedDemandCentroid, false);
   assert.equal(primary.point, centroid);
+});
+
+test('scoreCountyGridFeasibility prioritizes the Census population center over a legacy centroid', () => {
+  const legacy = { type: 'centroid', grid_fields: gridFields({ distance: 100, voltage: 230, status: 'IN SERVICE' }) };
+  const populationCenter = { type: 'population_center', grid_fields: gridFields({ distance: 9000, voltage: 230, status: 'IN SERVICE' }) };
+  const { primary, usedPopulationCenter } = scoreCountyGridFeasibility([legacy, populationCenter]);
+  assert.equal(primary.point, populationCenter);
+  assert.equal(usedPopulationCenter, true);
 });
 
 // --- bucketCounty ---
@@ -206,11 +217,11 @@ test('bucketCounty maps passing gates to fund_charger_now', () => {
 });
 
 test('bucketCounty maps failing gates to fund_grid_upgrade_first', () => {
-  assert.equal(bucketCounty({ passes_gates: false, data_status: 'sufficient' }), 'fund_grid_upgrade_first');
+  assert.equal(bucketCounty({ passes_gates: false }), 'fund_grid_upgrade_first');
 });
 
-test('bucketCounty sends missing decision data to review', () => {
-  assert.equal(bucketCounty({ passes_gates: false, data_status: 'insufficient' }), 'insufficient_data');
+test('bucketCounty maps missing physical evidence to insufficient_data', () => {
+  assert.equal(bucketCounty({ passes_gates: false, data_sufficient: false }), 'insufficient_data');
 });
 
 test('bucketCounty throws without a feasibility result', () => {

@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { MireyeClient, MireyeApiError } from '../mireye.js';
+import { MireyeClient, MireyeApiError, parseRetryAfter } from '../mireye.js';
 
 function jsonResponse(body, { status = 200, headers = {} } = {}) {
   return new Response(JSON.stringify(body), { status, headers });
@@ -49,9 +49,11 @@ test('fetchBatch rejects more than 25 locations without calling the network', as
 
 test('fetchBatchChunked splits >25 locations into multiple <=25 calls', async () => {
   const callSizes = [];
+  const idempotencyKeys = [];
   const fetchImpl = async (_url, init) => {
     const body = JSON.parse(init.body);
     callSizes.push(body.locations.length);
+    idempotencyKeys.push(init.headers['Idempotency-Key']);
     return jsonResponse({ results: body.locations.map(() => ({ ok: true })) });
   };
   const client = new MireyeClient({ apiKey: 'k', baseUrl: 'https://api.example.com', fetchImpl });
@@ -61,6 +63,14 @@ test('fetchBatchChunked splits >25 locations into multiple <=25 calls', async ()
 
   assert.deepEqual(callSizes, [25, 25, 10]);
   assert.equal(results.length, 60);
+  assert.equal(new Set(idempotencyKeys).size, 3);
+  assert.ok(idempotencyKeys.every(Boolean));
+});
+
+test('parseRetryAfter supports seconds and HTTP dates', () => {
+  const now = Date.parse('2026-08-22T12:00:00Z');
+  assert.equal(parseRetryAfter('3', now), 3000);
+  assert.equal(parseRetryAfter('Sat, 22 Aug 2026 12:00:05 GMT', now), 5000);
 });
 
 test('retries on 429 respecting Retry-After, then succeeds', async () => {

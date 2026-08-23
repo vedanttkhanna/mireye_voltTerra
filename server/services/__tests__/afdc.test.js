@@ -42,6 +42,14 @@ test('missing EVSE-count fields default to zero rather than NaN', () => {
   assert.equal(la.level1_ports, 0);
 });
 
+test('numeric port-count strings are normalized before aggregation', () => {
+  const { counties } = aggregateStationsByCounty([
+    { id: 5, zip: '90001', ev_level2_evse_num: '2' },
+    { id: 6, zip: '90002', ev_level2_evse_num: '3' },
+  ], { state: 'CA' });
+  assert.equal(counties[0].level2_ports, 5);
+});
+
 test('collects corridor_points from stations that carry coordinates', () => {
   const withCoords = [
     { id: 1, zip: '90001', latitude: 34.0, longitude: -118.2 },
@@ -52,6 +60,25 @@ test('collects corridor_points from stations that carry coordinates', () => {
   const la = counties.find((c) => c.county_name === 'Los Angeles County');
   assert.equal(la.corridor_points.length, 2);
   assert.deepEqual(la.corridor_points[0], { id: 1, station_name: undefined, lat: 34.0, lng: -118.2 });
+});
+
+test('aggregation does not label the existing-charger mean as demand', () => {
+  const withCoords = [
+    { id: 1, zip: '90001', latitude: 34.0, longitude: -118.0 },
+    { id: 2, zip: '90001', latitude: 34.2, longitude: -118.2 },
+    { id: 3, zip: '90001', latitude: 34.4, longitude: -118.4 },
+    { id: 4, zip: '90001', latitude: 34.6, longitude: -118.6 },
+  ];
+  const { counties } = aggregateStationsByCounty(withCoords, { state: 'CA' });
+  const la = counties.find((c) => c.county_name === 'Los Angeles County');
+  assert.equal(la.corridor_points.length, 3); // truncated per CORRIDOR_SAMPLE_SIZE
+  assert.equal('demand_centroid' in la, false);
+});
+
+test('aggregation omits demand_centroid when stations lack coordinates', () => {
+  const { counties } = aggregateStationsByCounty([{ id: 1, zip: '90001' }], { state: 'CA' });
+  const la = counties.find((c) => c.county_name === 'Los Angeles County');
+  assert.equal('demand_centroid' in la, false);
 });
 
 test('pickEvenlySpaced returns the whole list when under the max', () => {

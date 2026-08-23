@@ -1,13 +1,13 @@
 export function formatRatio(ratio) {
-  return ratio == null ? '—' : ratio.toFixed(1);
+  return ratio == null ? '-' : ratio.toFixed(1);
 }
 
 export function formatNumber(n) {
-  return n == null ? '—' : n.toLocaleString();
+  return n == null ? '-' : n.toLocaleString();
 }
 
 export function formatDistance(meters) {
-  if (meters == null) return '—';
+  if (meters == null) return '-';
   return `${(meters / 1609.34).toFixed(1)} mi`;
 }
 
@@ -19,7 +19,7 @@ export function formatBucket(bucket) {
 }
 
 export function formatTimestamp(iso) {
-  if (!iso) return '—';
+  if (!iso) return '-';
   return new Date(iso).toLocaleString(undefined, {
     dateStyle: 'medium',
     timeStyle: 'short',

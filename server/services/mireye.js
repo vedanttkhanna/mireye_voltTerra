@@ -1,8 +1,9 @@
 import { config } from '../config.js';
+import { createHash } from 'node:crypto';
 
 const MAX_BATCH_LOCATIONS = 25;
 const RATE_LIMIT_PER_MINUTE = 60;
-const RETRYABLE_STATUS = new Set([429, 502, 504]);
+const RETRYABLE_STATUS = new Set([429, 502, 503, 504]);
 
 export class MireyeApiError extends Error {
   constructor(message, { status, code, body } = {}) {
@@ -45,35 +46,64 @@ function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+export function parseRetryAfter(value, now = Date.now()) {
+  if (!value) return null;
+  const seconds = Number(value);
+  if (Number.isFinite(seconds)) return Math.max(0, seconds * 1000);
+  const date = Date.parse(value);
+  return Number.isFinite(date) ? Math.max(0, date - now) : null;
+}
+
+function stableIdempotencyKey(value) {
+  return `volt-terra-${createHash('sha256').update(JSON.stringify(value)).digest('hex').slice(0, 32)}`;
+}
+
 export class MireyeClient {
   constructor({
     apiKey = config.mireyeApiKey,
     baseUrl = config.mireyeBaseUrl,
     maxRetries = 4,
     fetchImpl = fetch,
+    requestTimeoutMs = 30_000,
+    askTimeoutMs = 110_000,
+    randomImpl = Math.random,
   } = {}) {
     this.apiKey = apiKey;
     this.baseUrl = baseUrl.replace(/\/$/, '');
     this.maxRetries = maxRetries;
     this.fetchImpl = fetchImpl;
+    this.requestTimeoutMs = requestTimeoutMs;
+    this.askTimeoutMs = askTimeoutMs;
+    this.randomImpl = randomImpl;
     this.limiter = new RateLimiter();
   }
 
-  async _request(method, path, { body, headers = {}, auth = true } = {}) {
+  async _request(method, path, { body, headers = {}, auth = true, timeoutMs = this.requestTimeoutMs } = {}) {
     const url = `${this.baseUrl}${path}`;
 
     for (let attempt = 0; attempt <= this.maxRetries; attempt++) {
       await this.limiter.acquire();
 
-      const res = await this.fetchImpl(url, {
-        method,
-        headers: {
-          'Content-Type': 'application/json',
-          ...(auth ? { Authorization: `Bearer ${this.apiKey}` } : {}),
-          ...headers,
-        },
-        body: body !== undefined ? JSON.stringify(body) : undefined,
-      });
+      let res;
+      try {
+        res = await this.fetchImpl(url, {
+          method,
+          headers: {
+            'Content-Type': 'application/json',
+            ...(auth ? { Authorization: `Bearer ${this.apiKey}` } : {}),
+            ...headers,
+          },
+          body: body !== undefined ? JSON.stringify(body) : undefined,
+          signal: AbortSignal.timeout(timeoutMs),
+        });
+      } catch (err) {
+        if (attempt === this.maxRetries) {
+          throw new MireyeApiError(`Mireye ${method} ${path} network failure`, { code: err.name });
+        }
+        const jitter = 0.75 + this.randomImpl() * 0.5;
+        await sleep(2 ** attempt * 500 * jitter);
+        continue;
+      }
 
       if (res.ok) {
         if (res.status === 204) return null;
@@ -95,9 +125,7 @@ export class MireyeClient {
       }
 
       const retryAfterHeader = res.headers.get('retry-after');
-      const retryAfterMs = retryAfterHeader
-        ? Number(retryAfterHeader) * 1000
-        : 2 ** attempt * 500;
+      const retryAfterMs = parseRetryAfter(retryAfterHeader) ?? 2 ** attempt * 500 * (0.75 + this.randomImpl() * 0.5);
       await sleep(retryAfterMs);
     }
 
@@ -161,10 +189,9 @@ export class MireyeClient {
     const results = [];
     for (let i = 0; i < locations.length; i += MAX_BATCH_LOCATIONS) {
       const chunk = locations.slice(i, i + MAX_BATCH_LOCATIONS);
-      const { results: chunkResults } = await this.fetchBatch({
-        locations: chunk,
-        fields,
-        preset,
+      const payload = { locations: chunk, fields, preset };
+      const { results: chunkResults } = await this.fetchBatch(payload, {
+        idempotencyKey: stableIdempotencyKey({ index: i / MAX_BATCH_LOCATIONS, ...payload }),
       });
       results.push(...chunkResults);
     }
@@ -198,6 +225,7 @@ export class MireyeClient {
   ask({ lat, lng, address, question, includeTrace = false } = {}) {
     return this._request('POST', '/v1/ask', {
       body: { lat, lng, address, question, include_trace: includeTrace },
+      timeoutMs: this.askTimeoutMs,
     });
   }
 

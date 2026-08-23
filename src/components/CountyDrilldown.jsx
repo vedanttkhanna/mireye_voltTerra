@@ -8,8 +8,8 @@ import { formatDistance, formatNumber, formatRatio } from '../utils/format.js';
 export default function CountyDrilldown({ fips }) {
   const { data: county, error, loading } = useApi(`/api/counties/${fips}`);
 
-  if (loading) return <p style={{ color: '#8899aa' }}>Loading county detail...</p>;
-  if (error) return <p style={{ color: '#ff5252' }}>{error}</p>;
+  if (loading) return <p style={{ color: 'var(--fg-muted)' }}>Loading county detail...</p>;
+  if (error) return <p style={{ color: 'var(--danger)' }}>{error}</p>;
   if (!county) return null;
 
   const gf = county.grid_feasibility;
@@ -17,74 +17,71 @@ export default function CountyDrilldown({ fips }) {
 
   return (
     <div>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.75rem' }}>
-        <h2 style={{ margin: 0 }}>{county.county_name}</h2>
+      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '1rem' }}>
+        <h2 style={{ margin: 0, fontSize: '1.4rem', color: 'var(--fg)' }}>{county.county_name}</h2>
         <BucketBadge bucket={county.bucket} />
       </div>
 
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(140px, 1fr))', gap: '0.75rem', marginBottom: '1rem' }}>
-        <Stat label="EVs / port" value={county.zero_charging_ports ? 'No ports' : formatRatio(county.driver_to_plug_ratio)} />
-        <Stat label="Latest registrations" value={formatNumber(county.registrations?.latest_registrations)} />
-        <Stat label="L2 + DC fast ports" value={formatNumber((county.chargers?.level2_ports ?? 0) + (county.chargers?.dc_fast_ports ?? 0))} />
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.65rem', marginBottom: '1.25rem' }}>
+        <Stat label="EVs / port" value={formatRatio(county.driver_to_plug_ratio)} highlight />
+        <Stat label="Registrations" value={formatNumber(county.registrations?.latest_registrations)} />
+        <Stat label="L2 + DC Fast Ports" value={formatNumber((county.chargers?.level2_ports ?? 0) + (county.chargers?.dc_fast_ports ?? 0))} />
         <Stat label="Underserved" value={county.underserved ? 'Yes' : 'No'} />
         {county.nevi_stations_awarded != null && (
-          <Stat label="Real NEVI stations awarded" value={formatNumber(county.nevi_stations_awarded)} />
+          <Stat label="NEVI Stations" value={formatNumber(county.nevi_stations_awarded)} />
         )}
       </div>
 
       {county.underserved && county.nevi_stations_awarded === 0 && (
-        <p style={{ color: '#ffab00', fontSize: '0.85rem', marginTop: '-0.5rem', marginBottom: '1rem' }}>
-          Flagged as underserved by our ratio signal, but has not (yet) received real NEVI corridor funding — see
-          README "Day 12 backtest" for why that can happen (NEVI funds highway-corridor coverage gaps, not
-          registration-per-charger stress).
-        </p>
+        <div style={{ background: 'var(--warn-light)', border: '1px solid var(--warn-border)', borderRadius: 8, padding: '0.75rem 1rem', marginBottom: '1rem' }}>
+          <p style={{ color: 'var(--warn-dark)', fontSize: '0.85rem', margin: 0, lineHeight: 1.4 }}>
+            <strong>Note:</strong> Flagged as underserved by our ratio signal, but has not (yet) received real NEVI corridor funding (NEVI funds highway corridors rather than county-wide registration stress).
+          </p>
+        </div>
       )}
 
       {gf && (
-        <div style={{ background: '#0f1522', border: '1px solid #1c2536', borderRadius: 8, padding: '1rem', marginBottom: '1rem' }}>
-          <h3 style={{ margin: '0 0 0.5rem', fontSize: '1rem' }}>
-            Grid feasibility (at {gf.sampled_at.type === 'population_center' ? 'population center' : 'county internal point'})
+        <div className="card" style={{ padding: '1.25rem', marginBottom: '1.25rem' }}>
+          <h3 style={{ margin: '0 0 0.75rem', fontSize: '1.05rem', color: 'var(--fg)' }}>
+            Grid feasibility ({gf.sampled_at.type === 'demand_centroid' ? 'demand-weighted point' : 'county centroid'})
           </h3>
-          {gf.used_population_center && (
-            <p style={{ margin: '0 0 0.75rem', fontSize: '0.8rem', color: '#ffab00' }}>
-              The Census mean center of population decides this county's bucket, avoiding bias toward places where
-              chargers already happen to exist.
+          {gf.used_demand_centroid && (
+            <p style={{ margin: '0 0 0.75rem', fontSize: '0.8rem', color: 'var(--warn-dark)', background: 'var(--warn-light)', padding: '0.4rem 0.6rem', borderRadius: 6 }}>
+              This county's geographic centroid diverges from charger concentrations, so a demand-weighted centroid decides the bucket.
             </p>
           )}
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0.5rem', fontSize: '0.9rem' }}>
-            <div>Substation distance: {formatDistance(gf.inputs.substation_distance_m)}</div>
-            <div>Substation voltage: {gf.inputs.substation_voltage_kv != null ? `${gf.inputs.substation_voltage_kv} kV` : '—'}</div>
-            <div>Status: {gf.inputs.substation_status ?? '—'}</div>
-            <div>Source: {gf.inputs.substation_source ?? '—'}</div>
-            <div>Score: {gf.score}/100</div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.65rem', fontSize: '0.875rem', color: 'var(--fg)' }}>
+            <div><span style={{ color: 'var(--fg-muted)' }}>Distance:</span> <strong>{formatDistance(gf.inputs.substation_distance_m)}</strong></div>
+            <div><span style={{ color: 'var(--fg-muted)' }}>Voltage:</span> <strong>{gf.inputs.substation_voltage_kv != null ? `${gf.inputs.substation_voltage_kv} kV` : '-'}</strong></div>
+            <div><span style={{ color: 'var(--fg-muted)' }}>Status:</span> <strong>{gf.inputs.substation_status ?? '-'}</strong></div>
+            <div><span style={{ color: 'var(--fg-muted)' }}>Source:</span> <strong>{gf.inputs.substation_source ?? '-'}</strong></div>
+            <div><span style={{ color: 'var(--fg-muted)' }}>Feasibility Score:</span> <strong style={{ color: 'var(--accent-darker)' }}>{gf.score}/100</strong></div>
           </div>
 
           <GateFailureList failures={gf.gate_failures} />
 
           {gf.grid_context?.best_alternative_site && (
-            <p style={{ marginTop: '0.75rem', fontSize: '0.8rem', color: '#8899aa' }}>
-              Best alternative site nearby (not used to decide the bucket — see README):{' '}
-              {gf.grid_context.best_alternative_site.station_name ?? 'existing charger'}, score{' '}
-              {gf.grid_context.best_alternative_site.score}/100,{' '}
-              {gf.grid_context.best_alternative_site.passes_gates ? 'passes gates' : 'fails gates'}.
+            <p style={{ marginTop: '0.85rem', fontSize: '0.8rem', color: 'var(--fg-muted)' }}>
+              Best alternative site nearby (context only):{' '}
+              <strong>{gf.grid_context.best_alternative_site.station_name ?? 'existing charger'}</strong>, score{' '}
+              {gf.grid_context.best_alternative_site.score}/100.
             </p>
           )}
 
           {gf.grid_context?.interconnection_queue_active_capacity_caiso_mw != null && (
-            <p style={{ marginTop: '0.5rem', fontSize: '0.8rem', color: '#8899aa' }}>
-              County CAISO interconnection queue (context only, not a gate):{' '}
-              {gf.grid_context.interconnection_queue_active_capacity_caiso_mw.toLocaleString()} MW active.
+            <p style={{ marginTop: '0.4rem', fontSize: '0.8rem', color: 'var(--fg-muted)' }}>
+              County CAISO interconnection queue: {gf.grid_context.interconnection_queue_active_capacity_caiso_mw.toLocaleString()} MW active.
             </p>
           )}
         </div>
       )}
 
       {primaryPoint && (
-        <details style={{ marginBottom: '1rem', fontSize: '0.85rem' }}>
-          <summary style={{ cursor: 'pointer', color: '#8899aa' }}>
-            Raw cited fields at {primaryPoint.type === 'population_center' ? 'population center' : 'county internal point'} ({primaryPoint.lat}, {primaryPoint.lng})
+        <details style={{ marginBottom: '1.25rem', fontSize: '0.85rem' }}>
+          <summary style={{ cursor: 'pointer', color: 'var(--accent-darker)', fontWeight: 600 }}>
+            Raw cited fields at {primaryPoint.type === 'demand_centroid' ? 'demand-weighted point' : 'centroid'} ({primaryPoint.lat}, {primaryPoint.lng})
           </summary>
-          <div style={{ marginTop: '0.5rem' }}>
+          <div className="card" style={{ marginTop: '0.65rem', padding: '0.85rem' }}>
             <FieldCitations fields={primaryPoint.grid_fields} />
           </div>
         </details>
@@ -95,11 +92,19 @@ export default function CountyDrilldown({ fips }) {
   );
 }
 
-function Stat({ label, value }) {
+function Stat({ label, value, highlight }) {
   return (
-    <div style={{ background: '#0f1522', border: '1px solid #1c2536', borderRadius: 8, padding: '0.6rem 0.8rem' }}>
-      <div style={{ fontSize: '0.75rem', color: '#8899aa' }}>{label}</div>
-      <div style={{ fontSize: '1.1rem', fontWeight: 600 }}>{value}</div>
+    <div
+      style={{
+        background: highlight ? 'var(--accent-light)' : '#ffffff',
+        border: highlight ? '1px solid var(--accent-border)' : '1px solid var(--card-border)',
+        borderRadius: 8,
+        padding: '0.6rem 0.8rem',
+        boxShadow: '0 1px 2px rgba(0,0,0,0.02)',
+      }}
+    >
+      <div style={{ fontSize: '0.75rem', color: highlight ? 'var(--accent-darker)' : 'var(--fg-muted)' }}>{label}</div>
+      <div style={{ fontSize: '1.15rem', fontWeight: 700, color: highlight ? 'var(--accent-darker)' : 'var(--fg)' }}>{value}</div>
     </div>
   );
 }

@@ -1,10 +1,26 @@
 import { formatBucket } from '../utils/format.js';
 
 const STYLES = {
-  fund_charger_now: { background: '#00e67622', color: '#00e676', border: '1px solid #00e67655' },
-  fund_grid_upgrade_first: { background: '#ffab0022', color: '#ffab00', border: '1px solid #ffab0055' },
-  insufficient_data: { background: '#5fb3ff22', color: '#5fb3ff', border: '1px solid #5fb3ff55' },
-  not_flagged: { background: '#8899aa22', color: '#8899aa', border: '1px solid #8899aa33' },
+  fund_charger_now: {
+    background: 'var(--accent-light, #ecfdf5)',
+    color: 'var(--accent-darker, #065f46)',
+    border: '1px solid var(--accent-border, #a7f3d0)',
+  },
+  fund_grid_upgrade_first: {
+    background: 'var(--warn-light, #fffbeb)',
+    color: 'var(--warn-dark, #b45309)',
+    border: '1px solid var(--warn-border, #fde68a)',
+  },
+  insufficient_data: {
+    background: '#f1f5f9',
+    color: '#475569',
+    border: '1px solid #94a3b8',
+  },
+  not_flagged: {
+    background: '#f1f5f9',
+    color: '#64748b',
+    border: '1px solid #e2e8f0',
+  },
 };
 
 export default function BucketBadge({ bucket }) {
@@ -13,11 +29,12 @@ export default function BucketBadge({ bucket }) {
     <span
       style={{
         ...style,
-        padding: '0.15rem 0.6rem',
+        padding: '0.2rem 0.65rem',
         borderRadius: '999px',
-        fontSize: '0.8rem',
+        fontSize: '0.78rem',
         fontWeight: 600,
         whiteSpace: 'nowrap',
+        display: 'inline-block',
       }}
     >
       {formatBucket(bucket)}

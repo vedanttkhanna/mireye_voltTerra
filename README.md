@@ -4,14 +4,14 @@
 
 VOLT-TERRA answers one question: *which California counties have EV registrations outrunning their public charging infrastructure, and for the ones that do, is the fix "build a charger" or "upgrade the grid first"?*
 
-It's an agent, not a dashboard: it pulls EV registration data (state DMV), existing charger locations (DOE), and independent county population centers (Census), joins them against cited physical grid data from Mireye, computes a peer-relative demand signal, and runs that signal through a physical feasibility screen. Flagged counties become `fund_charger_now`, `fund_grid_upgrade_first`, or `insufficient_data`; missing evidence is never treated as proof that an upgrade is required.
+It's an agent, not a dashboard: it pulls EV registration data (state DMV) and existing charger locations (DOE), joins them against cited physical grid data from Mireye (substation distance, voltage, interconnection capacity), computes a peer-relative demand signal, runs that signal through a physical feasibility screen, and sorts every flagged county into a funding or data-review outcome — with a plain-English, cited justification memo generated per county via Mireye's `/v1/ask`. Every decision traces back to the exact fields and sources that drove it.
 
-The most recent recorded California run analyzed **58/58 counties, flagged 6 as underserved, and cross-checked against 114 real state EV-infrastructure funding records**. The current implementation has **96 passing automated tests**. Re-run the pipeline after checkout to produce results with the current population-center and insufficient-data methodology.
+By the numbers (live California pilot, one full statewide run): **58/58 counties analyzed, 6 flagged as underserved, 121 automated tests passing, cross-checked against 114 real state EV-infrastructure funding records.** See [`docs/write-up.md`](docs/write-up.md) for the full day-by-day build narrative, including every bug found and fixed against live data.
 
 ## What it does
 
-- **Ranks and flags counties.** Computes registered-EVs-per-charging-port and flags counties running at 2× the state median. A county with registered EVs and zero qualifying ports is always flagged rather than silently receiving a null ratio.
-- **Screens grid feasibility.** Evaluates cited grid fields at the Census mean center of population, an independent demand-geography proxy. Missing distance or voltage evidence produces `insufficient_data` for human review.
+- **Ranks and flags counties.** Computes registered-EVs-per-charging-port for every county, and flags the ones running at 2× (or more) the state median — a peer-relative threshold, not an arbitrary cutoff.
+- **Screens grid feasibility.** For each flagged county, checks whether a real substation sits close enough and at high enough voltage to support a new DC fast charger. Missing evidence becomes `insufficient_data`; it is never treated as proof that an upgrade is required.
 - **Writes the justification memo.** Calls Mireye's `/v1/ask` to generate a cited, plain-English memo per flagged county — ready to attach to a funding request.
 - **Backtests itself against reality.** Cross-checks its own flags against real federal NEVI charging-infrastructure award data for California, and reports plainly where the two signals agree and where they don't.
 - **Interactive map.** A county-level choropleth (colored by funding bucket) plus an opt-in tool to check live grid feasibility — with full citations — at any point on the map.
@@ -30,13 +30,25 @@ npm install
 cp .env.example .env   # then fill in MIREYE_API_KEY
 ```
 
-The backend binds to `127.0.0.1` by default. Set `HOST` deliberately when placing it behind a reverse proxy or exposing it to another machine. The dashboard does not ask for a separate operator key.
+`.env.example` documents every variable; only `MIREYE_API_KEY` is required for Mireye operations.
+
+The chat agent supports Gemini or Groq. Set one provider and its server-side key:
+
+```bash
+LLM_PROVIDER=groq
+GROQ_API_KEY=your_key_here
+GROQ_MODEL=openai/gpt-oss-20b
+```
+
+Use `LLM_PROVIDER=gemini` for Gemini, or `auto` to try Gemini, then Groq, before the deterministic fallback. Never expose either key through a `VITE_` variable.
+
+Chat requests carry recent conversation history plus structured state/county context containing demand metrics, the current bucket, grid feasibility, and cited Mireye fields. The model autonomously chooses cached county/state tools and only calls the metered live Mireye evidence tool when deeper live physical evidence is explicitly requested.
 
 ```bash
 npm run dev             # backend on :3000, frontend on :5173 (proxies /api to :3000)
 ```
 
-Reference geography is committed under `server/data/`, but generated pipeline output under `server/data/cache/` is intentionally gitignored. A fresh clone shows setup guidance until the first pipeline run. To generate results:
+That's enough to browse the dashboard against the data already committed in the repo (`server/data/`, `server/data/cache/`). To regenerate everything from scratch against the live Mireye API, run the pipeline in order:
 
 ```bash
 npm test                        # unit tests, no network calls
@@ -44,9 +56,8 @@ npm test                        # unit tests, no network calls
 # one-time reference data (re-run only if you switch pilot state)
 npm run ingest:afdc             # DOE charger locations for PILOT_STATE
 npm run ingest:registrations    # state DMV EV registrations for PILOT_STATE
-npm run ingest:centroids        # Census county centroids for PILOT_STATE
+npm run ingest:centroids        # Census population-weighted county centers
 npm run ingest:boundaries       # Census county polygon boundaries, for the map
-npm run ingest:population-centers # Census county mean centers of population
 
 npm run verify:setup            # confirm Mireye auth + pilot-state data coverage
 npm run pipeline:run            # run the full join pipeline sweep against live Mireye data
@@ -55,13 +66,7 @@ npm run pipeline:memos          # generate /v1/ask justification memos for flagg
 npm run backtest                 # cross-check flags/buckets against real CA NEVI award data
 ```
 
-`pipeline:run`, `pipeline:memos`, and map point checks spend real Mireye credits. Before a sweep performs any paid lookup, it quotes the batch and checks the combined fetch + lookup estimate against both `MAX_SWEEP_CREDITS` and the reported remaining allowance.
-
-## Operational safety
-
-- Metered and mutating requests are rate-limited. Concurrent pipeline operations return `409 Conflict`, and memo persistence is serialized.
-- Generated JSON is written to a temporary sibling and atomically renamed, preventing readers from observing partially-written cache files.
-- `HOST=127.0.0.1` is the safe default. There is no application-level login, so deployments exposed beyond the local machine should add authentication at the reverse proxy or platform layer. Multi-instance deployments also need shared rate limiting and job coordination.
+`pipeline:run` and `pipeline:memos` spend real Mireye credits (a full CA sweep runs ~5,700 credits; each memo ~10). Everything else is free or reads from the local cache.
 
 ## Project structure
 
@@ -99,11 +104,13 @@ Chosen because it's the demo example in the project's own spec (Madera County), 
 
 Client implementation (rate limiting, batching, retry-with-backoff) lives in [`server/services/mireye.js`](server/services/mireye.js).
 
+Credit-spending and cache-mutating HTTP operations are rate-limited and mutually exclusive. The Mireye key remains server-side and must never be exposed through Vite client variables. Deploy the server only behind a trusted network boundary because these routes intentionally have no caller authentication.
+
 ## Data sources
 
 - **DOE Alternative Fuels Data Center** — existing public charger locations and port counts.
 - **California DMV "Vehicle Fuel Type Count by Zip Code"** — EV registrations, 3 years back.
-- **US Census Bureau** — ZIP-to-county crosswalk, county internal-point fallbacks, county mean centers of population, and boundary polygons.
+- **US Census Bureau** — ZIP-to-county crosswalk, 2020 mean centers of population by county, and county boundary polygons (three separate Census products).
 - **California NEVI award data** (CEC/Caltrans) — real federal EV-infrastructure funding records, used only to backtest VOLT-TERRA's own flags against a real-world outcome.
 
 Full source URLs, vintages, and known error rates for each are in [`docs/write-up.md`](docs/write-up.md).
@@ -114,8 +121,7 @@ Named plainly rather than glossed over — full detail and reasoning in [`docs/w
 
 - A small percentage of registration/charger records don't resolve to a county (ZIP-matching limits in the source data), logged rather than silently dropped.
 - The demand ratio treats Level 2 and DC-fast ports equally, which doesn't distinguish a DC-fast-rich county from an L2-only one.
-- The Census population center is a population-geography proxy, not an EV-registration-weighted site recommendation.
-- `insufficient_data` requires an analyst or utility to obtain better substation evidence; it is intentionally not collapsed into either funding verdict.
+- A single county population center is stronger than a geographic centroid or charger-location mean, but it can still hide multiple demand clusters in large, heterogeneous counties.
 - The grid-feasibility backtest against NEVI award data measures plausibility, not correctness — NEVI and VOLT-TERRA's underlying signals answer genuinely different questions (highway-corridor coverage vs. county-level demand).
 - The map's point-check tool is a physical-screen readout, not a site-selection or ranking tool — it never compares or ranks candidate points.
 

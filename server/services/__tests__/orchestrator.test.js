@@ -8,7 +8,6 @@ import {
 
 test('buildCountySamplePoints puts the population center first, then corridor points', () => {
   const points = buildCountySamplePoints({
-    populationCenter: { lat: 37.7, lng: -121.9 },
     centroid: { lat: 37.2, lng: -119.7 },
     corridorPoints: [
       { lat: 37.0, lng: -119.5, station_name: 'Station A' },
@@ -17,21 +16,16 @@ test('buildCountySamplePoints puts the population center first, then corridor po
   });
 
   assert.equal(points.length, 3);
-  assert.deepEqual(points[0], {
-    type: 'population_center',
-    lat: 37.7,
-    lng: -121.9,
-    source: 'census_2020_mean_center_of_population',
-  });
+  assert.deepEqual(points[0], { type: 'population_center', lat: 37.2, lng: -119.7, source: 'census_mean_population_center_2020' });
   assert.equal(points[1].type, 'corridor');
   assert.equal(points[1].station_name, 'Station A');
   assert.equal(points[2].station_name, 'Station B');
 });
 
-test('buildCountySamplePoints falls back to the county internal point', () => {
-  const points = buildCountySamplePoints({ populationCenter: null, centroid: { lat: 37.2, lng: -119.7 }, corridorPoints: [] });
+test('buildCountySamplePoints handles a county with no chargers (centroid only)', () => {
+  const points = buildCountySamplePoints({ centroid: { lat: 37.2, lng: -119.7 }, corridorPoints: [] });
   assert.equal(points.length, 1);
-  assert.equal(points[0].type, 'centroid');
+  assert.equal(points[0].type, 'population_center');
 });
 
 test('buildCountySamplePoints omits the centroid if none is found', () => {
@@ -41,6 +35,34 @@ test('buildCountySamplePoints omits the centroid if none is found', () => {
   });
   assert.equal(points.length, 1);
   assert.equal(points[0].type, 'corridor');
+});
+
+test('buildCountySamplePoints never treats the existing-charger mean as a demand point', () => {
+  const points = buildCountySamplePoints({
+    centroid: { lat: 33.729828, lng: -116.002239 },
+    corridorPoints: [],
+    demandCentroid: { lat: 33.85, lng: -117.0 },
+  });
+
+  assert.equal(points.some((p) => p.type === 'demand_centroid'), false);
+});
+
+test('buildCountySamplePoints does NOT add a demand_centroid point when divergence is small', () => {
+  const points = buildCountySamplePoints({
+    centroid: { lat: 37.2, lng: -119.7 },
+    corridorPoints: [],
+    demandCentroid: { lat: 37.21, lng: -119.71 }, // ~1.3km away
+  });
+  assert.equal(points.some((p) => p.type === 'demand_centroid'), false);
+});
+
+test('buildCountySamplePoints omits demand_centroid when the county has no chargers to compute one from', () => {
+  const points = buildCountySamplePoints({
+    centroid: { lat: 37.2, lng: -119.7 },
+    corridorPoints: [],
+    demandCentroid: null,
+  });
+  assert.equal(points.some((p) => p.type === 'demand_centroid'), false);
 });
 
 test('checkLookupAgreement flags a mismatch between our join key and Mireye\'s', () => {

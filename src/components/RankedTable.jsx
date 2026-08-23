@@ -12,6 +12,7 @@ const FILTERS = [
 
 export default function RankedTable({ counties, selectedFips, onSelect }) {
   const [filter, setFilter] = useState('underserved');
+  const [hoverFips, setHoverFips] = useState(null);
 
   const rows = useMemo(() => {
     if (filter === 'all') return counties;
@@ -20,61 +21,79 @@ export default function RankedTable({ counties, selectedFips, onSelect }) {
   }, [counties, filter]);
 
   return (
-    <div>
-      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '0.75rem', flexWrap: 'wrap' }}>
-        {FILTERS.map((f) => (
-          <button
-            key={f.key}
-            onClick={() => setFilter(f.key)}
-            style={{
-              padding: '0.35rem 0.75rem',
-              borderRadius: 6,
-              border: '1px solid #2a3548',
-              background: filter === f.key ? '#1c2536' : 'transparent',
-              color: filter === f.key ? '#e6edf3' : '#8899aa',
-              cursor: 'pointer',
-              fontSize: '0.85rem',
-            }}
-          >
-            {f.label}
-          </button>
-        ))}
+    <div className="card" style={{ padding: '1rem' }}>
+      <div style={{ display: 'flex', gap: '0.5rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+        {FILTERS.map((f) => {
+          const isActive = filter === f.key;
+          return (
+            <button
+              key={f.key}
+              onClick={() => setFilter(f.key)}
+              style={{
+                padding: '0.4rem 0.85rem',
+                borderRadius: 6,
+                border: isActive ? '1px solid var(--accent)' : '1px solid var(--card-border)',
+                background: isActive ? 'var(--accent-light)' : '#ffffff',
+                color: isActive ? 'var(--accent-darker)' : 'var(--fg-muted)',
+                fontWeight: isActive ? 600 : 500,
+                cursor: 'pointer',
+                fontSize: '0.85rem',
+                transition: 'all 0.15s ease',
+              }}
+            >
+              {f.label}
+            </button>
+          );
+        })}
       </div>
 
       <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9rem' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.875rem' }}>
           <thead>
-            <tr style={{ textAlign: 'left', color: '#8899aa', borderBottom: '1px solid #2a3548' }}>
-              <th style={{ padding: '0.5rem' }}>County</th>
-              <th style={{ padding: '0.5rem' }}>EVs / port</th>
-              <th style={{ padding: '0.5rem' }}>Registrations</th>
-              <th style={{ padding: '0.5rem' }}>Ports</th>
-              <th style={{ padding: '0.5rem' }}>Bucket</th>
+            <tr style={{ textAlign: 'left', color: 'var(--fg-muted)', borderBottom: '2px solid var(--card-border)' }}>
+              <th style={{ padding: '0.65rem 0.75rem', fontWeight: 600 }}>County</th>
+              <th style={{ padding: '0.65rem 0.75rem', fontWeight: 600 }}>EVs / port</th>
+              <th style={{ padding: '0.65rem 0.75rem', fontWeight: 600 }}>Registrations</th>
+              <th style={{ padding: '0.65rem 0.75rem', fontWeight: 600 }}>Ports</th>
+              <th style={{ padding: '0.65rem 0.75rem', fontWeight: 600 }}>Bucket</th>
             </tr>
           </thead>
           <tbody>
-            {rows.map((c) => (
-              <tr
-                key={c.county_fips}
-                onClick={() => onSelect(c.county_fips)}
-                style={{
-                  cursor: 'pointer',
-                  borderBottom: '1px solid #1c2536',
-                  background: selectedFips === c.county_fips ? '#141c2b' : 'transparent',
-                }}
-              >
-                <td style={{ padding: '0.5rem', fontWeight: 500 }}>{c.county_name}</td>
-                <td style={{ padding: '0.5rem' }}>{c.zero_charging_ports ? 'No ports' : formatRatio(c.driver_to_plug_ratio)}</td>
-                <td style={{ padding: '0.5rem' }}>{formatNumber(c.latest_registrations)}</td>
-                <td style={{ padding: '0.5rem' }}>{formatNumber(c.charger_count)}</td>
-                <td style={{ padding: '0.5rem' }}>
-                  <BucketBadge bucket={c.bucket} />
-                </td>
-              </tr>
-            ))}
+            {rows.map((c) => {
+              const isSelected = selectedFips === c.county_fips;
+              const isHovered = hoverFips === c.county_fips;
+              let rowBg = 'transparent';
+              if (isSelected) rowBg = 'var(--accent-light, #ecfdf5)';
+              else if (isHovered) rowBg = '#f8fafc';
+
+              return (
+                <tr
+                  key={c.county_fips}
+                  onClick={() => onSelect(c.county_fips)}
+                  onMouseEnter={() => setHoverFips(c.county_fips)}
+                  onMouseLeave={() => setHoverFips(null)}
+                  style={{
+                    cursor: 'pointer',
+                    borderBottom: '1px solid var(--card-border)',
+                    background: rowBg,
+                    transition: 'background-color 0.1s ease',
+                  }}
+                >
+                  <td style={{ padding: '0.75rem', fontWeight: isSelected ? 700 : 500, color: isSelected ? 'var(--accent-darker)' : 'var(--fg)' }}>
+                    {c.county_name}
+                  </td>
+                  <td style={{ padding: '0.75rem', fontWeight: 600 }}>{formatRatio(c.driver_to_plug_ratio)}</td>
+                  <td style={{ padding: '0.75rem', color: 'var(--fg-muted)' }}>{formatNumber(c.latest_registrations)}</td>
+                  <td style={{ padding: '0.75rem', color: 'var(--fg-muted)' }}>{formatNumber(c.charger_count)}</td>
+                  <td style={{ padding: '0.75rem' }}>
+                    <BucketBadge bucket={c.bucket} />
+                  </td>
+                </tr>
+              );
+            })}
             {rows.length === 0 && (
               <tr>
-                <td colSpan={5} style={{ padding: '1rem', color: '#8899aa', textAlign: 'center' }}>
+                <td colSpan={5} style={{ padding: '2rem', color: 'var(--fg-muted)', textAlign: 'center' }}>
                   No counties match this filter.
                 </td>
               </tr>

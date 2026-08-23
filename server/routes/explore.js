@@ -7,6 +7,7 @@ import { mireye } from '../services/mireye.js';
 import { GRID_FEASIBILITY_FIELDS } from '../services/orchestrator.js';
 import { computeGridFeasibilityScore } from '../services/scoring.js';
 import { findContainingFeature } from '../lib/geo.js';
+import { conflictWhileRunning, rateLimit } from '../lib/operation-guard.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.join(__dirname, '../data');
@@ -25,7 +26,8 @@ async function loadScoredCounties() {
   try {
     const raw = await readFile(path.join(CACHE_DIR, `scored-counties-${config.pilotState}.json`), 'utf8');
     return JSON.parse(raw);
-  } catch {
+  } catch (err) {
+    if (err.code !== 'ENOENT') throw err;
     return null;
   }
 }
@@ -34,7 +36,8 @@ async function loadCountyBoundaries() {
   try {
     const raw = await readFile(path.join(DATA_DIR, `county-boundaries-${config.pilotState}.json`), 'utf8');
     return JSON.parse(raw);
-  } catch {
+  } catch (err) {
+    if (err.code !== 'ENOENT') throw err;
     return null;
   }
 }
@@ -62,7 +65,7 @@ async function loadCountyBoundaries() {
  * and already known, and quoting a single ad-hoc point on every click would
  * only add latency, not new cost information.
  */
-exploreRouter.post('/check-point', async (req, res) => {
+exploreRouter.post('/check-point', rateLimit({ name: 'point-check', max: 10, windowMs: 60 * 60_000 }), conflictWhileRunning('point-check', async (req, res) => {
   const lat = Number(req.body?.lat);
   const lng = Number(req.body?.lng);
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
@@ -71,17 +74,27 @@ exploreRouter.post('/check-point', async (req, res) => {
   if (lat < US_BOUNDS.minLat || lat > US_BOUNDS.maxLat || lng < US_BOUNDS.minLng || lng > US_BOUNDS.maxLng) {
     return res.status(400).json({ error: 'out_of_range', detail: 'Point falls outside Mireye\'s US coverage envelope' });
   }
+  const estimatedCredits = GRID_FEASIBILITY_FIELDS.length;
+  if (estimatedCredits > config.maxPointCheckCredits) {
+    return res.status(409).json({ error: 'credit_cap_exceeded', detail: 'Point check disabled by MAX_POINT_CHECK_CREDITS.' });
+  }
 
   try {
+    // Validate optional local context before the paid request so a corrupt
+    // cache cannot waste credits and then turn the response into an error.
+    const boundaries = await loadCountyBoundaries();
+    const scored = boundaries ? await loadScoredCounties() : null;
     const response = await mireye.fetch({ lat, lng, fields: GRID_FEASIBILITY_FIELDS });
+    if (!response?.fields || typeof response.fields !== 'object' || Array.isArray(response.fields) ||
+        GRID_FEASIBILITY_FIELDS.some((field) => !(field in response.fields))) {
+      throw new Error('Mireye point response has an invalid fields schema');
+    }
     const feasibility = computeGridFeasibilityScore(response.fields);
 
-    const boundaries = await loadCountyBoundaries();
     const containingFeature = boundaries ? findContainingFeature({ lat, lng }, boundaries) : null;
 
     let resolvedCounty = null;
     if (containingFeature) {
-      const scored = await loadScoredCounties();
       const scoredCounty = scored?.counties.find((c) => c.county_fips === containingFeature.properties.county_fips);
       resolvedCounty = {
         county_fips: containingFeature.properties.county_fips,
@@ -99,9 +112,10 @@ exploreRouter.post('/check-point', async (req, res) => {
       resolved_county: resolvedCounty,
       feasibility,
       fields: response.fields,
-      credits_spent: GRID_FEASIBILITY_FIELDS.length,
+      credits_spent: estimatedCredits,
     });
   } catch (err) {
-    res.status(500).json({ error: 'check_failed', detail: err.message });
+    console.error('[explore/check-point]', err);
+    res.status(502).json({ error: 'check_failed' });
   }
-});
+}));

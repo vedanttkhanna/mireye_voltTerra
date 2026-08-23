@@ -48,25 +48,29 @@ export default function MemoPanel({ fips, bucket }) {
   }, [fips]);
 
   return (
-    <div style={{ marginTop: '1.5rem' }}>
-      <h3 style={{ margin: '0 0 0.5rem', fontSize: '1rem' }}>Justification memo</h3>
+    <div className="card" style={{ marginTop: '1.5rem', padding: '1.25rem' }}>
+      <h3 style={{ margin: '0 0 0.75rem', fontSize: '1.1rem', color: 'var(--fg)' }}>Justification memo</h3>
 
-      {status === STATUS.LOADING && <p style={{ color: '#8899aa' }}>Checking for an existing memo...</p>}
+      {status === STATUS.LOADING && <p style={{ color: 'var(--fg-muted)' }}>Checking for an existing memo...</p>}
 
       {status === STATUS.MISSING && (
         <div>
-          <p style={{ color: '#8899aa' }}>No memo generated yet for this county.</p>
+          <p style={{ color: 'var(--fg-muted)', fontSize: '0.9rem', marginBottom: '0.85rem' }}>No memo generated yet for this county.</p>
           <button onClick={generate} style={buttonStyle}>
             Generate memo (~10 credits, calls /v1/ask, 10-20s)
           </button>
         </div>
       )}
 
-      {status === STATUS.GENERATING && <p style={{ color: '#8899aa' }}>Calling /v1/ask — this typically takes 10-20 seconds...</p>}
+      {status === STATUS.GENERATING && (
+        <p style={{ color: 'var(--accent-darker)', fontWeight: 500, fontSize: '0.9rem' }}>
+          Calling Mireye /v1/ask (typically takes 10-20 seconds)...
+        </p>
+      )}
 
       {status === STATUS.ERROR && (
         <div>
-          <p style={{ color: '#ff5252' }}>{error}</p>
+          <p style={{ color: 'var(--danger)', fontSize: '0.9rem' }}>{error}</p>
           <button onClick={load} style={buttonStyle}>
             Retry
           </button>
@@ -75,23 +79,29 @@ export default function MemoPanel({ fips, bucket }) {
 
       {status === STATUS.READY && memo && (
         <div>
-          <div style={{ fontSize: '0.8rem', color: '#8899aa', marginBottom: '0.5rem' }}>
-            Answered {formatTimestamp(memo.answered_at)} · confidence: {memo.confidence}
+          <div style={{ fontSize: '0.8rem', color: 'var(--fg-muted)', marginBottom: '0.75rem' }}>
+            Answered {formatTimestamp(memo.answered_at)} · confidence: <strong style={{ color: 'var(--accent-darker)' }}>{memo.confidence}</strong>
             {memo.bucket && memo.bucket !== bucket && (
-              <span style={{ color: '#ffab00' }}> · note: bucket has changed since this memo was generated ({memo.bucket} → {bucket})</span>
+              <span style={{ color: 'var(--warn-dark)' }}> · note: bucket has changed ({memo.bucket} → {bucket})</span>
             )}
           </div>
-          <details style={{ marginBottom: '0.75rem', fontSize: '0.8rem', color: '#8899aa' }}>
-            <summary style={{ cursor: 'pointer' }}>Question asked</summary>
-            <p style={{ marginTop: '0.5rem' }}>{memo.question}</p>
+          <details style={{ marginBottom: '1rem', fontSize: '0.85rem', color: 'var(--fg-muted)' }}>
+            <summary style={{ cursor: 'pointer', fontWeight: 600, color: 'var(--accent-darker)' }}>Question asked</summary>
+            <p style={{ marginTop: '0.5rem', padding: '0.6rem', background: 'var(--bg)', borderRadius: 6, color: 'var(--fg)' }}>
+              {memo.question}
+            </p>
           </details>
-          <div style={{ lineHeight: 1.5 }}>{renderMarkdownLite(memo.answer)}</div>
+          <div style={{ lineHeight: 1.6, color: 'var(--fg)', fontSize: '0.92rem' }}>
+            {renderMarkdownLite(memo.answer)}
+          </div>
           {memo.data_gaps && memo.data_gaps.length > 0 && (
-            <p style={{ color: '#ffab00', fontSize: '0.85rem' }}>Data gaps: {memo.data_gaps.join(', ')}</p>
+            <p style={{ color: 'var(--warn-dark)', fontSize: '0.85rem', marginTop: '0.75rem' }}>
+              <strong>Data gaps:</strong> {memo.data_gaps.join(', ')}
+            </p>
           )}
-          <h4 style={{ fontSize: '0.85rem', margin: '1rem 0 0.5rem', color: '#8899aa' }}>Sources</h4>
+          <h4 style={{ fontSize: '0.9rem', margin: '1.25rem 0 0.5rem', color: 'var(--fg)' }}>Sources</h4>
           <CitationList citations={memo.citations} />
-          <button onClick={generate} style={{ ...buttonStyle, marginTop: '0.75rem' }}>
+          <button onClick={generate} style={{ ...buttonStyle, marginTop: '1rem' }}>
             Regenerate memo
           </button>
         </div>
@@ -101,11 +111,13 @@ export default function MemoPanel({ fips, bucket }) {
 }
 
 const buttonStyle = {
-  padding: '0.5rem 0.9rem',
-  borderRadius: 6,
-  border: '1px solid #2a3548',
-  background: '#1c2536',
-  color: '#e6edf3',
+  padding: '0.5rem 1rem',
+  borderRadius: 7,
+  border: '1px solid var(--accent)',
+  background: 'var(--accent-light)',
+  color: 'var(--accent-darker)',
+  fontWeight: 600,
   cursor: 'pointer',
   fontSize: '0.85rem',
+  transition: 'all 0.15s ease',
 };

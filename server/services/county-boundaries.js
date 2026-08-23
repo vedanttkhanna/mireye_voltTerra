@@ -21,6 +21,7 @@ import { fileURLToPath } from 'node:url';
 import { DOMParser } from '@xmldom/xmldom';
 import { kml as kmlToGeoJson } from '@tmcw/togeojson';
 import { config } from '../config.js';
+import { writeJsonAtomic } from '../lib/safe-persistence.js';
 
 const execFileAsync = promisify(execFile);
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -65,6 +66,12 @@ export async function ingestCountyBoundaries({ state = config.pilotState, fetchI
         geometry: f.geometry,
       }))
       .sort((a, b) => a.properties.county_fips.localeCompare(b.properties.county_fips));
+    if (features.length === 0 || features.some((f) => !/^\d{5}$/.test(f.properties.county_fips) || !f.geometry?.type)) {
+      throw new Error('Census boundary file produced invalid or empty features; keeping existing file');
+    }
+    if (new Set(features.map((f) => f.properties.county_fips)).size !== features.length) {
+      throw new Error('Census boundary file produced duplicate county FIPS values; keeping existing file');
+    }
 
     const output = {
       type: 'FeatureCollection',
@@ -76,7 +83,7 @@ export async function ingestCountyBoundaries({ state = config.pilotState, fetchI
     };
 
     const outPath = path.join(DATA_DIR, `county-boundaries-${state}.json`);
-    await writeFile(outPath, JSON.stringify(output));
+    await writeJsonAtomic(outPath, output);
     return { outPath, ...output };
   } finally {
     await rm(tmpDir, { recursive: true, force: true });

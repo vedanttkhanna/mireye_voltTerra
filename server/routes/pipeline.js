@@ -3,7 +3,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Router } from 'express';
 import { config } from '../config.js';
-import { tryAcquireOperation } from '../lib/operation-lock.js';
+import { conflictWhileRunning, rateLimit } from '../lib/operation-guard.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CACHE_DIR = path.join(__dirname, '../data/cache');
@@ -17,9 +17,7 @@ let lastScoreStatus = null;
 // canonical join (/v1/lookup), cost check (/v1/fetch/quote), grid data
 // fetch (/v1/fetch/batch), then scoring (Days 8-9) on top of that output.
 // Memo generation (Days 10-11) still needs to run separately, per county.
-pipelineRouter.post('/run', async (_req, res) => {
-  const release = tryAcquireOperation('pipeline');
-  if (!release) return res.status(409).json({ error: 'operation_busy', detail: 'A pipeline operation is already running.' });
+pipelineRouter.post('/run', rateLimit({ name: 'pipeline-run', max: 1, windowMs: 60 * 60_000 }), conflictWhileRunning('pipeline', async (_req, res) => {
   try {
     const { runFullSweep } = await import('../services/orchestrator.js');
     const result = await runFullSweep({ state: config.pilotState });
@@ -45,12 +43,12 @@ pipelineRouter.post('/run', async (_req, res) => {
 
     res.json({ sweep: lastRunStatus, scoring: lastScoreStatus });
   } catch (err) {
-    lastRunStatus = { ok: false, message: err.message, at: new Date().toISOString() };
-    res.status(500).json({ error: 'sweep_failed', detail: err.message });
-  } finally {
-    release();
+    lastRunStatus = { ok: false, error: 'sweep_failed', at: new Date().toISOString() };
+    console.error('[pipeline/run]', err);
+    if (err.code === 'credit_cap_exceeded') return res.status(409).json({ error: err.code });
+    res.status(500).json({ error: 'sweep_failed' });
   }
-});
+}));
 
 pipelineRouter.post('/run/:fips', (_req, res) => {
   res
@@ -61,9 +59,7 @@ pipelineRouter.post('/run/:fips', (_req, res) => {
 // POST /api/pipeline/score — re-run scoring alone against the existing
 // join-pipeline cache, without spending any Mireye credits. Useful for
 // iterating on scoring.js's thresholds without re-fetching grid data.
-pipelineRouter.post('/score', async (_req, res) => {
-  const release = tryAcquireOperation('pipeline');
-  if (!release) return res.status(409).json({ error: 'operation_busy', detail: 'A pipeline operation is already running.' });
+pipelineRouter.post('/score', rateLimit({ name: 'pipeline-score', max: 6, windowMs: 60 * 60_000 }), conflictWhileRunning('pipeline', async (_req, res) => {
   try {
     const { runScoring } = await import('../services/scoring.js');
     const result = await runScoring({ state: config.pilotState });
@@ -77,14 +73,18 @@ pipelineRouter.post('/score', async (_req, res) => {
     };
     res.json(lastScoreStatus);
   } catch (err) {
-    lastScoreStatus = { ok: false, message: err.message, at: new Date().toISOString() };
-    res.status(500).json({ error: 'scoring_failed', detail: err.message });
-  } finally {
-    release();
+    lastScoreStatus = { ok: false, error: 'scoring_failed', at: new Date().toISOString() };
+    console.error('[pipeline/score]', err);
+    if (err.code === 'ENOENT') return res.status(404).json({ error: 'not_found', detail: 'No join pipeline run exists.' });
+    if (err instanceof SyntaxError || err.message?.startsWith('Invalid join-pipeline-')) {
+      return res.status(503).json({ error: 'cache_unavailable' });
+    }
+    res.status(500).json({ error: 'scoring_failed' });
   }
-});
+}));
 
 pipelineRouter.get('/status', async (_req, res) => {
+  const cacheErrors = [];
   let lastJoinPipelineRun = null;
   try {
     const raw = await readFile(path.join(CACHE_DIR, `join-pipeline-${config.pilotState}.json`), 'utf8');
@@ -96,8 +96,8 @@ pipelineRouter.get('/status', async (_req, res) => {
       credits_spent: data.credits_spent,
       lookup_mismatches: data.lookup_mismatches.length,
     };
-  } catch {
-    // No sweep has run yet — leave null.
+  } catch (err) {
+    if (err.code !== 'ENOENT') cacheErrors.push('join_pipeline');
   }
 
   let lastScoredRun = null;
@@ -110,10 +110,14 @@ pipelineRouter.get('/status', async (_req, res) => {
       counties_underserved: data.counties_underserved,
       counties_fund_charger_now: data.counties_fund_charger_now,
       counties_fund_grid_upgrade_first: data.counties_fund_grid_upgrade_first,
-      counties_insufficient_data: data.counties_insufficient_data,
+      counties_insufficient_data: data.counties_insufficient_data ?? 0,
     };
-  } catch {
-    // No scoring run yet — leave null.
+  } catch (err) {
+    if (err.code !== 'ENOENT') cacheErrors.push('scored_counties');
+  }
+
+  if (cacheErrors.length) {
+    return res.status(503).json({ error: 'cache_unavailable', caches: cacheErrors });
   }
 
   res.json({
@@ -135,7 +139,9 @@ pipelineRouter.get('/backtest', async (_req, res) => {
   try {
     const raw = await readFile(path.join(CACHE_DIR, `backtest-${config.pilotState}.json`), 'utf8');
     res.json(JSON.parse(raw));
-  } catch {
-    res.status(501).json({ error: 'not_implemented', detail: 'No backtest run yet — npm run backtest' });
+  } catch (err) {
+    if (err.code === 'ENOENT') return res.status(404).json({ error: 'not_found', detail: 'No backtest run yet — npm run backtest' });
+    console.error('[pipeline/backtest]', err);
+    res.status(503).json({ error: 'cache_unavailable' });
   }
 });

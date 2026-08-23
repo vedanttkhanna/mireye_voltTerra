@@ -16,7 +16,6 @@
     "ingest:registrations": "node server/services/registrations.js",
     "ingest:centroids": "node server/services/county-centroids.js",
     "ingest:boundaries": "node server/services/county-boundaries.js",
-    "ingest:population-centers": "node server/services/population-centers.js",
     "pipeline:run": "node server/services/orchestrator.js",
     "pipeline:score": "node server/services/scoring.js",
     "pipeline:memos": "node server/services/memo-generator.js",
@@ -39,5 +38,9 @@
     "@vitejs/plugin-react": "^4.3.1",
     "concurrently": "^8.2.2",
     "vite": "^5.4.0"
+  },
+  "allowScripts": {
+    "esbuild@0.21.5": true,
+    "fsevents@2.3.3": true
   }
 }
