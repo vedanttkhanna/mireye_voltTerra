@@ -7,9 +7,9 @@ const STYLES = {
     border: '1px solid var(--accent-border, #a7f3d0)',
   },
   fund_grid_upgrade_first: {
-    background: 'var(--warn-light, #fffbeb)',
-    color: 'var(--warn-dark, #b45309)',
-    border: '1px solid var(--warn-border, #fde68a)',
+    background: 'var(--danger-light, #fef2f2)',
+    color: '#b91c1c',
+    border: '1px solid #fecaca',
   },
   insufficient_data: {
     background: '#f1f5f9',

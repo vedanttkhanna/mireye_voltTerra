@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react';
 import { renderMarkdownLite } from '../utils/markdownLite.jsx';
 import CitationChip from './CitationChip.jsx';
 import BucketBadge from './BucketBadge.jsx';
-import { formatRatio } from '../utils/format.js';
+import ToolExecutionList from './ToolExecutionList.jsx';
 
 function formatDataGap(gap) {
   if (typeof gap === 'string') return gap;
@@ -22,13 +22,51 @@ function formatProvider(provider) {
   return 'deterministic fallback';
 }
 
-export default function ChatPanel({ selectedCounty, onSelectCounty, chatExpanded, onToggleExpand, onClose }) {
+/**
+ * Pulls anything map-renderable out of a completed agent turn: named
+ * substations and a labor-shed origin. Returns null when the turn produced
+ * nothing plottable, so an ordinary answer leaves the existing map layer alone
+ * rather than clearing it.
+ */
+function extractMapFindings(toolExecutions = []) {
+  const substations = [];
+  let laborShed = null;
+
+  for (const te of toolExecutions) {
+    const r = te.result;
+    if (!r || r.error) continue;
+
+    if (te.tool === 'find_nearest_substations') {
+      const strongestName = r.highest_voltage_nearby?.name;
+      for (const c of r.candidates ?? []) {
+        if (c.lat == null || c.lng == null) continue;
+        substations.push({ ...c, isStrongest: c.name === strongestName });
+      }
+    }
+
+    if (te.tool === 'get_labor_shed' && !r.quote_only && r.population_within_shed != null) {
+      laborShed = {
+        lat: Number(te.args?.lat),
+        lng: Number(te.args?.lng),
+        minutes: r.minutes,
+        population: r.population_within_shed,
+        labor_force: r.civilian_labor_force_within_shed,
+      };
+      if (!Number.isFinite(laborShed.lat) || !Number.isFinite(laborShed.lng)) laborShed = null;
+    }
+  }
+
+  if (!substations.length && !laborShed) return null;
+  return { substations, laborShed };
+}
+
+export default function ChatPanel({ selectedCounty, onSelectCounty, chatExpanded, onToggleExpand, onClose, onAgentFindings }) {
   const [messages, setMessages] = useState([
     {
       id: 'welcome',
       role: 'assistant',
       content:
-        'Hello! I can evaluate California counties for EV charging funding using Mireye physical grid tools and California DMV/DOE infrastructure models.\n\nAsk me about any county or location, and I will inspect real physical constraints and formulate justifiable funding decisions.',
+        'Hello! I can evaluate counties for EV charging funding using Mireye physical grid tools and state DMV/DOE infrastructure models.\n\nAsk me about any county or location, and I will inspect real physical constraints and formulate justifiable funding decisions.',
       citations: [
         { source: 'EIA Substation Dataset', source_url: 'https://www.eia.gov/electricity/data.php', confidence: 'high' },
         { source: 'DOE AFDC Charging Data', source_url: 'https://developer.nlr.gov', confidence: 'high' },
@@ -111,6 +149,8 @@ export default function ChatPanel({ selectedCounty, onSelectCounty, chatExpanded
         answered_at: data.answered_at,
         county: data.county,
         tool_executions: data.tool_executions,
+        credits_spent: data.credits_spent,
+        credit_budget: data.credit_budget,
         provider: data.provider,
         fallback_used: data.fallback_used,
         fallback_reason: data.fallback_reason,
@@ -120,6 +160,9 @@ export default function ChatPanel({ selectedCounty, onSelectCounty, chatExpanded
       };
 
       setMessages((prev) => [...prev, agentMessage]);
+
+      const findings = extractMapFindings(data.tool_executions);
+      if (findings && onAgentFindings) onAgentFindings(findings);
 
       if (data.county?.county_fips && onSelectCounty) {
         onSelectCounty(data.county.county_fips);
@@ -137,14 +180,6 @@ export default function ChatPanel({ selectedCounty, onSelectCounty, chatExpanded
       sendQuery();
     }
   };
-
-  const dynamicPrompts = selectedCounty
-    ? [
-      `Evaluate feasibility and make funding decision for ${selectedCounty.county_name}`,
-      `Inspect substation capacity & distance in ${selectedCounty.county_name}`,
-      `Compare ${selectedCounty.county_name} (${formatRatio(selectedCounty.driver_to_plug_ratio)} EVs/port) against state median`,
-    ]
-    : [];
 
   return (
     <div className="card chat-panel-container">
@@ -164,7 +199,7 @@ export default function ChatPanel({ selectedCounty, onSelectCounty, chatExpanded
             </button>
           </div>
         ) : (
-          <span style={{ fontSize: '0.78rem', color: '#ffffff' }}>California Statewide Context</span>
+          <span style={{ fontSize: '0.78rem', color: '#ffffff' }}>Statewide Context</span>
         )}
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
@@ -218,20 +253,10 @@ export default function ChatPanel({ selectedCounty, onSelectCounty, chatExpanded
                     </div>
 
                     {/* Tool Execution Details */}
-                    {msg.tool_executions && msg.tool_executions.length > 0 && (
-                      <details style={{ marginTop: '0.65rem', fontSize: '0.76rem', color: 'var(--fg-muted)' }}>
-                        <summary style={{ cursor: 'pointer', fontWeight: 600, color: 'var(--accent-darker)' }}>
-                          ⚙️ Executed {msg.tool_executions.length} MCP Tools &amp; Data Checks
-                        </summary>
-                        <div style={{ marginTop: '0.35rem', background: 'var(--bg)', padding: '0.5rem', borderRadius: 6 }}>
-                          {msg.tool_executions.map((te, idx) => (
-                            <div key={idx} style={{ marginBottom: '0.25rem' }}>
-                              <code>{te.tool}</code>
-                            </div>
-                          ))}
-                        </div>
-                      </details>
-                    )}
+                    <ToolExecutionList
+                      executions={msg.tool_executions}
+                      creditsSpent={msg.credits_spent}
+                    />
 
                     {/* Confidence & Metadata */}
                     {msg.confidence && (
@@ -253,6 +278,14 @@ export default function ChatPanel({ selectedCounty, onSelectCounty, chatExpanded
                         Context: {msg.context_scope.state}
                         {msg.context_scope.county ? ` · ${msg.context_scope.county}` : ''}
                         {` · ${msg.context_scope.history_messages} prior messages · ${msg.context_scope.mireye_fields} Mireye fields`}
+                      </div>
+                    )}
+
+                    {msg.credits_spent > 0 && (
+                      <div style={{ marginTop: '0.4rem', fontSize: '0.75rem' }}>
+                        <span style={{ background: 'var(--accent-light)', border: '1px solid var(--accent-border)', color: 'var(--accent-darker)', padding: '0.15rem 0.45rem', borderRadius: 999, fontWeight: 600 }}>
+                          ⚡ Live evidence: {msg.credits_spent} Mireye credits spent
+                        </span>
                       </div>
                     )}
 
@@ -321,27 +354,6 @@ export default function ChatPanel({ selectedCounty, onSelectCounty, chatExpanded
 
         <div ref={messagesEndRef} />
       </div>
-
-      {/* Suggested Quick Prompts */}
-      {dynamicPrompts.length > 0 && (
-        <div className="chat-quick-prompts">
-          <div style={{ fontSize: '0.72rem', fontWeight: 600, color: 'var(--fg-muted)', marginBottom: '0.35rem' }}>
-            Suggested actions:
-          </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
-            {dynamicPrompts.slice(0, 3).map((prompt, idx) => (
-              <button
-                key={idx}
-                onClick={() => sendQuery(prompt)}
-                disabled={loading}
-                className="chat-prompt-pill"
-              >
-                {prompt}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Input Box */}
       <div className="chat-input-area">

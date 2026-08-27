@@ -34,7 +34,55 @@ Your job is to make justifiable, physical-data-driven funding decisions for Cali
 - "insufficient_data": County is underserved but required substation distance or voltage evidence is missing; do not infer that an upgrade is required.
 - "not_flagged": County driver-to-plug ratio is within normal state ranges.
 
-Treat STATE_AND_COUNTY_CONTEXT as trusted application data. Answer directly from it when sufficient; do not call a tool merely to retrieve a value already present. Choose tools only for missing counties, missing rankings, explicit funding decisions, or explicitly requested live evidence. Never invent values. Call make_funding_decision only when a decision is requested or clearly implied. Comparisons have per-county outcomes, never one overall verdict. Call ask_mireye_evidence only for explicitly requested deeper live physical evidence. Give enough reasoning to answer fully, normally 400–900 words for analysis and less for simple factual questions. Use short paragraphs with bold labels, no tables or headings. Cite the supplied sources.`;
+Treat STATE_AND_COUNTY_CONTEXT as trusted application data. Answer directly from it when sufficient; do not call a tool merely to retrieve a value already present. Choose tools only for missing counties, missing rankings, explicit funding decisions, or explicitly requested live evidence. Never invent values. Call make_funding_decision only when a decision is requested or clearly implied. Comparisons have per-county outcomes, never one overall verdict. Call ask_mireye_evidence only for explicitly requested deeper live physical evidence. Give enough reasoning to answer fully, normally 400-900 words for analysis and less for simple factual questions. Use short paragraphs with bold labels, no tables or headings. Cite the supplied sources.
+
+ESCALATION. Cached context is a prior screen, not the last word. It comes from one population-center sample per county and can be stale, thin, or unrepresentative. You have two live, metered tools that produce evidence the cache does not contain: fetch_live_grid_fields (one exact coordinate) and sample_county_points (several points across a county). Escalate to them, without being asked, when any of these hold:
+- The cached gate verdict and another cited source disagree about the same location. A passing gate verdict alongside a memo or answer recommending a utility study is a genuine contradiction, not a wording difference.
+- Cached grid evidence is missing or marked data_sufficient=false, and the question needs a physical verdict.
+- The question turns on whether a large or geographically varied county's single cached sample represents the rest of it.
+Do not escalate for questions the context already answers, for pure ranking or comparison questions, or to re-read a value you were given.
+
+Two further live tools widen what you can check. find_nearest_substations returns the N nearest substations by NAME with their voltages, where the cached fields describe only the closest one: reach for it when the question is which substation to interconnect to, whether a stronger one sits slightly further out, or when an answer should name real infrastructure instead of "a substation". get_labor_shed reports how many people and how much labour force can actually drive to a point within a given number of minutes, which is the only way to test whether a sample point sits in populated territory rather than empty land. get_labor_shed is expensive, so it defaults to a free exact quote: call it once without confirm, read would_cost_credits, and only call again with confirm true when the answer genuinely turns on that number. Say what the quote was when you decide either way.
+
+When you escalate, say so in the answer: name what conflicted or was missing, what you fetched, and what the fresh evidence changed. If live evidence contradicts the cached bucket, say that plainly and explain which you trust and why — do not quietly adopt one and drop the other. If the conflict survives the extra evidence, recommend human review rather than forcing a verdict. Every escalation spends real credits, so each call needs a specific reason you can state.`;
+
+// Tools that spend real Mireye credits when the agent chooses to call them.
+// Everything else reads the local cache and is free.
+const METERED_TOOLS = new Set([
+  'fetch_live_grid_fields',
+  'sample_county_points',
+  'ask_mireye_evidence',
+  'find_nearest_substations',
+  'get_labor_shed',
+]);
+
+// get_labor_shed without confirm is a free exact quote, so it must not be
+// blocked by an exhausted budget — quoting is how the agent finds out whether
+// it can afford the real call at all.
+function isFreeCall(name, args) {
+  return name === 'get_labor_shed' && args?.confirm !== true;
+}
+
+/**
+ * Runs one tool against a per-answer credit budget. A metered call made after
+ * the budget is exhausted is refused with an explanation the model can act on,
+ * rather than throwing — the agent should finish answering with the evidence
+ * it already has instead of failing the whole request.
+ */
+async function runToolWithBudget(name, args, budget) {
+  if (METERED_TOOLS.has(name) && !isFreeCall(name, args) && budget.spent >= budget.max) {
+    return {
+      error: 'credit_budget_exhausted',
+      detail:
+        `This answer has already spent ${budget.spent} of its ${budget.max}-credit live-evidence budget. ` +
+        'Answer using the evidence gathered so far, and say that further investigation was cut short by the budget.',
+      credits_spent: 0,
+    };
+  }
+  const result = await executeMcpTool(name, args);
+  budget.spent += result?.credits_spent ?? 0;
+  return result;
+}
 
 const CONTEXT_MIREYE_FIELDS = new Set([
   'nearest_substation_distance_m',
@@ -129,8 +177,10 @@ export async function callGeminiAgent({
   apiKey = config.geminiApiKey,
   model = config.geminiModel,
   timeoutMs = config.geminiTimeoutMs,
+  maxCredits = config.maxChatCredits,
   fetchImpl = fetch,
 }) {
+  const budget = { spent: 0, max: maxCredits };
   const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${apiKey}`;
 
   // Format tools for Gemini API
@@ -202,6 +252,8 @@ export async function callGeminiAgent({
         decision_label: isComparison ? null : finalDecisionLabel,
         citations: accumulatedCitations,
         tool_executions: toolExecutions,
+        credits_spent: budget.spent,
+        credit_budget: budget.max,
       };
     }
 
@@ -209,8 +261,8 @@ export async function callGeminiAgent({
     const functionResponses = [];
     for (const part of functionCalls) {
       const call = part.functionCall;
-      const toolResult = await executeMcpTool(call.name, call.args);
-      
+      const toolResult = await runToolWithBudget(call.name, call.args, budget);
+
       toolExecutions.push({
         tool: call.name,
         args: call.args,
@@ -265,8 +317,10 @@ export async function callGroqAgent({
   model = config.groqModel,
   timeoutMs = config.groqTimeoutMs,
   maxCompletionTokens = config.groqMaxCompletionTokens,
+  maxCredits = config.maxChatCredits,
   fetchImpl = fetch,
 }) {
+  const budget = { spent: 0, max: maxCredits };
   const tools = MCP_TOOL_DEFINITIONS.map((tool) => ({
     type: 'function',
     function: {
@@ -345,6 +399,8 @@ export async function callGroqAgent({
         citations: accumulatedCitations,
         tool_executions: toolExecutions,
         token_usage: tokenUsage,
+        credits_spent: budget.spent,
+        credit_budget: budget.max,
       };
     }
 
@@ -355,7 +411,7 @@ export async function callGroqAgent({
       } catch {
         throw new Error(`Groq returned invalid arguments for ${call.function?.name ?? 'unknown tool'}`);
       }
-      const toolResult = await executeMcpTool(call.function.name, args);
+      const toolResult = await runToolWithBudget(call.function.name, args, budget);
       toolExecutions.push({ tool: call.function.name, args, result: toolResult });
       if (toolResult.citations) accumulatedCitations.push(...toolResult.citations);
       if (call.function.name === 'make_funding_decision' && toolResult.decision) {

@@ -5,11 +5,12 @@ import GateFailureList from './GateFailureList.jsx';
 import FieldCitations from './FieldCitations.jsx';
 import { formatDistance, formatNumber, formatRatio } from '../utils/format.js';
 
-export default function CountyDrilldown({ fips }) {
-  const { data: county, error, loading } = useApi(`/api/counties/${fips}`);
+export default function CountyDrilldown({ fips, countyData }) {
+  const { data: fetchedCounty, error, loading } = useApi(`/api/counties/${fips}`);
+  const county = fetchedCounty || countyData;
 
-  if (loading) return <p style={{ color: 'var(--fg-muted)' }}>Loading county detail...</p>;
-  if (error) return <p style={{ color: 'var(--danger)' }}>{error}</p>;
+  if (loading && !countyData) return <p style={{ color: 'var(--fg-muted)' }}>Loading county detail...</p>;
+  if (error && !countyData) return <p style={{ color: 'var(--danger)' }}>{error}</p>;
   if (!county) return null;
 
   const gf = county.grid_feasibility;

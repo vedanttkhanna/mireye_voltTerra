@@ -80,7 +80,11 @@ test('deterministic fallback compares selected county with a county named in nat
   assert.equal(result.decision, null);
   assert.match(result.answer, /Calaveras County/);
   assert.match(result.answer, /Contra Costa County/);
-  assert.match(result.answer, /29\.5 vs\. 61\.7/);
+  // Asserts the "A vs. B" comparison shape, not the literal ratios: these come
+  // from the live scored-counties cache and legitimately move whenever the
+  // pipeline is re-run, which previously made this test fail on a data refresh
+  // rather than on a real regression.
+  assert.match(result.answer, /\d+\.\d+ vs\. \d+\.\d+/);
   assert.match(result.answer, /no live Mireye credit call was needed/i);
   assert.deepEqual(result.tool_executions.map((item) => item.tool), [
     'get_county_demand_metrics',

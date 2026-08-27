@@ -27,6 +27,11 @@ export const config = {
   // developer.nrel.gov retired May 2026; AFDC now serves from developer.nlr.gov.
   nrelApiKey: process.env.NREL_API_KEY || 'DEMO_KEY',
   afdcBaseUrl: process.env.AFDC_BASE_URL || 'https://developer.nlr.gov',
+  // ACS now requires a free Census API key. A live sweep still runs without
+  // one using the bundled Census population reference, but exposes that
+  // provenance rather than presenting it as a fresh population pull.
+  censusApiKey: process.env.CENSUS_API_KEY || '',
+  censusAcsBaseUrl: process.env.CENSUS_ACS_BASE_URL || 'https://api.census.gov/data/2024/acs/acs5',
 
   pilotState: process.env.PILOT_STATE || 'CA',
   underservedThresholdMultiplier: Number(process.env.UNDERSERVED_THRESHOLD_MULTIPLIER) || 2.0,
@@ -37,4 +42,14 @@ export const config = {
   // monthly allowance (25,000 on the build plan) in one run.
   maxSweepCredits: Number(process.env.MAX_SWEEP_CREDITS) || 15000,
   maxPointCheckCredits: Number(process.env.MAX_POINT_CHECK_CREDITS) || 50,
+
+  // Ceiling on live Mireye spend within a single chat answer. The agent can
+  // escalate to metered tools on its own initiative, so this bounds the blast
+  // radius of one badly-judged escalation (or a prompt-injected one) to a
+  // couple of points rather than the remaining monthly allowance.
+  maxChatCredits: Number(process.env.MAX_CHAT_CREDITS) || 1500,
+
+  // Concurrent /v1/fetch/batch requests for a statewide run. Four is far
+  // below Mireye's 60 req/min cap while removing the avoidable serial wait.
+  liveSweepConcurrency: Math.min(6, Math.max(1, Number(process.env.LIVE_SWEEP_CONCURRENCY) || 4)),
 };

@@ -34,7 +34,7 @@ const DATA_DIR = path.join(__dirname, '../data');
 const BOUNDARY_KML_URL = 'https://www2.census.gov/geo/tiger/GENZ2020/kml/cb_2020_us_county_500k.zip';
 const BOUNDARY_KML_ENTRY = 'cb_2020_us_county_500k.kml';
 
-const STATE_FIPS = { CA: '06' }; // extend if a second pilot state is ever added
+import { STATE_FIPS } from './live-sweep.js';
 
 export async function ingestCountyBoundaries({ state = config.pilotState, fetchImpl = fetch } = {}) {
   const stateFips = STATE_FIPS[state];

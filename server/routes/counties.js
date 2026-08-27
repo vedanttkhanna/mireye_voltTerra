@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { Router } from 'express';
 import { config } from '../config.js';
 import { conflictWhileRunning, rateLimit } from '../lib/operation-guard.js';
+import { findLiveCountyByFips, findLiveSweepByState } from './live.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CACHE_DIR = path.join(__dirname, '../data/cache');
@@ -85,13 +86,16 @@ countiesRouter.get('/', async (_req, res) => {
 // GET /api/counties/boundaries — GeoJSON county polygons (Census
 // cartographic boundary file, server/services/county-boundaries.js) merged
 // with each county's current bucket/ratio, for the map's choropleth layer.
-// A static file lookup with one merge pass, not a live pipeline output.
-countiesRouter.get('/boundaries', async (_req, res) => {
+countiesRouter.get('/boundaries/:state?', async (req, res) => {
   try {
-    const raw = await readFile(path.join(__dirname, `../data/county-boundaries-${config.pilotState}.json`), 'utf8');
+    const state = String(req.params.state || req.query.state || config.pilotState).toUpperCase();
+    const raw = await readFile(path.join(__dirname, `../data/county-boundaries-${state}.json`), 'utf8');
     const boundaries = JSON.parse(raw);
-    const scored = await loadScoredCounties();
-    const scoredByFips = new Map((scored?.counties ?? []).map((c) => [c.county_fips, c]));
+
+    // Map colouring is tied only to the current in-memory live run, including
+    // California. Never blend it with the legacy scored-counties cache.
+    const liveResult = findLiveSweepByState(state);
+    const scoredByFips = new Map((liveResult?.counties ?? []).map((c) => [c.county_fips, c]));
 
     res.json({
       ...boundaries,
@@ -101,7 +105,7 @@ countiesRouter.get('/boundaries', async (_req, res) => {
           ...f,
           properties: {
             ...f.properties,
-            driver_to_plug_ratio: s?.driver_to_plug_ratio ?? null,
+            driver_to_plug_ratio: s?.driver_to_plug_ratio ?? s?.people_per_port ?? null,
             underserved: s?.underserved ?? null,
             bucket: s?.bucket ?? null,
           },
@@ -109,7 +113,7 @@ countiesRouter.get('/boundaries', async (_req, res) => {
       }),
     });
   } catch (err) {
-    if (err.code === 'ENOENT') return res.status(404).json({ error: 'not_found', detail: 'No county boundaries ingested yet — npm run ingest:boundaries' });
+    if (err.code === 'ENOENT') return res.status(404).json({ error: 'not_found', detail: `No county boundaries found for state ${req.params.state || req.query.state || config.pilotState}` });
     console.error('[counties/boundaries]', err);
     res.status(503).json({ error: 'cache_unavailable' });
   }
@@ -137,9 +141,21 @@ countiesRouter.get('/stats', async (_req, res) => {
 // that decide its bucket, and the per-field citation."
 countiesRouter.get('/:fips', async (req, res) => {
   try {
-    const data = await loadJoinPipelineOutput();
-    const county = data.counties.find((c) => c.county_fips === req.params.fips);
-    if (!county) return res.status(404).json({ error: 'not_found', detail: `No county with FIPS ${req.params.fips}` });
+    let county = null;
+    try {
+      const data = await loadJoinPipelineOutput();
+      county = data.counties.find((c) => c.county_fips === req.params.fips);
+    } catch {
+      // ignore cache missing
+    }
+
+    if (!county) {
+      const liveCounty = findLiveCountyByFips(req.params.fips);
+      if (liveCounty) {
+        return res.json(liveCounty);
+      }
+      return res.status(404).json({ error: 'not_found', detail: `No county with FIPS ${req.params.fips}` });
+    }
 
     const scored = await loadScoredCounties();
     const scoredCounty = scored?.counties.find((c) => c.county_fips === req.params.fips) ?? null;

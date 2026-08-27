@@ -165,7 +165,7 @@ export class MireyeClient {
    * selection for the whole batch. Throws if given more than 25; use
    * fetchBatchChunked for larger sweeps.
    */
-  async fetchBatch({ locations, fields, preset } = {}, { idempotencyKey } = {}) {
+  async fetchBatch({ locations, fields, preset } = {}, { idempotencyKey , timeoutMs} = {}) {
     if (!Array.isArray(locations) || locations.length === 0) {
       throw new Error('fetchBatch requires a non-empty locations array');
     }
@@ -177,6 +177,7 @@ export class MireyeClient {
     return this._request('POST', '/v1/fetch/batch', {
       body: { locations, fields, preset },
       headers: idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : {},
+      ...(timeoutMs ? { timeoutMs } : {}),
     });
   }
 
@@ -227,6 +228,22 @@ export class MireyeClient {
       body: { lat, lng, address, question, include_trace: includeTrace },
       timeoutMs: this.askTimeoutMs,
     });
+  }
+
+  /**
+   * POST /v1/proximity — multi-coordinate drive-time compute. One
+   * discriminated-union body keyed on `op`: distance, nearest, screen,
+   * labor_shed.
+   *
+   * Pricing varies enormously by op and mode, and is NOT the flat
+   * 1-credit-per-field model the rest of the API uses: a `nearest` over
+   * @substations costs 2 credits straightline but 300 driving, and a 15-minute
+   * labor_shed costs ~1,200. Always pass `max_credits` — the refusal is a 422
+   * that states the exact price and happens BEFORE the driving matrix is
+   * charged, so it doubles as a free price probe.
+   */
+  proximity(op) {
+    return this._request('POST', '/v1/proximity', { body: op });
   }
 
   /** POST /v1/field-requests — spend a scarce field request. */

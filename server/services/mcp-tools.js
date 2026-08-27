@@ -4,10 +4,44 @@ import { fileURLToPath } from 'node:url';
 import { config } from '../config.js';
 import { mireye } from './mireye.js';
 import { computeGridFeasibilityScore } from './scoring.js';
+import { GRID_FEASIBILITY_FIELDS } from './orchestrator.js';
+import { pointInGeometry, haversineDistanceMeters } from '../lib/geo.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const CACHE_DIR = path.join(__dirname, '../data/cache');
+const DATA_DIR = path.join(__dirname, '../data');
+const CACHE_DIR = path.join(DATA_DIR, 'cache');
 const METERS_PER_MILE = 1609.34;
+
+// Every field in GRID_FEASIBILITY_FIELDS bills at 1 credit/location and none
+// belong to a metered group (parcel fields are deliberately excluded), so a
+// live point fetch costs exactly this much — deterministic, no quote needed.
+const CREDITS_PER_LIVE_POINT = GRID_FEASIBILITY_FIELDS.length;
+
+// /v1/ask is priced flat per the build brief ("POST /v1/ask - ask in plain
+// English - 10 credits"), independent of how many fields it fetches internally.
+const ASK_CREDITS = 10;
+
+// /v1/proximity prices per op and mode, not per field. These ceilings are
+// passed as max_credits so a wrong mode is refused with a 422 stating the real
+// price rather than silently charged. Observed live: nearest/@substations is
+// 2 credits straightline and 300 driving; a 15-minute labor_shed is ~1,200.
+const PROXIMITY_STRAIGHTLINE_CEILING = 25;
+const PROXIMITY_DRIVING_CEILING = 400;
+// A 15-minute shed in a dense metro was observed to price at 5,388 credits
+// (the price is the number of census tracts in the uncertain ring, which grows
+// fast in a city), so a 5,000 ceiling refused exactly the urban sheds that are
+// most worth running. Sized to clear those while still stopping a runaway.
+const LABOR_SHED_CEILING = 9000;
+
+async function loadCountyBoundaries(state = config.pilotState) {
+  try {
+    const raw = await readFile(path.join(DATA_DIR, `county-boundaries-${state}.json`), 'utf8');
+    return JSON.parse(raw);
+  } catch (err) {
+    if (err.code === 'ENOENT') return null;
+    throw err;
+  }
+}
 
 async function loadScoredData(state = config.pilotState) {
   try {
@@ -102,6 +136,91 @@ export const MCP_TOOL_DEFINITIONS = [
     },
   },
   {
+    name: 'fetch_live_grid_fields',
+    description:
+      `LIVE AND METERED (~${CREDITS_PER_LIVE_POINT} Mireye credits per call). Fetches fresh cited grid fields ` +
+      'straight from Mireye at one exact coordinate and evaluates the feasibility gates on them. This is the ' +
+      'only tool that can produce evidence not already in the cache. Use it when cached evidence is missing, ' +
+      'marked insufficient, or contradicts another source — never to re-read a value already present in context.',
+    parameters: {
+      type: 'OBJECT',
+      properties: {
+        lat: { type: 'NUMBER', description: 'Latitude of the point to investigate.' },
+        lng: { type: 'NUMBER', description: 'Longitude of the point to investigate.' },
+        reason: {
+          type: 'STRING',
+          description: 'Why live evidence is needed at this point rather than the cached value. Shown to the user.',
+        },
+      },
+      required: ['lat', 'lng', 'reason'],
+    },
+  },
+  {
+    name: 'sample_county_points',
+    description:
+      `LIVE AND METERED (~${CREDITS_PER_LIVE_POINT} Mireye credits per point). Fetches fresh grid fields at ` +
+      'several points spread across a county, to test whether its single population-center sample is ' +
+      'representative of the whole county. Use for large or geographically varied counties, or when one ' +
+      'sample point contradicts other evidence.',
+    parameters: {
+      type: 'OBJECT',
+      properties: {
+        county_name_or_fips: { type: 'STRING', description: 'County name or 5-digit FIPS code.' },
+        count: { type: 'NUMBER', description: 'How many points to sample, 1 to 4. Defaults to 3.' },
+        reason: {
+          type: 'STRING',
+          description: 'Why extra sampling is warranted for this county. Shown to the user.',
+        },
+      },
+      required: ['county_name_or_fips', 'reason'],
+    },
+  },
+  {
+    name: 'find_nearest_substations',
+    description:
+      'LIVE AND METERED (about 2 credits straightline). Returns the N nearest electrical substations to a ' +
+      'coordinate, each with its NAME, coordinates and max voltage, from Mireye\'s curated @substations set. ' +
+      'The cached grid fields only describe the single closest substation, so use this when the question is ' +
+      'which substation to interconnect to, whether a higher-voltage option exists slightly further out, or ' +
+      'when a memo should name real infrastructure. Set mode to driving only if road distance genuinely ' +
+      'matters: it costs about 300 credits instead of 2.',
+    parameters: {
+      type: 'OBJECT',
+      properties: {
+        lat: { type: 'NUMBER', description: 'Latitude of the origin point.' },
+        lng: { type: 'NUMBER', description: 'Longitude of the origin point.' },
+        n: { type: 'NUMBER', description: 'How many substations to return, 1 to 25. Defaults to 5.' },
+        mode: { type: 'STRING', description: '"straightline" (default, ~2 credits) or "driving" (~300 credits).' },
+        reason: { type: 'STRING', description: 'Why this lookup is needed. Shown to the user.' },
+      },
+      required: ['lat', 'lng', 'reason'],
+    },
+  },
+  {
+    name: 'get_labor_shed',
+    description:
+      'Population and civilian labor force reachable within a driving-time shed of a coordinate. This is a ' +
+      'DEMAND signal the county-level registration ratio cannot give you: it says how many people can ' +
+      'actually reach this exact point, which is how you test whether a sample point sits in populated ' +
+      'territory or empty land. EXPENSIVE when run for real (roughly 1,200 credits). It defaults to a FREE ' +
+      'exact price quote — call it first without confirm, read would_cost_credits, and only pass confirm ' +
+      'true if the answer genuinely needs the real number.',
+    parameters: {
+      type: 'OBJECT',
+      properties: {
+        lat: { type: 'NUMBER', description: 'Latitude of the origin point.' },
+        lng: { type: 'NUMBER', description: 'Longitude of the origin point.' },
+        minutes: { type: 'NUMBER', description: 'Driving-minutes radius, 5 to 90. Defaults to 15.' },
+        confirm: {
+          type: 'BOOLEAN',
+          description: 'False (default) returns a free exact price quote. True actually runs and charges it.',
+        },
+        reason: { type: 'STRING', description: 'Why this shed is needed. Shown to the user.' },
+      },
+      required: ['lat', 'lng', 'reason'],
+    },
+  },
+  {
     name: 'make_funding_decision',
     description: 'Determines the recommendation bucket, including insufficient_data when physical evidence is missing.',
     parameters: {
@@ -117,6 +236,104 @@ export const MCP_TOOL_DEFINITIONS = [
     },
   },
 ];
+
+/** Flattens any GeoJSON geometry's coordinates into a flat [lng, lat][] list. */
+function collectCoords(geometry, out = []) {
+  if (!geometry) return out;
+  if (geometry.type === 'GeometryCollection') {
+    for (const g of geometry.geometries) collectCoords(g, out);
+    return out;
+  }
+  const walk = (arr) => {
+    if (typeof arr[0] === 'number') {
+      out.push(arr);
+      return;
+    }
+    for (const item of arr) walk(item);
+  };
+  if (geometry.coordinates) walk(geometry.coordinates);
+  return out;
+}
+
+function geometryBbox(geometry) {
+  const coords = collectCoords(geometry);
+  if (!coords.length) return null;
+  let minLng = Infinity;
+  let maxLng = -Infinity;
+  let minLat = Infinity;
+  let maxLat = -Infinity;
+  for (const [lng, lat] of coords) {
+    if (lng < minLng) minLng = lng;
+    if (lng > maxLng) maxLng = lng;
+    if (lat < minLat) minLat = lat;
+    if (lat > maxLat) maxLat = lat;
+  }
+  return { minLng, maxLng, minLat, maxLat };
+}
+
+/**
+ * Picks up to `count` points spread across a county's interior. Walks a grid
+ * over the bounding box and keeps only points that actually fall inside the
+ * polygon (pointInGeometry handles holes and multi-part counties like San
+ * Francisco), then spreads the picks across the accepted list. These are
+ * genuinely new coordinates — deliberately not the county's cached
+ * population-center or corridor points, since re-fetching those would spend
+ * credits to learn nothing the cache doesn't already hold.
+ */
+export function interiorPoints(geometry, count = 3, steps = 7) {
+  const bbox = geometryBbox(geometry);
+  if (!bbox) return [];
+  const candidates = [];
+  for (let i = 1; i < steps; i++) {
+    for (let j = 1; j < steps; j++) {
+      const lat = bbox.minLat + ((bbox.maxLat - bbox.minLat) * i) / steps;
+      const lng = bbox.minLng + ((bbox.maxLng - bbox.minLng) * j) / steps;
+      if (pointInGeometry({ lat, lng }, geometry)) candidates.push({ lat, lng });
+    }
+  }
+  if (candidates.length <= count) return candidates;
+
+  // Farthest-point sampling. Taking evenly-spaced indices out of the candidate
+  // list clusters badly, because the grid walk emits candidates in row-major
+  // order — on a wide county like Riverside that returned three points sharing
+  // one longitude, sampling a single edge. Greedily picking the candidate
+  // farthest from everything already chosen spreads across the real extent.
+  const start = candidates.reduce((best, c) => {
+    const center = {
+      lat: (bbox.minLat + bbox.maxLat) / 2,
+      lng: (bbox.minLng + bbox.maxLng) / 2,
+    };
+    return haversineDistanceMeters(c, center) < haversineDistanceMeters(best, center) ? c : best;
+  }, candidates[0]);
+
+  const picked = [start];
+  while (picked.length < count) {
+    let farthest = null;
+    let farthestDistance = -1;
+    for (const c of candidates) {
+      if (picked.includes(c)) continue;
+      const nearest = Math.min(...picked.map((p) => haversineDistanceMeters(c, p)));
+      if (nearest > farthestDistance) {
+        farthestDistance = nearest;
+        farthest = c;
+      }
+    }
+    if (!farthest) break;
+    picked.push(farthest);
+  }
+  return picked;
+}
+
+function substationCitation(inputs, confidence = 'high') {
+  return {
+    source: inputs.substation_source === 'OSM' ? 'OpenStreetMap Power' : 'EIA Substation Dataset',
+    source_url:
+      inputs.substation_source === 'OSM'
+        ? 'https://www.openstreetmap.org'
+        : 'https://www.eia.gov/electricity/data.php',
+    confidence,
+  };
+}
 
 /**
  * Resolves a county record from scored data or join data by name or FIPS.
@@ -136,7 +353,15 @@ export function resolveCounty(nameOrFips, scoredData) {
 /**
  * Executes an MCP tool invocation and returns structured output with citations.
  */
-export async function executeMcpTool(toolName, args, { askImpl = mireye.ask.bind(mireye) } = {}) {
+export async function executeMcpTool(
+  toolName,
+  args,
+  {
+    askImpl = mireye.ask.bind(mireye),
+    fetchImpl = mireye.fetch.bind(mireye),
+    proximityImpl = mireye.proximity.bind(mireye),
+  } = {}
+) {
   const scoredData = await loadScoredData();
   const joinData = await loadJoinData();
 
@@ -257,6 +482,229 @@ export async function executeMcpTool(toolName, args, { askImpl = mireye.ask.bind
         confidence: response.confidence ?? 'moderate',
         citations: response.citations ?? [],
         data_gaps: response.data_gaps ?? [],
+        credits_spent: ASK_CREDITS,
+      };
+    }
+
+    case 'fetch_live_grid_fields': {
+      const lat = Number(args.lat);
+      const lng = Number(args.lng);
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+        return { error: 'fetch_live_grid_fields requires numeric lat and lng.', credits_spent: 0 };
+      }
+
+      const response = await fetchImpl({ lat, lng, fields: GRID_FEASIBILITY_FIELDS });
+      if (!response?.fields || typeof response.fields !== 'object' || Array.isArray(response.fields)) {
+        return { error: 'Mireye returned an invalid field response for this point.', credits_spent: 0 };
+      }
+      const feasibility = computeGridFeasibilityScore(response.fields);
+
+      return {
+        live: true,
+        lat,
+        lng,
+        reason: args.reason ?? null,
+        fetched_at: response.fetched_at ?? null,
+        passes_gates: feasibility.passes_gates,
+        data_sufficient: feasibility.data_sufficient,
+        score: feasibility.score,
+        gate_failures: feasibility.gate_failures,
+        substation_distance_m: feasibility.inputs.substation_distance_m,
+        substation_distance_miles:
+          feasibility.inputs.substation_distance_m != null
+            ? Number((feasibility.inputs.substation_distance_m / METERS_PER_MILE).toFixed(2))
+            : null,
+        substation_voltage_kv: feasibility.inputs.substation_voltage_kv,
+        substation_status: feasibility.inputs.substation_status,
+        substation_source: feasibility.inputs.substation_source,
+        credits_spent: CREDITS_PER_LIVE_POINT,
+        citations: [substationCitation(feasibility.inputs)],
+      };
+    }
+
+    case 'sample_county_points': {
+      const county = resolveCounty(args.county_name_or_fips, scoredData);
+      if (!county) {
+        return { error: `County "${args.county_name_or_fips}" not found.`, credits_spent: 0 };
+      }
+      const boundaries = await loadCountyBoundaries();
+      const feature = boundaries?.features?.find((f) => f.properties.county_fips === county.county_fips);
+      if (!feature) {
+        return { error: `No boundary geometry for ${county.county_name}.`, credits_spent: 0 };
+      }
+
+      const count = Math.max(1, Math.min(4, Math.trunc(Number(args.count) || 3)));
+      const points = interiorPoints(feature.geometry, count);
+      if (points.length === 0) {
+        return { error: `Could not derive interior points for ${county.county_name}.`, credits_spent: 0 };
+      }
+
+      const samples = [];
+      let creditsSpent = 0;
+      for (const point of points) {
+        const response = await fetchImpl({ lat: point.lat, lng: point.lng, fields: GRID_FEASIBILITY_FIELDS });
+        if (!response?.fields || typeof response.fields !== 'object' || Array.isArray(response.fields)) continue;
+        creditsSpent += CREDITS_PER_LIVE_POINT;
+        const feasibility = computeGridFeasibilityScore(response.fields);
+        samples.push({
+          lat: point.lat,
+          lng: point.lng,
+          passes_gates: feasibility.passes_gates,
+          data_sufficient: feasibility.data_sufficient,
+          score: feasibility.score,
+          gate_failures: feasibility.gate_failures,
+          substation_distance_miles:
+            feasibility.inputs.substation_distance_m != null
+              ? Number((feasibility.inputs.substation_distance_m / METERS_PER_MILE).toFixed(2))
+              : null,
+          substation_voltage_kv: feasibility.inputs.substation_voltage_kv,
+          substation_source: feasibility.inputs.substation_source,
+        });
+      }
+
+      const passing = samples.filter((s) => s.passes_gates).length;
+      const cachedVerdict = county.grid_feasibility?.passes_gates ?? null;
+      const agrees = cachedVerdict == null ? null : samples.every((s) => s.passes_gates === cachedVerdict);
+
+      return {
+        live: true,
+        county_name: county.county_name,
+        reason: args.reason ?? null,
+        points_sampled: samples.length,
+        points_passing_gates: passing,
+        cached_population_center_passes_gates: cachedVerdict,
+        // The whole point of this tool: does the county's single cached
+        // sample actually represent the rest of it?
+        samples_agree_with_cached_verdict: agrees,
+        representativeness: agrees === null ? 'unknown' : agrees ? 'consistent' : 'inconsistent',
+        samples,
+        credits_spent: creditsSpent,
+        citations: samples.length ? [substationCitation({ substation_source: samples[0].substation_source })] : [],
+      };
+    }
+
+    case 'find_nearest_substations': {
+      const lat = Number(args.lat);
+      const lng = Number(args.lng);
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+        return { error: 'find_nearest_substations requires numeric lat and lng.', credits_spent: 0 };
+      }
+      const mode = args.mode === 'driving' ? 'driving' : 'straightline';
+      const n = Math.max(1, Math.min(25, Math.trunc(Number(args.n) || 5)));
+      // Ceiling sized to the op so a mis-typed mode can't quietly cost 300
+      // credits when 2 was intended; the 422 states the real price.
+      const maxCredits = mode === 'driving' ? PROXIMITY_DRIVING_CEILING : PROXIMITY_STRAIGHTLINE_CEILING;
+
+      let response;
+      try {
+        response = await proximityImpl({
+          op: 'nearest',
+          origin: `${lat},${lng}`,
+          set: '@substations',
+          n,
+          mode,
+          max_credits: maxCredits,
+        });
+      } catch (err) {
+        return {
+          error: 'substation_lookup_failed',
+          detail: err.body?.detail?.message ?? err.message,
+          credits_spent: 0,
+        };
+      }
+
+      const candidates = (response.candidates ?? []).map((c) => ({
+        name: c.name,
+        lat: c.lat,
+        lng: c.lng,
+        max_voltage_kv: c.attributes?.max_voltage_kv ?? null,
+        distance_miles: c.distance_miles != null ? Number(c.distance_miles.toFixed(2)) : null,
+        duration_minutes: c.duration_minutes ?? null,
+      }));
+
+      // The point of returning N rather than 1: the closest substation is not
+      // always the best interconnection target if a higher-voltage one sits
+      // only slightly further out.
+      const strongest = candidates.reduce(
+        (best, c) => (c.max_voltage_kv != null && (best == null || c.max_voltage_kv > best.max_voltage_kv) ? c : best),
+        null
+      );
+
+      return {
+        live: true,
+        mode,
+        reason: args.reason ?? null,
+        substations_found: candidates.length,
+        nearest: candidates[0] ?? null,
+        highest_voltage_nearby: strongest,
+        candidates,
+        credits_spent: response.credits_charged ?? 0,
+        citations: [
+          {
+            source: 'Mireye curated substation set (@substations)',
+            source_url: 'https://www.eia.gov/electricity/data.php',
+            confidence: 'high',
+          },
+        ],
+      };
+    }
+
+    case 'get_labor_shed': {
+      const lat = Number(args.lat);
+      const lng = Number(args.lng);
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
+        return { error: 'get_labor_shed requires numeric lat and lng.', credits_spent: 0 };
+      }
+      const minutes = Math.max(5, Math.min(90, Math.trunc(Number(args.minutes) || 15)));
+      const confirmed = args.confirm === true;
+
+      let response;
+      try {
+        response = await proximityImpl({
+          op: 'labor_shed',
+          origin: `${lat},${lng}`,
+          minutes,
+          estimate: !confirmed,
+          ...(confirmed ? { max_credits: LABOR_SHED_CEILING } : {}),
+        });
+      } catch (err) {
+        return {
+          error: 'labor_shed_failed',
+          detail: err.body?.detail?.message ?? err.message,
+          credits_spent: 0,
+        };
+      }
+
+      // Unconfirmed calls come back as a free, exact quote rather than an
+      // answer — the same quote-before-you-spend discipline the sweep uses.
+      if (!confirmed) {
+        return {
+          quote_only: true,
+          reason: args.reason ?? null,
+          minutes,
+          would_cost_credits: response.would_cost_credits ?? null,
+          tracts_to_query: response.annulus_tracts ?? null,
+          note: 'This is a free exact quote, not a result. Call again with confirm true to actually run it.',
+          credits_spent: 0,
+        };
+      }
+
+      return {
+        live: true,
+        reason: args.reason ?? null,
+        minutes,
+        population_within_shed: response.population ?? null,
+        civilian_labor_force_within_shed: response.civilian_labor_force ?? null,
+        tracts_counted: response.tracts_counted ?? null,
+        tracts_unreachable: response.tracts_unreachable ?? null,
+        credits_spent: response.credits_charged ?? 0,
+        citations: [
+          {
+            source: 'US Census ACS tract labor force via Mireye proximity',
+            source_url: 'https://www.census.gov/programs-surveys/acs',
+            confidence: 'high',
+          },
+        ],
       };
     }
 
