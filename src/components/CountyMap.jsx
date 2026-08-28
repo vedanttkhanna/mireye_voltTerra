@@ -83,17 +83,28 @@ function substationIcon(isStrongest) {
   });
 }
 
-// Public charging stations shown in rider mode. Blue circles, visually distinct
-// from the yellow substation diamonds (grid infrastructure) and the green/red
-// county sample dots (funding decisions).
+// Public charging stations shown in rider mode. The EV glyph makes their
+// purpose recognizable at a glance; the small badge separates DC fast from L2.
 function stationIcon(hasDcFast) {
-  const size = hasDcFast ? 16 : 11;
-  const color = hasDcFast ? '#1d4ed8' : '#60a5fa';
+  const size = hasDcFast ? 28 : 25;
   return L.divIcon({
-    className: '',
-    html: `<div style="width:${size}px;height:${size}px;border-radius:50%;background:${color};border:2px solid #ffffff;box-shadow:0 1px 5px rgba(0,0,0,0.35)"></div>`,
-    iconSize: [size, size],
-    iconAnchor: [size / 2, size / 2],
+    className: 'ev-station-div-icon',
+    html: `
+      <span class="ev-station-map-icon ${hasDcFast ? 'dc-fast' : 'level-two'}">
+        <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M5 13.5 6.4 9.4A2 2 0 0 1 8.3 8h7.4a2 2 0 0 1 1.9 1.4l1.4 4.1" />
+          <path d="M5 12.5h14a2 2 0 0 1 2 2V18H3v-3.5a2 2 0 0 1 2-2Z" />
+          <path d="M5 18v1.5M19 18v1.5" />
+          <circle cx="7" cy="15.2" r="1" />
+          <circle cx="17" cy="15.2" r="1" />
+          <path class="ev-glyph-bolt" d="m13.2 2-3 4.4h2.3l-.8 3.5 3.3-4.7h-2.2l.4-3.2Z" />
+        </svg>
+        <span class="ev-station-type-badge">${hasDcFast ? '⚡' : 'L2'}</span>
+      </span>
+    `,
+    iconSize: [size, size + 4],
+    iconAnchor: [size / 2, size + 2],
+    popupAnchor: [0, -(size + 1)],
   });
 }
 
@@ -275,7 +286,13 @@ function RiderLayer({ result, focusStation }) {
       </Marker>
 
       {result.stations.slice(0, 12).map((s) => (
-        <Marker key={s.id} position={[s.lat, s.lng]} icon={stationIcon(s.dc_fast_ports > 0)}>
+        <Marker
+          key={s.id}
+          position={[s.lat, s.lng]}
+          icon={stationIcon(s.dc_fast_ports > 0)}
+          title={`${s.name} — ${s.dc_fast_ports > 0 ? 'DC fast charging' : 'Level 2 charging'}`}
+          alt={`${s.name} EV charging station`}
+        >
           <Popup>
             <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '0.85rem', color: '#0f172a' }}>
               <strong>{s.name}</strong>
@@ -291,6 +308,44 @@ function RiderLayer({ result, focusStation }) {
       ))}
     </Fragment>
   );
+}
+
+/** Public AFDC stations for the county selected in facility map mode. */
+function CountyStationLayer({ stations = [] }) {
+  const map = useMap();
+
+  useEffect(() => {
+    const points = stations
+      .map((station) => [station.lat, station.lng])
+      .filter(([lat, lng]) => Number.isFinite(lat) && Number.isFinite(lng));
+    if (points.length === 1) map.flyTo(points[0], 12, { duration: 0.6 });
+    else if (points.length > 1) map.fitBounds(L.latLngBounds(points).pad(0.12), { maxZoom: 12, animate: true });
+  }, [stations, map]);
+
+  return stations.map((station) => (
+    <Marker
+      key={`county-station-${station.id}`}
+      position={[station.lat, station.lng]}
+      icon={stationIcon(station.dc_fast_ports > 0)}
+      title={`${station.name} — ${station.dc_fast_ports > 0 ? 'DC fast charging' : 'Level 2 charging'}`}
+      alt={`${station.name} EV charging station`}
+    >
+      <Popup>
+        <div style={{ fontFamily: 'system-ui, sans-serif', fontSize: '0.85rem', color: '#0f172a', lineHeight: 1.45 }}>
+          <strong>{station.name}</strong>
+          {station.address && <><br />{station.address}</>}
+          <br />
+          {station.network}
+          <br />
+          {station.dc_fast_ports > 0 ? `${station.dc_fast_ports} DC fast` : ''}
+          {station.dc_fast_ports > 0 && station.level2_ports > 0 ? ' · ' : ''}
+          {station.level2_ports > 0 ? `${station.level2_ports} Level 2` : ''}
+          {station.connector_types?.length > 0 && <><br />Connectors: {station.connector_types.join(', ')}</>}
+          {station.date_last_confirmed && <><br /><span style={{ color: '#64748b' }}>Confirmed {station.date_last_confirmed}</span></>}
+        </div>
+      </Popup>
+    </Marker>
+  ));
 }
 
 const LABOR_ICON = L.divIcon({
@@ -444,6 +499,11 @@ export default function CountyMap({ activeState, selectedFips, onSelectCounty, t
   const { data: boundaries, error: boundariesError } = useApi(`/api/counties/boundaries/${currentState}`);
   const hasLiveSweep = Array.isArray(liveCounties) && liveCounties.length > 0;
   const { data: stateOutline } = useApi(hasLiveSweep ? `/api/counties/state-outline/${currentState}` : null);
+  const {
+    data: countyStationData,
+    error: countyStationError,
+    loading: countyStationsLoading,
+  } = useApi(!riderMode && hasLiveSweep && selectedFips ? `/api/counties/${selectedFips}/stations` : null);
   const [exploreMode, setExploreMode] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [mapInstance, setMapInstance] = useState(null);
@@ -480,7 +540,7 @@ export default function CountyMap({ activeState, selectedFips, onSelectCounty, t
         boxShadow: '0 4px 16px rgba(15, 23, 42, 0.14)',
         backdropFilter: 'blur(8px)',
       } : { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.75rem' }}>
-        <Legend />
+        <Legend showChargingStations={Boolean(riderResult || countyStationData?.stations?.length)} />
         {backgroundMode && <ZoomButtons map={mapInstance} />}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           {toolbarAction}
@@ -532,6 +592,17 @@ export default function CountyMap({ activeState, selectedFips, onSelectCounty, t
         </p>
       )}
       {pointNotice && <p style={{ position: 'absolute', top: backgroundMode ? '8.4rem' : '3.25rem', right: '1rem', zIndex: 1001, margin: 0, padding: '0.5rem 0.7rem', borderRadius: 8, background: '#fffbeb', border: '1px solid #facc15', color: '#854d0e', fontSize: '0.8rem', fontWeight: 600 }}>{pointNotice}</p>}
+      {!riderMode && selectedFips && countyStationsLoading && (
+        <p className="map-station-status">Loading public charging stations…</p>
+      )}
+      {!riderMode && selectedFips && countyStationError && (
+        <p className="map-station-status error">{countyStationError}</p>
+      )}
+      {!riderMode && selectedFips && countyStationData && (
+        <p className="map-station-status">
+          <strong>{countyStationData.stations.length.toLocaleString()}</strong> public charging station{countyStationData.stations.length === 1 ? '' : 's'} mapped
+        </p>
+      )}
 
       <div style={backgroundMode ? { position: 'absolute', inset: 0, overflow: 'hidden' } : { borderRadius: 10, overflow: 'hidden', border: '1px solid var(--card-border)', flex: 1, minHeight: 520, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
         <MapContainer center={CA_CENTER} zoom={CA_ZOOM} zoomControl={!backgroundMode} style={{ width: '100%', height: '100%', minHeight: backgroundMode ? 0 : 520, background: '#e2e8f0' }}>
@@ -580,6 +651,8 @@ export default function CountyMap({ activeState, selectedFips, onSelectCounty, t
 
           {!riderMode && <LiveCountyLayer counties={liveCounties} selectedFips={selectedFips} onSelectCounty={onSelectCounty} riderMode={riderMode} />}
 
+          {!riderMode && <CountyStationLayer stations={countyStationData?.stations ?? []} />}
+
           {riderMode && <RiderLayer result={riderResult} focusStation={riderFocusStation} />}
           {exploreMode && (
             <ClickCapture
@@ -602,12 +675,13 @@ export default function CountyMap({ activeState, selectedFips, onSelectCounty, t
   );
 }
 
-function Legend() {
+function Legend({ showChargingStations = false }) {
   return (
     <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', fontSize: '0.78rem', color: 'var(--fg-muted)' }}>
       <LegendItem color="#facc15" label="County boundary" />
       <LegendItem color={BUCKET_FILL.fund_charger_now} label="Fund charger now" />
       <LegendItem color={BUCKET_FILL.fund_grid_upgrade_first} label="Fund grid upgrade first" />
+      {showChargingStations && <LegendItem color="#0284c7" label="Public EV charging station" />}
     </div>
   );
 }

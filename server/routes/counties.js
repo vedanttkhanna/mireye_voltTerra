@@ -5,6 +5,7 @@ import { Router } from 'express';
 import { config } from '../config.js';
 import { conflictWhileRunning, rateLimit } from '../lib/operation-guard.js';
 import { findLiveCountyByFips, findLiveSweepByState } from './live.js';
+import { liveStationsForCounty, STATE_FIPS } from '../services/live-sweep.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const CACHE_DIR = path.join(__dirname, '../data/cache');
@@ -189,6 +190,24 @@ countiesRouter.get('/state-outline/:state', async (req, res) => {
     console.error('[counties/state-outline]', err);
     res.status(503).json({ error: 'cache_unavailable' });
   }
+});
+
+// GET /api/counties/:fips/stations — public, operational EV stations from the
+// same live AFDC snapshot used to calculate this county's charger totals.
+countiesRouter.get('/:fips/stations', (req, res) => {
+  const countyFips = String(req.params.fips);
+  const state = Object.entries(STATE_FIPS).find(([, stateFips]) => countyFips.startsWith(stateFips))?.[0];
+  if (!state || countyFips.length !== 5) {
+    return res.status(400).json({ error: 'bad_fips', detail: 'Provide a valid five-digit county FIPS code' });
+  }
+  if (!findLiveSweepByState(state)) {
+    return res.status(409).json({ error: 'sweep_required', detail: `Run a live sweep for ${state} before loading stations` });
+  }
+  const inventory = liveStationsForCounty(state, countyFips);
+  if (!inventory) {
+    return res.status(409).json({ error: 'station_inventory_unavailable', detail: `Station inventory is unavailable; rerun the live sweep for ${state}` });
+  }
+  res.json(inventory);
 });
 
 // GET /api/counties/stats — the Days 8-9 scored, ranked, bucketed output:

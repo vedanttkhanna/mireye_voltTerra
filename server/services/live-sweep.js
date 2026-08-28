@@ -82,6 +82,7 @@ const UNDERSERVED_PERCENTILE = 0.75;
 
 let centroidCache = null;
 let crosswalkCache = null;
+const stationInventoryByState = new Map();
 
 function normalizedCountyName(value) {
   return String(value ?? '')
@@ -122,6 +123,7 @@ export async function chargersByCounty(state) {
     countiesForState(state).map((county) => [normalizedCountyName(county.county_name), county.county_fips])
   );
   const byCounty = new Map();
+  const stationsByCounty = new Map();
   const coverage = { county_field: 0, zip_crosswalk: 0, unresolved: 0 };
 
   for (const s of stations) {
@@ -143,8 +145,48 @@ export async function chargersByCounty(state) {
     cur.level2_ports += Number(s.ev_level2_evse_num || 0);
     cur.dc_fast_ports += Number(s.ev_dc_fast_num || 0);
     byCounty.set(countyFips, cur);
+
+    const lat = Number(s.latitude);
+    const lng = Number(s.longitude);
+    if (Number.isFinite(lat) && Number.isFinite(lng)) {
+      const countyStations = stationsByCounty.get(countyFips) ?? [];
+      countyStations.push({
+        id: s.id,
+        name: s.station_name || 'Public EV charging station',
+        lat,
+        lng,
+        network: s.ev_network || 'Non-networked',
+        level2_ports: Number(s.ev_level2_evse_num || 0),
+        dc_fast_ports: Number(s.ev_dc_fast_num || 0),
+        connector_types: Array.isArray(s.ev_connector_types) ? s.ev_connector_types : [],
+        address: [s.street_address, s.city, s.state, s.zip].filter(Boolean).join(', '),
+        access: s.access_code || 'public',
+        status: s.status_code || 'E',
+        date_last_confirmed: s.date_last_confirmed || null,
+        updated_at: s.updated_at || null,
+      });
+      stationsByCounty.set(countyFips, countyStations);
+    }
   }
+  stationInventoryByState.set(state, {
+    fetched_at: new Date().toISOString(),
+    stations_by_county: stationsByCounty,
+  });
   return { byCounty, total_stations: stations.length, coverage };
+}
+
+/** Returns the public AFDC station snapshot captured by the latest live sweep. */
+export function liveStationsForCounty(state, countyFips) {
+  const inventory = stationInventoryByState.get(String(state).toUpperCase());
+  if (!inventory) return null;
+  return {
+    state: String(state).toUpperCase(),
+    county_fips: countyFips,
+    fetched_at: inventory.fetched_at,
+    source: 'DOE Alternative Fuels Data Center',
+    source_url: 'https://afdc.energy.gov/stations/',
+    stations: inventory.stations_by_county.get(countyFips) ?? [],
+  };
 }
 
 /** Fetch county population directly from the Census ACS API for this run. */

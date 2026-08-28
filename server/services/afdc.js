@@ -58,6 +58,7 @@ export async function fetchAllStations({
   state = config.pilotState,
   fuelType = 'ELEC',
   status = 'E',
+  access = 'public',
   apiKey = config.nrelApiKey,
   baseUrl = config.afdcBaseUrl,
   fetchImpl = fetch,
@@ -72,6 +73,7 @@ export async function fetchAllStations({
     url.searchParams.set('fuel_type', fuelType);
     url.searchParams.set('state', state);
     url.searchParams.set('status', status);
+    url.searchParams.set('access', access);
     url.searchParams.set('limit', String(PAGE_LIMIT));
     url.searchParams.set('offset', String(offset));
     url.searchParams.set('api_key', apiKey);

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { usePostJson } from '../hooks/useApi.js';
 import { formatRatio } from '../utils/format.js';
+import EvStationIcon from './EvStationIcon.jsx';
 
 const ALL_STATES = [
   { code: 'AL', name: 'Alabama' }, { code: 'AK', name: 'Alaska' }, { code: 'AZ', name: 'Arizona' },
@@ -314,11 +315,14 @@ export default function RiderTypeView({
                 )}
                 {riderResult.stations?.slice(0, 10).map((s) => (
                   <div key={s.id} className="rider-station" style={{ cursor: 'default' }}>
-                    <span className="rider-station-name">{s.name}</span>
-                    <span className="rider-station-meta">
-                      {s.distance_miles} mi away · {s.network}
-                      {s.dc_fast_ports > 0 ? ` · ${s.dc_fast_ports} DC Fast` : ''}
-                      {s.level2_ports > 0 ? ` · ${s.level2_ports} L2` : ''}
+                    <EvStationIcon dcFast={s.dc_fast_ports > 0} />
+                    <span className="rider-station-copy">
+                      <span className="rider-station-name">{s.name}</span>
+                      <span className="rider-station-meta">
+                        {s.distance_miles} mi away · {s.network}
+                        {s.dc_fast_ports > 0 ? ` · ${s.dc_fast_ports} DC Fast` : ''}
+                        {s.level2_ports > 0 ? ` · ${s.level2_ports} L2` : ''}
+                      </span>
                     </span>
                   </div>
                 ))}

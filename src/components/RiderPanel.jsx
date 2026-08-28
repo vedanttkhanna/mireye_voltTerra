@@ -1,4 +1,5 @@
 import { formatRatio } from '../utils/format.js';
+import EvStationIcon from './EvStationIcon.jsx';
 
 const VERDICT_CLASS = {
   easy: 'rider-verdict easy',
@@ -104,11 +105,14 @@ export default function RiderPanel({ result, loading, error, onSelectStation }) 
             onClick={() => onSelectStation?.(s)}
             title="Show on map"
           >
-            <span className="rider-station-name">{s.name}</span>
-            <span className="rider-station-meta">
-              {s.drive_minutes != null ? `${s.drive_minutes} min` : `${s.distance_miles} mi`}
-              {s.dc_fast_ports > 0 ? ` · ${s.dc_fast_ports} DC fast` : ''}
-              {s.level2_ports > 0 ? ` · ${s.level2_ports} L2` : ''}
+            <EvStationIcon dcFast={s.dc_fast_ports > 0} />
+            <span className="rider-station-copy">
+              <span className="rider-station-name">{s.name}</span>
+              <span className="rider-station-meta">
+                {s.drive_minutes != null ? `${s.drive_minutes} min` : `${s.distance_miles} mi`}
+                {s.dc_fast_ports > 0 ? ` · ${s.dc_fast_ports} DC fast` : ''}
+                {s.level2_ports > 0 ? ` · ${s.level2_ports} L2` : ''}
+              </span>
             </span>
           </button>
         ))}

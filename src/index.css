@@ -636,6 +636,30 @@ body,
   color: var(--danger);
 }
 
+.map-station-status {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1001;
+  margin: 0;
+  padding: 0.5rem 0.7rem;
+  border: 1px solid var(--info-border);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.96);
+  box-shadow: 0 3px 12px rgba(15, 23, 42, 0.12);
+  color: var(--fg-muted);
+  font-size: 0.76rem;
+}
+
+.map-station-status strong {
+  color: var(--info);
+}
+
+.map-station-status.error {
+  border-color: #fecaca;
+  color: var(--danger);
+}
+
 @media (max-width: 760px) {
   .map-brand-overlay {
     top: 0.75rem;
@@ -913,6 +937,72 @@ body,
 /* Leaflet Map overrides for Light Theme */
 .leaflet-container {
   font-family: inherit;
+}
+
+.ev-station-div-icon {
+  border: 0;
+  background: transparent;
+}
+
+.ev-station-map-icon {
+  position: relative;
+  display: grid;
+  width: 100%;
+  height: 100%;
+  place-items: center;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(15, 23, 42, 0.38);
+}
+
+.ev-station-map-icon.dc-fast {
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.28), 0 2px 8px rgba(15, 23, 42, 0.38);
+}
+
+.ev-station-map-icon.level-two {
+  box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.22), 0 2px 8px rgba(15, 23, 42, 0.34);
+}
+
+.ev-station-map-icon svg {
+  width: 78%;
+  height: 78%;
+  overflow: visible;
+  fill: none;
+  stroke: var(--fg);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ev-station-map-icon .ev-glyph-bolt {
+  fill: var(--accent-dark);
+  stroke: none;
+}
+
+.ev-station-type-badge {
+  position: absolute;
+  right: -5px;
+  bottom: -4px;
+  display: grid;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 3px;
+  place-items: center;
+  border: 2px solid #ffffff;
+  border-radius: 999px;
+  color: #ffffff;
+  font-size: 8px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.dc-fast .ev-station-type-badge {
+  background: var(--accent-dark);
+}
+
+.level-two .ev-station-type-badge {
+  background: var(--info);
 }
 
 .leaflet-popup-content-wrapper {
@@ -1492,9 +1582,8 @@ body,
 .rider-station {
   display: flex;
   width: 100%;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 0.75rem;
+  align-items: center;
+  gap: 0.65rem;
   padding: 0.45rem 0.55rem;
   margin-bottom: 0.3rem;
   border: 1px solid var(--card-border);
@@ -1505,22 +1594,94 @@ body,
   cursor: pointer;
 }
 
+.rider-station-icon {
+  position: relative;
+  display: grid;
+  flex: 0 0 27px;
+  width: 27px;
+  height: 27px;
+  place-items: center;
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.rider-station-icon.dc-fast {
+  border-color: var(--accent-border);
+  background: var(--accent-light);
+}
+
+.rider-station-icon.level-two {
+  border-color: var(--info-border);
+  background: var(--info-light);
+}
+
+.rider-station-icon svg {
+  width: 19px;
+  height: 19px;
+  overflow: visible;
+  fill: none;
+  stroke: var(--fg);
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.rider-station-icon .ev-glyph-bolt {
+  fill: var(--accent-dark);
+  stroke: none;
+}
+
+.rider-station-icon > span {
+  position: absolute;
+  right: -4px;
+  bottom: -4px;
+  display: grid;
+  min-width: 15px;
+  height: 15px;
+  padding: 0 2px;
+  place-items: center;
+  border: 2px solid #ffffff;
+  border-radius: 999px;
+  color: #ffffff;
+  font-size: 7px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.rider-station-icon.dc-fast > span {
+  background: var(--accent-dark);
+}
+
+.rider-station-icon.level-two > span {
+  background: var(--info);
+}
+
+.rider-station-copy {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.12rem;
+}
+
 .rider-station:hover {
   border-color: var(--accent);
   background: var(--accent-light);
 }
 
 .rider-station-name {
+  display: block;
   font-size: 0.82rem;
   font-weight: 600;
   color: var(--fg);
 }
 
 .rider-station-meta {
-  flex: 0 0 auto;
+  display: block;
   font-size: 0.74rem;
   color: var(--fg-muted);
-  white-space: nowrap;
+  line-height: 1.35;
 }
 
 .rider-footnote {
