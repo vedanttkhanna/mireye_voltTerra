@@ -90,7 +90,7 @@ export default function RiderTypeView({
 
     setError(null);
     try {
-      const res = await runRiderCheck({ lat: la, lng: ln });
+      const res = await runRiderCheck({ lat: la, lng: ln, state: activeState });
       setRiderResult(res);
       onPickPoint?.({ lat: la, lng: ln });
     } catch {

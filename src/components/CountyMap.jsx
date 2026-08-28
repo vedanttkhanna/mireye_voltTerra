@@ -13,40 +13,37 @@ const BUCKET_FILL = {
   fund_grid_upgrade_first: '#ef4444',
   insufficient_data: '#64748b',
 };
-const NOT_FLAGGED_FILL = '#cbd5e1';
-
-function getBoundaryStyle(feature, selectedFips) {
-  const bucket = feature.properties.bucket;
-  const isUnderserved = feature.properties.underserved;
-  const isSelected = selectedFips === feature.properties.county_fips;
-
-  if (isSelected) {
-    return {
-      fillColor: BUCKET_FILL[bucket] ?? '#38bdf8',
-      fillOpacity: 0.85,
-      color: '#0f172a',
-      weight: 5,
-      opacity: 1,
-    };
-  }
-
-  return {
-    fillColor: BUCKET_FILL[bucket] ?? NOT_FLAGGED_FILL,
-    fillOpacity: isUnderserved ? 0.65 : 0.35,
-    color: isUnderserved ? (BUCKET_FILL[bucket] ?? '#1e293b') : '#1e293b',
-    weight: isUnderserved ? 2.5 : 2,
-    opacity: 0.95,
-  };
-}
-
 function getStateOutlineStyle() {
   return {
     fill: false,
-    color: '#0f172a',
-    weight: 4.5,
+    color: '#facc15',
+    weight: 4,
     opacity: 1,
     lineJoin: 'round',
   };
+}
+
+function pointInRing({ lat, lng }, ring) {
+  let inside = false;
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i += 1) {
+    const [xi, yi] = ring[i];
+    const [xj, yj] = ring[j];
+    const crosses = yi > lat !== yj > lat && lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi;
+    if (crosses) inside = !inside;
+  }
+  return inside;
+}
+
+function pointInGeometry(point, geometry) {
+  if (!geometry) return false;
+  if (geometry.type === 'Polygon') return geometry.coordinates.reduce((inside, ring) => pointInRing(point, ring) ? !inside : inside, false);
+  if (geometry.type === 'MultiPolygon') return geometry.coordinates.some((polygon) => polygon.reduce((inside, ring) => pointInRing(point, ring) ? !inside : inside, false));
+  if (geometry.type === 'GeometryCollection') return geometry.geometries.some((child) => pointInGeometry(point, child));
+  return false;
+}
+
+function isInsideBoundaries(point, boundaries) {
+  return boundaries?.features?.some((feature) => pointInGeometry(point, feature.geometry)) ?? false;
 }
 
 // Substations the agent looked up live. Square rather than round so they read
@@ -412,21 +409,12 @@ function MapViewController({ activeState, selectedFips, liveCounties, statsCount
 export default function CountyMap({ activeState, selectedFips, onSelectCounty, toolbarAction, agentFindings, liveCounties, riderMode = false, riderResult, riderFocusStation, onCheckPoint, backgroundMode = false }) {
   const currentState = activeState || 'CA';
   const { data: boundaries, error: boundariesError } = useApi(`/api/counties/boundaries/${currentState}`);
+  const hasLiveSweep = Array.isArray(liveCounties) && liveCounties.length > 0;
+  const { data: stateOutline } = useApi(hasLiveSweep ? `/api/counties/state-outline/${currentState}` : null);
   const [exploreMode, setExploreMode] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [mapInstance, setMapInstance] = useState(null);
-
-  const filteredBoundaries = useMemo(() => {
-    if (!boundaries) return null;
-    if (riderMode) return boundaries;
-    return {
-      ...boundaries,
-      features: boundaries.features.filter((f) => {
-        const b = f.properties.bucket;
-        return b === 'fund_charger_now' || b === 'fund_grid_upgrade_first';
-      }),
-    };
-  }, [boundaries, riderMode]);
+  const [pointNotice, setPointNotice] = useState(null);
 
   return (
     <div style={expanded ? {
@@ -479,7 +467,9 @@ export default function CountyMap({ activeState, selectedFips, onSelectCounty, t
           <button
             onClick={() => {
               setExploreMode((v) => !v);
+              setPointNotice(null);
             }}
+            disabled={!hasLiveSweep}
             style={{
               padding: '0.4rem 0.85rem',
               borderRadius: 7,
@@ -487,8 +477,9 @@ export default function CountyMap({ activeState, selectedFips, onSelectCounty, t
               background: exploreMode ? 'var(--accent-light)' : '#ffffff',
               color: exploreMode ? 'var(--accent-darker)' : 'var(--fg)',
               fontWeight: 600,
-              cursor: 'pointer',
+              cursor: hasLiveSweep ? 'pointer' : 'not-allowed',
               fontSize: '0.8rem',
+              opacity: hasLiveSweep ? 1 : 0.55,
               boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
               transition: 'all 0.15s ease',
             }}
@@ -503,6 +494,7 @@ export default function CountyMap({ activeState, selectedFips, onSelectCounty, t
           {boundariesError}. Run <code>npm run ingest:boundaries</code>.
         </p>
       )}
+      {pointNotice && <p style={{ position: 'absolute', top: backgroundMode ? '8.4rem' : '3.25rem', right: '1rem', zIndex: 1001, margin: 0, padding: '0.5rem 0.7rem', borderRadius: 8, background: '#fffbeb', border: '1px solid #facc15', color: '#854d0e', fontSize: '0.8rem', fontWeight: 600 }}>{pointNotice}</p>}
 
       <div style={backgroundMode ? { position: 'absolute', inset: 0, overflow: 'hidden' } : { borderRadius: 10, overflow: 'hidden', border: '1px solid var(--card-border)', flex: 1, minHeight: 520, boxShadow: '0 2px 8px rgba(0,0,0,0.04)' }}>
         <MapContainer center={CA_CENTER} zoom={CA_ZOOM} zoomControl={!backgroundMode} style={{ width: '100%', height: '100%', minHeight: backgroundMode ? 0 : 520, background: '#e2e8f0' }}>
@@ -517,26 +509,12 @@ export default function CountyMap({ activeState, selectedFips, onSelectCounty, t
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           />
 
-          {filteredBoundaries && (
+          {stateOutline && (
             <GeoJSON
-              key={`${currentState}-${selectedFips ?? 'all'}`}
-              data={filteredBoundaries}
-              style={(feature) => getBoundaryStyle(feature, selectedFips)}
-              onEachFeature={(feature, layer) => {
-                const p = feature.properties;
-                layer.bindTooltip(
-                  `<strong>${p.county_name}</strong><br/>${p.driver_to_plug_ratio != null ? formatRatio(p.driver_to_plug_ratio) + ' EVs/port' : 'not flagged'}${
-                    p.bucket ? '<br/>' + formatBucket(p.bucket) : ''
-                  }<br/><span style="color:#059669;font-weight:600">Click to select for AI chat</span>`,
-                  { sticky: true }
-                );
-
-                layer.on('click', () => {
-                  if (!exploreMode && onSelectCounty) {
-                    onSelectCounty(p.county_fips);
-                  }
-                });
-              }}
+              key={`${currentState}-outline`}
+              data={stateOutline}
+              style={getStateOutlineStyle}
+              interactive={false}
             />
           )}
 
@@ -549,7 +527,12 @@ export default function CountyMap({ activeState, selectedFips, onSelectCounty, t
             <ClickCapture
               active={exploreMode}
               onPick={(point) => {
+                if (!isInsideBoundaries(point, boundaries)) {
+                  setPointNotice(`Choose a point inside the live-swept ${currentState} boundary.`);
+                  return;
+                }
                 setExploreMode(false);
+                setPointNotice(null);
                 onCheckPoint?.(point);
               }}
             />
@@ -564,10 +547,9 @@ export default function CountyMap({ activeState, selectedFips, onSelectCounty, t
 function Legend() {
   return (
     <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', fontSize: '0.78rem', color: 'var(--fg-muted)' }}>
+      <LegendItem color="#facc15" label="Live sweep boundary" />
       <LegendItem color={BUCKET_FILL.fund_charger_now} label="Fund charger now" />
       <LegendItem color={BUCKET_FILL.fund_grid_upgrade_first} label="Fund grid upgrade first" />
-      <LegendItem color={BUCKET_FILL.insufficient_data} label="Needs data review" />
-      <LegendItem color="#cbd5e1" label="Not flagged" />
     </div>
   );
 }

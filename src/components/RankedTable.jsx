@@ -10,8 +10,8 @@ const FILTERS = [
   { key: 'insufficient_data', label: 'Needs data review' },
 ];
 
-export default function RankedTable({ counties, selectedFips, onSelect }) {
-  const [filter, setFilter] = useState('underserved');
+export default function RankedTable({ counties, selectedFips, onSelect, demandMetric }) {
+  const [filter, setFilter] = useState('all');
   const [hoverFips, setHoverFips] = useState(null);
 
   const rows = useMemo(() => {
@@ -52,8 +52,12 @@ export default function RankedTable({ counties, selectedFips, onSelect }) {
           <thead>
             <tr style={{ textAlign: 'left', color: 'var(--fg-muted)', borderBottom: '2px solid var(--card-border)' }}>
               <th style={{ padding: '0.65rem 0.75rem', fontWeight: 600 }}>County</th>
-              <th style={{ padding: '0.65rem 0.75rem', fontWeight: 600 }}>EVs / port</th>
-              <th style={{ padding: '0.65rem 0.75rem', fontWeight: 600 }}>Registrations</th>
+              <th style={{ padding: '0.65rem 0.75rem', fontWeight: 600 }}>
+                {demandMetric === 'people_per_public_port' ? 'People / port' : 'EVs / port'}
+              </th>
+              <th style={{ padding: '0.65rem 0.75rem', fontWeight: 600 }}>
+                {demandMetric === 'people_per_public_port' ? 'Population' : 'Registrations'}
+              </th>
               <th style={{ padding: '0.65rem 0.75rem', fontWeight: 600 }}>Ports</th>
               <th style={{ padding: '0.65rem 0.75rem', fontWeight: 600 }}>Bucket</th>
             </tr>
@@ -83,7 +87,9 @@ export default function RankedTable({ counties, selectedFips, onSelect }) {
                     {c.county_name}
                   </td>
                   <td style={{ padding: '0.75rem', fontWeight: 600 }}>{formatRatio(c.driver_to_plug_ratio)}</td>
-                  <td style={{ padding: '0.75rem', color: 'var(--fg-muted)' }}>{formatNumber(c.latest_registrations)}</td>
+                  <td style={{ padding: '0.75rem', color: 'var(--fg-muted)' }}>
+                    {formatNumber(demandMetric === 'people_per_public_port' ? c.population : c.latest_registrations)}
+                  </td>
                   <td style={{ padding: '0.75rem', color: 'var(--fg-muted)' }}>{formatNumber(c.charger_count)}</td>
                   <td style={{ padding: '0.75rem' }}>
                     <BucketBadge bucket={c.bucket} />

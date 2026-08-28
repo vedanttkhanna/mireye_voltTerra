@@ -17,6 +17,7 @@ import { fileURLToPath } from 'node:url';
 import { mireye } from './mireye.js';
 import { computeGridFeasibilityScore, bucketCounty, flagUnderservedCounties } from './scoring.js';
 import { fetchAllStations } from './afdc.js';
+import { fetchLiveEvRegistrations } from './live-registrations.js';
 import { config } from '../config.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -181,9 +182,13 @@ export async function runLiveSweep({ state, onProgress = () => {} } = {}) {
   const counties = countiesForState(state);
 
   onProgress({ phase: 'chargers', message: `Pulling charging stations for ${state}` });
-  const [{ byCounty: chargers, total_stations, coverage: chargerCoverage }, livePopulation] = await Promise.all([
+  const registrationTask = fetchLiveEvRegistrations(state, { counties })
+    .then((data) => ({ data, error: null }))
+    .catch((error) => ({ data: null, error: error.message }));
+  const [{ byCounty: chargers, total_stations, coverage: chargerCoverage }, livePopulation, registrationResult] = await Promise.all([
     chargersByCounty(state),
     fetchLiveCountyPopulation(state),
+    registrationTask,
   ]);
 
   // Preflight against Mireye's own pricing before spending anything.
@@ -245,13 +250,19 @@ export async function runLiveSweep({ state, onProgress = () => {} } = {}) {
 
   onProgress({ phase: 'scoring', message: 'Scoring and bucketing' });
 
+  const liveRegistrations = registrationResult.data;
+  const usesRegistrations = Boolean(liveRegistrations);
   const withRatio = counties.map((c, i) => {
     const ch = chargers.get(c.county_fips) ?? { station_count: 0, level2_ports: 0, dc_fast_ports: 0 };
     const ports = ch.level2_ports + ch.dc_fast_ports;
+    const population = livePopulation?.get(c.county_fips) ?? c.population;
+    const registrations = liveRegistrations?.byCounty.get(c.county_fips) ?? null;
+    const demand = usesRegistrations ? registrations : population;
     return {
       county_fips: c.county_fips,
       county_name: c.county_name,
-      population: livePopulation?.get(c.county_fips) ?? c.population,
+      population,
+      registrations,
       lat: c.lat,
       lng: c.lng,
       chargers: ch,
@@ -259,7 +270,7 @@ export async function runLiveSweep({ state, onProgress = () => {} } = {}) {
       // People per public port. The universal stand-in for the CA-only
       // EV-registrations-per-port ratio; a county with no ports at all is
       // maximally underserved rather than undefined.
-      ratio: ports > 0 ? (livePopulation?.get(c.county_fips) ?? c.population) / ports : (livePopulation?.get(c.county_fips) ?? c.population) > 0 ? Infinity : null,
+      ratio: demand != null && ports > 0 ? demand / ports : demand != null && demand > 0 ? Infinity : null,
       grid_fields: gridResults[i]?.fields ?? null,
     };
   });
@@ -288,6 +299,7 @@ export async function runLiveSweep({ state, onProgress = () => {} } = {}) {
       county_fips: c.county_fips,
       county_name: c.county_name,
       population: c.population,
+      latest_registrations: c.registrations,
       charger_count: c.charger_count,
       // Surfaced from the wider Mireye pull so the drill-down can explain cost
       // and buildability, not just whether a substation is near.
@@ -320,10 +332,10 @@ export async function runLiveSweep({ state, onProgress = () => {} } = {}) {
     ran_at: new Date().toISOString(),
     duration_ms: Date.now() - started,
     mireye_batching: { locations_per_request: BATCH, concurrent_requests: workerCount },
-    demand_metric: 'people_per_public_port',
-    demand_metric_note:
-      'Census 2020 county population per public charging port. Used instead of EV registrations ' +
-      'because county-level EV registration data is not published for most states.',
+    demand_metric: usesRegistrations ? 'ev_registrations_per_public_port' : 'people_per_public_port',
+    demand_metric_note: usesRegistrations
+      ? 'Current public DMV/Atlas EV registrations per public charging port.'
+      : 'Census county population per public charging port. No public county-level EV registration source is available for this state.',
     state_median_driver_to_plug_ratio: median,
     underserved_threshold_multiplier: config.underservedThresholdMultiplier,
     counties_total: scored.length,
@@ -343,6 +355,15 @@ export async function runLiveSweep({ state, onProgress = () => {} } = {}) {
       county_population: livePopulation
         ? { source: 'US Census Bureau ACS 2024 B01003_001E', freshness: 'live', fetched_at: new Date().toISOString() }
         : { source: 'US Census Bureau 2020 county reference', freshness: 'bundled_reference', note: 'Set CENSUS_API_KEY to fetch this input live.' },
+      ev_registrations: liveRegistrations
+        ? { source: liveRegistrations.source, freshness: 'live', fetched_at: liveRegistrations.fetched_at, source_url: liveRegistrations.source_url }
+        : {
+            source: null,
+            freshness: registrationResult.error ? 'unavailable' : 'not_published',
+            note: registrationResult.error
+              ? `Live registration source was unavailable for this run: ${registrationResult.error}`
+              : 'No public county-level EV-registration feed is published for this state.',
+          },
     },
     credits_spent: estimated,
     counties: scored,

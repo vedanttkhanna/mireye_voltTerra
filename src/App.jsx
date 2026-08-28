@@ -105,7 +105,7 @@ export default function App() {
   const pickRiderPoint = async ({ lat, lng }) => {
     setRiderFocusStation(null);
     try {
-      setRiderResult(await runRiderCheck({ lat, lng }));
+      setRiderResult(await runRiderCheck({ lat, lng, state: activeState }));
     } catch {
       // surfaced through riderError
     }
@@ -374,7 +374,12 @@ export default function App() {
                     onPickPoint={pickRiderPoint}
                     busy={riderLoading}
                   />
-                  <RankedTable counties={facilityData.counties} selectedFips={selectedFips} onSelect={setSelectedFips} />
+                  <RankedTable
+                    counties={facilityData.counties}
+                    selectedFips={selectedFips}
+                    onSelect={setSelectedFips}
+                    demandMetric={facilityData.demand_metric}
+                  />
                   {selectedFips && (
                     <div className="overlay-drilldown">
                       <CountyDrilldown fips={selectedFips} countyData={selectedCounty} />

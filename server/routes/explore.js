@@ -8,10 +8,11 @@ import { GRID_FEASIBILITY_FIELDS } from '../services/orchestrator.js';
 import { computeGridFeasibilityScore } from '../services/scoring.js';
 import { findContainingFeature } from '../lib/geo.js';
 import { conflictWhileRunning, rateLimit } from '../lib/operation-guard.js';
+import { STATE_FIPS } from '../services/live-sweep.js';
+import { findLiveSweepByState } from './live.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.join(__dirname, '../data');
-const CACHE_DIR = path.join(DATA_DIR, 'cache');
 
 export const exploreRouter = Router();
 
@@ -22,19 +23,9 @@ export const exploreRouter = Router();
 // is just Mireye field data and works anywhere Mireye does.
 const US_BOUNDS = { minLat: 18, maxLat: 72, minLng: -180, maxLng: -65 };
 
-async function loadScoredCounties() {
+async function loadCountyBoundaries(state) {
   try {
-    const raw = await readFile(path.join(CACHE_DIR, `scored-counties-${config.pilotState}.json`), 'utf8');
-    return JSON.parse(raw);
-  } catch (err) {
-    if (err.code !== 'ENOENT') throw err;
-    return null;
-  }
-}
-
-async function loadCountyBoundaries() {
-  try {
-    const raw = await readFile(path.join(DATA_DIR, `county-boundaries-${config.pilotState}.json`), 'utf8');
+    const raw = await readFile(path.join(DATA_DIR, `county-boundaries-${state}.json`), 'utf8');
     return JSON.parse(raw);
   } catch (err) {
     if (err.code !== 'ENOENT') throw err;
@@ -43,7 +34,8 @@ async function loadCountyBoundaries() {
 }
 
 /**
- * POST /api/explore/check-point — ad-hoc grid-feasibility check at any
+ * POST /api/explore/check-point — ad-hoc grid-feasibility check inside the
+ * currently live-swept state only.
  * coordinate, reusing the exact same gate logic (computeGridFeasibilityScore)
  * and field list (GRID_FEASIBILITY_FIELDS) as the county-level pipeline, so
  * a point check and a county's own bucket are directly comparable, not a
@@ -68,11 +60,19 @@ async function loadCountyBoundaries() {
 exploreRouter.post('/check-point', rateLimit({ name: 'point-check', max: 10, windowMs: 60 * 60_000 }), conflictWhileRunning('point-check', async (req, res) => {
   const lat = Number(req.body?.lat);
   const lng = Number(req.body?.lng);
+  const state = String(req.body?.state ?? '').toUpperCase();
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
     return res.status(400).json({ error: 'bad_request', detail: 'Body must include numeric lat and lng' });
   }
   if (lat < US_BOUNDS.minLat || lat > US_BOUNDS.maxLat || lng < US_BOUNDS.minLng || lng > US_BOUNDS.maxLng) {
     return res.status(400).json({ error: 'out_of_range', detail: 'Point falls outside Mireye\'s US coverage envelope' });
+  }
+  if (!STATE_FIPS[state]) {
+    return res.status(400).json({ error: 'bad_state', detail: 'Select a valid state before checking a point' });
+  }
+  const liveSweep = findLiveSweepByState(state);
+  if (!liveSweep) {
+    return res.status(409).json({ error: 'sweep_required', detail: `Run a live sweep for ${state} before checking a point` });
   }
   const estimatedCredits = GRID_FEASIBILITY_FIELDS.length;
   if (estimatedCredits > config.maxPointCheckCredits) {
@@ -80,10 +80,14 @@ exploreRouter.post('/check-point', rateLimit({ name: 'point-check', max: 10, win
   }
 
   try {
-    // Validate optional local context before the paid request so a corrupt
-    // cache cannot waste credits and then turn the response into an error.
-    const boundaries = await loadCountyBoundaries();
-    const scored = boundaries ? await loadScoredCounties() : null;
+    // Resolve the point before the paid request. A point outside the sweep's
+    // state must never consume Mireye credits.
+    const boundaries = await loadCountyBoundaries(state);
+    const containingFeature = boundaries ? findContainingFeature({ lat, lng }, boundaries) : null;
+    if (!containingFeature) {
+      return res.status(400).json({ error: 'outside_swept_state', detail: `Choose a point inside the live-swept ${state} boundary` });
+    }
+
     const response = await mireye.fetch({ lat, lng, fields: GRID_FEASIBILITY_FIELDS });
     if (!response?.fields || typeof response.fields !== 'object' || Array.isArray(response.fields) ||
         GRID_FEASIBILITY_FIELDS.some((field) => !(field in response.fields))) {
@@ -91,11 +95,9 @@ exploreRouter.post('/check-point', rateLimit({ name: 'point-check', max: 10, win
     }
     const feasibility = computeGridFeasibilityScore(response.fields);
 
-    const containingFeature = boundaries ? findContainingFeature({ lat, lng }, boundaries) : null;
-
     let resolvedCounty = null;
     if (containingFeature) {
-      const scoredCounty = scored?.counties.find((c) => c.county_fips === containingFeature.properties.county_fips);
+      const scoredCounty = liveSweep.counties?.find((c) => c.county_fips === containingFeature.properties.county_fips);
       resolvedCounty = {
         county_fips: containingFeature.properties.county_fips,
         county_name: containingFeature.properties.county_name,
@@ -108,6 +110,7 @@ exploreRouter.post('/check-point', rateLimit({ name: 'point-check', max: 10, win
     res.json({
       lat,
       lng,
+      state,
       checked_at: response.fetched_at,
       resolved_county: resolvedCounty,
       feasibility,

@@ -7,6 +7,12 @@ export function useApi(path) {
   const [loading, setLoading] = useState(true);
 
   const refetch = useCallback(async () => {
+    if (!path) {
+      setData(null);
+      setError(null);
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
     try {

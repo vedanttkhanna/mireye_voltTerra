@@ -88,7 +88,7 @@ export default function FacilityTypeView({
 
     setPointError(null);
     try {
-      const res = await checkPoint({ lat: la, lng: ln });
+      const res = await checkPoint({ lat: la, lng: ln, state: activeState });
       setPointResult(res);
     } catch {
       // captured by checkError
@@ -172,6 +172,12 @@ export default function FacilityTypeView({
               )}
               {facilityData.data_sources?.county_population?.freshness !== 'live' && (
                 <> County population is the bundled Census reference. Add <code>CENSUS_API_KEY</code> to make that input live too.</>
+              )}
+              {facilityData.data_sources?.ev_registrations?.freshness === 'live' && (
+                <> Demand ranking uses fresh EV registrations from {facilityData.data_sources.ev_registrations.source}.</>
+              )}
+              {facilityData.data_sources?.ev_registrations?.freshness === 'unavailable' && (
+                <> This state has no public county-level DMV feed, so demand is labeled and ranked as people per port.</>
               )}
             </div>
 

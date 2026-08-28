@@ -2,14 +2,14 @@ import { readFile } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { Router } from 'express';
-import { config } from '../config.js';
 import { fetchRiderContext, routeToStations, fetchRiderPhysical, scoreRiderFeasibility } from '../services/rider.js';
 import { findContainingFeature } from '../lib/geo.js';
 import { rateLimit } from '../lib/operation-guard.js';
+import { STATE_FIPS } from '../services/live-sweep.js';
+import { findLiveSweepByState } from './live.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.join(__dirname, '../data');
-const CACHE_DIR = path.join(DATA_DIR, 'cache');
 
 export const riderRouter = Router();
 
@@ -33,14 +33,28 @@ async function loadJson(file) {
 riderRouter.post('/check-point', rateLimit({ name: 'rider-check', max: 60, windowMs: 60 * 60_000 }), async (req, res) => {
   const lat = Number(req.body?.lat);
   const lng = Number(req.body?.lng);
+  const state = String(req.body?.state ?? '').toUpperCase();
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
     return res.status(400).json({ error: 'bad_request', detail: 'Body must include numeric lat and lng' });
   }
   if (lat < US_BOUNDS.minLat || lat > US_BOUNDS.maxLat || lng < US_BOUNDS.minLng || lng > US_BOUNDS.maxLng) {
     return res.status(400).json({ error: 'out_of_range', detail: 'Point falls outside US coverage' });
   }
+  if (!STATE_FIPS[state]) {
+    return res.status(400).json({ error: 'bad_state', detail: 'Select a valid state before checking a point' });
+  }
+  const liveSweep = findLiveSweepByState(state);
+  if (!liveSweep) {
+    return res.status(409).json({ error: 'sweep_required', detail: `Run a live sweep for ${state} before checking a point` });
+  }
 
   try {
+    const boundaries = await loadJson(path.join(DATA_DIR, `county-boundaries-${state}.json`));
+    const feature = boundaries ? findContainingFeature({ lat, lng }, boundaries) : null;
+    if (!feature) {
+      return res.status(400).json({ error: 'outside_swept_state', detail: `Choose a point inside the live-swept ${state} boundary` });
+    }
+
     const { stations, nearestDcfcMiles } = await fetchRiderContext({ lat, lng });
 
     // Mireye does the routing and the physical read; AFDC only supplied the
@@ -50,25 +64,21 @@ riderRouter.post('/check-point', rateLimit({ name: 'rider-check', max: 60, windo
       fetchRiderPhysical({ lat, lng }),
     ]);
 
-    // County context is best-effort: a point outside the pilot state still gets
-    // a station answer, just without the congestion half of the verdict.
-    const boundaries = await loadJson(path.join(DATA_DIR, `county-boundaries-${config.pilotState}.json`));
-    const scored = await loadJson(path.join(CACHE_DIR, `scored-counties-${config.pilotState}.json`));
-    const feature = boundaries ? findContainingFeature({ lat, lng }, boundaries) : null;
     const scoredCounty = feature
-      ? scored?.counties?.find((c) => c.county_fips === feature.properties.county_fips) ?? null
+      ? liveSweep.counties?.find((c) => c.county_fips === feature.properties.county_fips) ?? null
       : null;
 
     const feasibility = scoreRiderFeasibility({
       stations: routing.routed,
       nearestDcfcMiles,
       countyRatio: scoredCounty?.driver_to_plug_ratio ?? null,
-      stateMedianRatio: scored?.state_median_driver_to_plug_ratio ?? null,
+      stateMedianRatio: liveSweep.state_median_driver_to_plug_ratio ?? null,
     });
 
     res.json({
       lat,
       lng,
+      state,
       checked_at: new Date().toISOString(),
       county: feature
         ? {

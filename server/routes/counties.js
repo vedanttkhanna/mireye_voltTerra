@@ -11,6 +11,63 @@ const CACHE_DIR = path.join(__dirname, '../data/cache');
 
 export const countiesRouter = Router();
 
+function coordinateKey([lng, lat]) {
+  // County files share coordinates at their borders. Rounding prevents tiny
+  // floating point representation differences from creating false seams.
+  return `${Number(lng).toFixed(7)},${Number(lat).toFixed(7)}`;
+}
+
+function addPolygonRings(geometry, rings) {
+  if (!geometry) return;
+  if (geometry.type === 'Polygon') {
+    rings.push(...geometry.coordinates);
+    return;
+  }
+  if (geometry.type === 'MultiPolygon') {
+    for (const polygon of geometry.coordinates) rings.push(...polygon);
+    return;
+  }
+  if (geometry.type === 'GeometryCollection') {
+    for (const child of geometry.geometries) addPolygonRings(child, rings);
+  }
+}
+
+/**
+ * Returns only the exterior edges of a state, not its internal county seams.
+ * An edge shared by two counties appears twice and is removed; an exterior
+ * edge appears once and becomes part of the yellow map outline.
+ */
+function createStateOutline(boundaries) {
+  const edges = new Map();
+  const rings = [];
+  for (const feature of boundaries.features ?? []) addPolygonRings(feature.geometry, rings);
+
+  for (const ring of rings) {
+    for (let i = 0; i < ring.length - 1; i += 1) {
+      const start = ring[i];
+      const end = ring[i + 1];
+      const startKey = coordinateKey(start);
+      const endKey = coordinateKey(end);
+      if (startKey === endKey) continue;
+      const key = startKey < endKey ? `${startKey}|${endKey}` : `${endKey}|${startKey}`;
+      const existing = edges.get(key);
+      if (existing) existing.count += 1;
+      else edges.set(key, { count: 1, coordinates: [start, end] });
+    }
+  }
+
+  return {
+    type: 'FeatureCollection',
+    features: [...edges.values()]
+      .filter((edge) => edge.count === 1)
+      .map((edge) => ({
+        type: 'Feature',
+        properties: {},
+        geometry: { type: 'LineString', coordinates: edge.coordinates },
+      })),
+  };
+}
+
 async function loadJoinPipelineOutput() {
   const raw = await readFile(path.join(CACHE_DIR, `join-pipeline-${config.pilotState}.json`), 'utf8');
   return JSON.parse(raw);
@@ -115,6 +172,21 @@ countiesRouter.get('/boundaries/:state?', async (req, res) => {
   } catch (err) {
     if (err.code === 'ENOENT') return res.status(404).json({ error: 'not_found', detail: `No county boundaries found for state ${req.params.state || req.query.state || config.pilotState}` });
     console.error('[counties/boundaries]', err);
+    res.status(503).json({ error: 'cache_unavailable' });
+  }
+});
+
+// GET /api/counties/state-outline/:state — a single state perimeter for the
+// live-sweep map. Internal county borders are intentionally omitted so a
+// grid-upgrade bucket never looks like a red route or zone on the basemap.
+countiesRouter.get('/state-outline/:state', async (req, res) => {
+  try {
+    const state = String(req.params.state).toUpperCase();
+    const raw = await readFile(path.join(__dirname, `../data/county-boundaries-${state}.json`), 'utf8');
+    res.json({ state, ...createStateOutline(JSON.parse(raw)) });
+  } catch (err) {
+    if (err.code === 'ENOENT') return res.status(404).json({ error: 'not_found', detail: `No county boundaries found for state ${req.params.state}` });
+    console.error('[counties/state-outline]', err);
     res.status(503).json({ error: 'cache_unavailable' });
   }
 });
