@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { usePostJson } from '../hooks/useApi.js';
 import { formatRatio } from '../utils/format.js';
 
@@ -41,7 +41,9 @@ export default function RiderTypeView({
 
   const { run: runRiderCheck, loading: riderLoading, error: riderError } = usePostJson('/api/rider/check-point');
   const [riderResult, setRiderResult] = useState(null);
+  const lastAutoSubmittedPoint = useRef(null);
 
+  // Populate fields when a map click sends an initialPoint
   useEffect(() => {
     if (!initialPoint) return;
     setLatInput(String(initialPoint.lat));
@@ -50,6 +52,23 @@ export default function RiderTypeView({
     setError(null);
     setRiderResult(null);
   }, [initialPoint]);
+
+  // Auto-submit the rider check when initialPoint arrives from a map click
+  useEffect(() => {
+    if (!initialPoint) return;
+    const key = `${initialPoint.lat},${initialPoint.lng}`;
+    if (lastAutoSubmittedPoint.current === key) return;
+    lastAutoSubmittedPoint.current = key;
+    (async () => {
+      try {
+        const res = await runRiderCheck({ lat: initialPoint.lat, lng: initialPoint.lng, state: activeState });
+        setRiderResult(res);
+        onPickPoint?.({ lat: initialPoint.lat, lng: initialPoint.lng });
+      } catch {
+        // error surfaced through riderError
+      }
+    })();
+  }, [initialPoint, activeState, runRiderCheck, onPickPoint]);
 
   const counties = facilityData?.counties ?? [];
   const selectedCounty = counties.find((c) => c.county_fips === selectedFips) ?? counties[0];

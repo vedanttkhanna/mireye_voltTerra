@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import BucketBadge from './BucketBadge.jsx';
 import FieldCitations from './FieldCitations.jsx';
 import GateFailureList from './GateFailureList.jsx';
@@ -43,7 +43,9 @@ export default function FacilityTypeView({
   const [pointError, setPointError] = useState(null);
   const { run: checkPoint, loading: checkingPoint, error: checkError } = usePostJson('/api/explore/check-point');
   const [pointResult, setPointResult] = useState(null);
+  const lastAutoSubmittedPoint = useRef(null);
 
+  // Populate fields when a map click sends an initialPoint
   useEffect(() => {
     if (!initialPoint) return;
     setLatInput(String(initialPoint.lat));
@@ -52,6 +54,22 @@ export default function FacilityTypeView({
     setPointError(null);
     setPointResult(null);
   }, [initialPoint]);
+
+  // Auto-submit the point check when initialPoint arrives from a map click
+  useEffect(() => {
+    if (!initialPoint) return;
+    const key = `${initialPoint.lat},${initialPoint.lng}`;
+    if (lastAutoSubmittedPoint.current === key) return;
+    lastAutoSubmittedPoint.current = key;
+    (async () => {
+      try {
+        const res = await checkPoint({ lat: initialPoint.lat, lng: initialPoint.lng, state: activeState });
+        setPointResult(res);
+      } catch {
+        // error surfaced through checkError
+      }
+    })();
+  }, [initialPoint, activeState, checkPoint]);
 
   const counties = facilityData?.counties ?? [];
   const chargerCounties = counties.filter((c) => c.bucket === 'fund_charger_now');

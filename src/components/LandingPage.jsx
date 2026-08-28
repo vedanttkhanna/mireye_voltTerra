@@ -22,12 +22,20 @@ export default function LandingPage({ onSelectRole }) {
               <span>50 US States live sweep</span>
               <span>Cited justification memos</span>
             </div>
-            <button
-              className="role-launch-btn primary-btn"
-              onClick={() => onSelectRole('facility')}
-            >
-              Enter as EV Facility →
-            </button>
+            <div className="role-mode-buttons">
+              <button
+                className="role-launch-btn primary-btn"
+                onClick={() => onSelectRole('facility', 'map')}
+              >
+                🗺️ Enter Map Mode
+              </button>
+              <button
+                className="role-launch-btn secondary-btn"
+                onClick={() => onSelectRole('facility', 'type')}
+              >
+                ⌨️ Enter Type Mode
+              </button>
+            </div>
           </div>
 
           {/* Role Option 2: EV Rider */}
@@ -43,12 +51,20 @@ export default function LandingPage({ onSelectRole }) {
               <span>Point & address charger search</span>
               <span>Mireye physical location data</span>
             </div>
-            <button
-              className="role-launch-btn secondary-btn"
-              onClick={() => onSelectRole('rider')}
-            >
-              Enter as EV Rider →
-            </button>
+            <div className="role-mode-buttons">
+              <button
+                className="role-launch-btn primary-btn"
+                onClick={() => onSelectRole('rider', 'map')}
+              >
+                🗺️ Enter Map Mode
+              </button>
+              <button
+                className="role-launch-btn secondary-btn"
+                onClick={() => onSelectRole('rider', 'type')}
+              >
+                ⌨️ Enter Type Mode
+              </button>
+            </div>
           </div>
         </div>
 

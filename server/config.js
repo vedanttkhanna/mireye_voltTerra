@@ -34,7 +34,7 @@ export const config = {
   censusAcsBaseUrl: process.env.CENSUS_ACS_BASE_URL || 'https://api.census.gov/data/2024/acs/acs5',
 
   pilotState: process.env.PILOT_STATE || 'CA',
-  underservedThresholdMultiplier: Number(process.env.UNDERSERVED_THRESHOLD_MULTIPLIER) || 2.0,
+  underservedThresholdMultiplier: Number(process.env.UNDERSERVED_THRESHOLD_MULTIPLIER) || 1.5,
 
   // Safety cap on a single runFullSweep() call, checked against the live
   // /v1/fetch/quote before any metered call runs. Guards against a

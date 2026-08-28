@@ -23,9 +23,23 @@ function getStateOutlineStyle() {
   };
 }
 
+function getCountyBoundaryStyle(feature, selectedFips) {
+  const selected = feature.properties.county_fips === selectedFips;
+  return {
+    color: '#facc15',
+    weight: selected ? 2.4 : 1.1,
+    opacity: selected ? 1 : 0.8,
+    fillColor: '#facc15',
+    fillOpacity: selected ? 0.24 : 0,
+  };
+}
+
 function pointInRing({ lat, lng }, ring) {
   let inside = false;
-  for (let i = 0, j = ring.length - 1; i < ring.length; j = i += 1) {
+  // j must trail i by one edge. `j = i += 1` increments i *then* assigns, so
+  // j === i and every edge is zero-length: the test then never registers a
+  // crossing and reports every point as outside. `j = i++` is the correct form.
+  for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
     const [xi, yi] = ring[i];
     const [xj, yj] = ring[j];
     const crosses = yi > lat !== yj > lat && lng < ((xj - xi) * (lat - yi)) / (yj - yi) + xi;
@@ -44,6 +58,16 @@ function pointInGeometry(point, geometry) {
 
 function isInsideBoundaries(point, boundaries) {
   return boundaries?.features?.some((feature) => pointInGeometry(point, feature.geometry)) ?? false;
+}
+
+function countyTooltip(countyName, county) {
+  if (!county) return `<strong>${countyName}</strong><br/>Live county data unavailable`;
+  const metric = county.people_per_port != null ? 'people per public port' : 'EVs per public port';
+  const ratio = county.driver_to_plug_ratio ?? county.people_per_port;
+  const grid = county.grid_feasibility
+    ? (county.grid_feasibility.passes_gates ? 'Grid gates pass' : 'Grid upgrade first')
+    : (county.underserved ? 'Grid evidence unavailable' : 'Within peer threshold');
+  return `<strong>${countyName}</strong><br/><strong>${ratio != null ? formatRatio(ratio) : 'No ratio'} ${metric}</strong><br/>${county.charger_count ?? 0} public ports<br/>${grid}<br/><span style="color:#854d0e;font-weight:600">Click to select</span>`;
 }
 
 // Substations the agent looked up live. Square rather than round so they read
@@ -165,7 +189,11 @@ function LiveCountyLayer({ counties, selectedFips, onSelectCounty, riderMode = f
   }, [counties, riderMode]);
 
   useEffect(() => {
-    const pts = displayCounties.map((c) => [c.grid_feasibility.sampled_at.lat, c.grid_feasibility.sampled_at.lng]);
+    // Defensive: a county can be bucketed without a usable coordinate, and one
+    // NaN pair makes Leaflet throw and blanks the whole map.
+    const pts = displayCounties
+      .map((c) => [c.grid_feasibility?.sampled_at?.lat, c.grid_feasibility?.sampled_at?.lng])
+      .filter(([lat, lng]) => Number.isFinite(lat) && Number.isFinite(lng));
     if (pts.length && !selectedFips) {
       map.fitBounds(L.latLngBounds(pts).pad(0.4), { maxZoom: 8, animate: true });
     }
@@ -176,10 +204,15 @@ function LiveCountyLayer({ counties, selectedFips, onSelectCounty, riderMode = f
     <Fragment>
       {displayCounties.map((c) => {
           const isSelected = c.county_fips === selectedFips;
+          const mLat = c.grid_feasibility?.sampled_at?.lat;
+          const mLng = c.grid_feasibility?.sampled_at?.lng;
+          // Skip rather than hand Leaflet a NaN pair, which throws and takes
+          // the whole map down with it.
+          if (!Number.isFinite(mLat) || !Number.isFinite(mLng)) return null;
           return (
             <Marker
               key={c.county_fips}
-              position={[c.grid_feasibility.sampled_at.lat, c.grid_feasibility.sampled_at.lng]}
+              position={[mLat, mLng]}
               icon={countyBubbleIcon(c.bucket, c.underserved, isSelected)}
               eventHandlers={{ click: () => onSelectCounty?.(c.county_fips) }}
             >
@@ -415,6 +448,10 @@ export default function CountyMap({ activeState, selectedFips, onSelectCounty, t
   const [expanded, setExpanded] = useState(false);
   const [mapInstance, setMapInstance] = useState(null);
   const [pointNotice, setPointNotice] = useState(null);
+  const liveCountyByFips = useMemo(
+    () => new Map((liveCounties ?? []).map((county) => [county.county_fips, county])),
+    [liveCounties]
+  );
 
   return (
     <div style={expanded ? {
@@ -502,13 +539,34 @@ export default function CountyMap({ activeState, selectedFips, onSelectCounty, t
           <ResizeMap expanded={expanded} />
           {backgroundMode && <MapRefSetter onReady={setMapInstance} />}
           <TileLayer
-            // CARTO's anonymous basemap started serving "API KEY REQUIRED"
-            // watermarked tiles, so this uses OSM's standard tiles instead:
-            // free, keyless, and adequate for a county-scale choropleth.
-            url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            // OSM's standard style uses pink/red road strokes, which can look
+            // like our grid-upgrade overlay. Esri's neutral canvas leaves the
+            // yellow county geometry and real red decision markers unambiguous.
+            url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
+            attribution='Tiles &copy; <a href="https://www.esri.com/">Esri</a>'
           />
 
+          {/* Census county geometry is drawn only as yellow cartographic
+              boundaries. It carries no scoring colour, so it cannot be
+              mistaken for a route or a grid-upgrade zone. */}
+          {hasLiveSweep && boundaries && (
+            <GeoJSON
+              key={`${currentState}-counties-${selectedFips ?? 'none'}-${exploreMode ? 'point' : 'select'}`}
+              data={boundaries}
+              style={(feature) => getCountyBoundaryStyle(feature, selectedFips)}
+              interactive={!exploreMode}
+              onEachFeature={(feature, layer) => {
+                const { county_fips: countyFips, county_name: countyName } = feature.properties;
+                layer.bindTooltip(countyTooltip(countyName, liveCountyByFips.get(countyFips)), { sticky: true });
+                layer.on('click', () => {
+                  if (!exploreMode) onSelectCounty?.(countyFips);
+                });
+              }}
+            />
+          )}
+
+          {/* Keep the statewide perimeter above the county seams so it reads
+              as the state boundary at every zoom level. */}
           {stateOutline && (
             <GeoJSON
               key={`${currentState}-outline`}
@@ -547,7 +605,7 @@ export default function CountyMap({ activeState, selectedFips, onSelectCounty, t
 function Legend() {
   return (
     <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', fontSize: '0.78rem', color: 'var(--fg-muted)' }}>
-      <LegendItem color="#facc15" label="Live sweep boundary" />
+      <LegendItem color="#facc15" label="County boundary" />
       <LegendItem color={BUCKET_FILL.fund_charger_now} label="Fund charger now" />
       <LegendItem color={BUCKET_FILL.fund_grid_upgrade_first} label="Fund grid upgrade first" />
     </div>

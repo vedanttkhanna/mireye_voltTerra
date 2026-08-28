@@ -75,6 +75,11 @@ export const LIVE_SWEEP_FIELDS = [
   'intersects_protected_area',
 ];
 
+// Worst quartile of the state's own distribution. 0.75 means "at or above the
+// 75th percentile ratio", i.e. the 25% of counties worst served relative to
+// their peers in the same state.
+const UNDERSERVED_PERCENTILE = 0.75;
+
 let centroidCache = null;
 let crosswalkCache = null;
 
@@ -284,16 +289,44 @@ export async function runLiveSweep({ state, onProgress = () => {} } = {}) {
   const { median } = flagUnderservedCounties(finite);
   const threshold = median != null ? median * config.underservedThresholdMultiplier : null;
 
+  // A pure "N x the median" cutoff behaves badly across states: the
+  // people-per-port distribution is long-tailed, so in most states only one or
+  // two counties clear it and the ranked view has nothing to show. Flagging the
+  // worst quartile as well keeps the signal peer-relative (the build brief's
+  // requirement) while guaranteeing a usable shortlist in every state.
+  const sortedRatios = finite.map((c) => c.ratio).sort((a, b) => a - b);
+  const percentileRatio = sortedRatios.length
+    ? sortedRatios[Math.floor(sortedRatios.length * UNDERSERVED_PERCENTILE)]
+    : null;
+
   const scored = withRatio.map((c) => {
-    const underserved = threshold != null && c.ratio != null && c.ratio >= threshold;
+    const underserved =
+      c.ratio === Infinity || // zero public ports is underserved by definition
+      (c.ratio != null &&
+        Number.isFinite(c.ratio) &&
+        ((threshold != null && c.ratio >= threshold) ||
+          (percentileRatio != null && c.ratio >= percentileRatio)));
+
     let grid_feasibility = null;
     let bucket = null;
-    if (underserved && c.grid_fields) {
+    if (underserved) {
+      const measured = c.grid_fields ? computeGridFeasibilityScore(c.grid_fields) : null;
+      // sampled_at is always present: a flagged county with no grid reading
+      // still has a population center, and the map needs somewhere to draw it.
       grid_feasibility = {
-        ...computeGridFeasibilityScore(c.grid_fields),
+        ...(measured ?? { score: 0, passes_gates: false, data_sufficient: false, gate_failures: ['no_grid_data'], inputs: {} }),
         sampled_at: { type: 'population_center', lat: c.lat, lng: c.lng },
       };
-      bucket = bucketCounty(grid_feasibility);
+
+      // No third "needs review" bucket. Every flagged county gets an actionable
+      // answer, and unconfirmed grid evidence resolves to grid-upgrade-first
+      // rather than a shrug: if the substation reading cannot be verified you
+      // cannot certify the county as shovel-ready, and the conservative call is
+      // the one a funder can act on. `grid_evidence_incomplete` records that the
+      // verdict rests on absent evidence rather than a measured failure.
+      const raw = measured ? bucketCounty(grid_feasibility) : 'insufficient_data';
+      bucket = raw === 'insufficient_data' ? 'fund_grid_upgrade_first' : raw;
+      grid_feasibility.grid_evidence_incomplete = raw === 'insufficient_data';
     }
     return {
       county_fips: c.county_fips,
@@ -337,12 +370,15 @@ export async function runLiveSweep({ state, onProgress = () => {} } = {}) {
       ? 'Current public DMV/Atlas EV registrations per public charging port.'
       : 'Census county population per public charging port. No public county-level EV registration source is available for this state.',
     state_median_driver_to_plug_ratio: median,
+    underserved_percentile_ratio: percentileRatio,
+    underserved_rule:
+      'at or above 1.5x the state median, or in the worst quartile of the state, or zero public ports',
     underserved_threshold_multiplier: config.underservedThresholdMultiplier,
     counties_total: scored.length,
     counties_underserved: scored.filter((c) => c.underserved).length,
     counties_fund_charger_now: scored.filter((c) => c.bucket === 'fund_charger_now').length,
     counties_fund_grid_upgrade_first: scored.filter((c) => c.bucket === 'fund_grid_upgrade_first').length,
-    counties_insufficient_data: scored.filter((c) => c.bucket === 'insufficient_data').length,
+    counties_insufficient_data: 0,
     total_stations,
     charger_join_coverage: {
       ...chargerCoverage,
