@@ -10,6 +10,7 @@ import ManualEntry from './components/ManualEntry.jsx';
 import FacilityTypeView from './components/FacilityTypeView.jsx';
 import RiderTypeView from './components/RiderTypeView.jsx';
 import BucketBadge from './components/BucketBadge.jsx';
+import ComparisonPanel from './components/ComparisonPanel.jsx';
 import { usePostJson } from './hooks/useApi.js';
 
 const STATE_NAMES = {
@@ -296,6 +297,14 @@ export default function App() {
             >
               AI Chat
             </button>
+            {role === 'facility' && (
+              <button
+                className={activePanel === 'comparison' ? 'active' : ''}
+                onClick={() => togglePanel('comparison')}
+              >
+                Comparison Mode
+              </button>
+            )}
           </nav>
 
           {liveStatus?.running && (
@@ -308,11 +317,11 @@ export default function App() {
           {activePanel && (
             <aside
               key={activePanel}
-              className={`map-side-panel ${activePanel === 'rider' ? 'rider-panel' : activePanel === 'demand' ? 'demand-panel' : `chat-panel ${chatExpanded ? 'expanded' : 'compact'}`}${panelClosing ? ' closing' : ''}`}
+              className={`map-side-panel ${activePanel === 'rider' ? 'rider-panel' : activePanel === 'demand' ? 'demand-panel' : activePanel === 'comparison' ? 'comparison-panel' : `chat-panel ${chatExpanded ? 'expanded' : 'compact'}`}${panelClosing ? ' closing' : ''}`}
             >
               {activePanel !== 'chat' && (
                 <div className="map-side-panel-heading">
-                  <strong>{activePanel === 'rider' ? 'Can I own an EV here?' : 'County Demand'}</strong>
+                  <strong>{activePanel === 'rider' ? 'Can I own an EV here?' : activePanel === 'comparison' ? 'Comparison Mode' : 'County Demand'}</strong>
                   <div className="map-side-panel-actions">
                     <button onClick={closePanel} aria-label="Close panel" title="Close">✕</button>
                   </div>
@@ -356,6 +365,16 @@ export default function App() {
                       {liveStatus?.running ? 'Sweeping Mireye API…' : `⚡ Run Live Sweep for ${STATE_NAMES[activeState] ?? activeState}`}
                     </button>
                   </div>
+                </div>
+              ) : activePanel === 'comparison' ? (
+                <div className="map-side-panel-body comparison-body">
+                  <ComparisonPanel
+                    counties={facilityData.counties}
+                    demandMetric={facilityData.demand_metric}
+                    dataSources={facilityData.data_sources}
+                    selectedFips={selectedFips}
+                    onSelectCounty={setSelectedFips}
+                  />
                 </div>
               ) : (
                 <div className="map-side-panel-body demand-body">

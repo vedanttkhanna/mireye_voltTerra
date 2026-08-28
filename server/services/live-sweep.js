@@ -386,11 +386,11 @@ export async function runLiveSweep({ state, onProgress = () => {} } = {}) {
       resolved_percent: total_stations ? Number((((chargerCoverage.county_field + chargerCoverage.zip_crosswalk) / total_stations) * 100).toFixed(1)) : 100,
     },
     data_sources: {
-      charger_inventory: { source: 'DOE AFDC', freshness: 'live', fetched_at: new Date().toISOString() },
-      grid_evidence: { source: 'Mireye /v1/fetch/batch', freshness: 'live', fetched_at: new Date().toISOString() },
+      charger_inventory: { source: 'DOE AFDC', freshness: 'live', fetched_at: new Date().toISOString(), source_url: 'https://afdc.energy.gov/data_download' },
+      grid_evidence: { source: 'Mireye /v1/fetch/batch', freshness: 'live', fetched_at: new Date().toISOString(), source_url: 'https://www.mireye.com' },
       county_population: livePopulation
-        ? { source: 'US Census Bureau ACS 2024 B01003_001E', freshness: 'live', fetched_at: new Date().toISOString() }
-        : { source: 'US Census Bureau 2020 county reference', freshness: 'bundled_reference', note: 'Set CENSUS_API_KEY to fetch this input live.' },
+        ? { source: 'US Census Bureau ACS 2024 B01003_001E', freshness: 'live', fetched_at: new Date().toISOString(), source_url: 'https://www.census.gov/programs-surveys/acs' }
+        : { source: 'US Census Bureau 2020 county reference', freshness: 'bundled_reference', source_url: 'https://www.census.gov/geographies/reference-files/time-series/geo/centers-population.html', note: 'Set CENSUS_API_KEY to fetch this input live.' },
       ev_registrations: liveRegistrations
         ? { source: liveRegistrations.source, freshness: 'live', fetched_at: liveRegistrations.fetched_at, source_url: liveRegistrations.source_url }
         : {

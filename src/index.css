@@ -244,6 +244,10 @@ body,
   animation-name: chat-window-out;
 }
 
+.map-side-panel.comparison-panel {
+  width: min(68rem, calc(100vw - 12rem));
+}
+
 .map-side-panel-heading {
   display: flex;
   flex: 0 0 auto;
@@ -304,6 +308,314 @@ body,
   border-top: 1px solid var(--card-border);
 }
 
+/* County comparison */
+.comparison-body {
+  padding: 0;
+  background: var(--bg);
+}
+
+.comparison-workspace {
+  min-width: 52rem;
+  padding: 1.15rem;
+}
+
+.comparison-intro {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.comparison-eyebrow {
+  margin: 0 0 0.25rem;
+  color: var(--accent-darker);
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.comparison-intro h2 {
+  margin: 0;
+  color: var(--fg);
+  font-size: 1.15rem;
+}
+
+.comparison-intro p:not(.comparison-eyebrow) {
+  margin: 0.3rem 0 0;
+  color: var(--fg-muted);
+  font-size: 0.8rem;
+}
+
+.comparison-insights {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 0.55rem;
+}
+
+.comparison-summary {
+  display: flex;
+  align-items: flex-end;
+  flex: 0 0 auto;
+  gap: 0.6rem;
+}
+
+.comparison-add {
+  min-height: 3.3rem;
+  padding: 0.55rem 0.8rem;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  background: var(--accent);
+  color: #ffffff;
+  font: inherit;
+  font-size: 0.75rem;
+  font-weight: 750;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.comparison-add:hover:not(:disabled) {
+  background: var(--accent-dark);
+}
+
+.comparison-add:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.comparison-insights div {
+  min-width: 8.5rem;
+  padding: 0.55rem 0.7rem;
+  border: 1px solid var(--accent-border);
+  border-radius: 8px;
+  background: var(--accent-light);
+}
+
+.comparison-insights span,
+.comparison-insights strong {
+  display: block;
+}
+
+.comparison-insights span {
+  margin-bottom: 0.15rem;
+  color: var(--accent-darker);
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.comparison-insights strong {
+  max-width: 11rem;
+  overflow: hidden;
+  color: var(--fg);
+  font-size: 0.8rem;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.comparison-table-wrap {
+  overflow: auto;
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  background: var(--card-bg);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.comparison-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-size: 0.81rem;
+}
+
+.comparison-table th,
+.comparison-table td {
+  padding: 0.72rem 0.8rem;
+  border-right: 1px solid var(--card-border);
+  border-bottom: 1px solid var(--card-border);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.comparison-table tr > :last-child {
+  border-right: 0;
+}
+
+.comparison-table tbody tr:last-child > * {
+  border-bottom: 0;
+}
+
+.comparison-table thead th {
+  background: var(--accent-light);
+}
+
+.comparison-table thead th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 3;
+  width: 14rem;
+  color: var(--accent-darker);
+  font-size: 0.74rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.comparison-table thead label {
+  display: block;
+  margin-bottom: 0.3rem;
+  color: var(--accent-darker);
+  font-size: 0.67rem;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.comparison-table select {
+  width: 100%;
+  min-width: 0;
+  padding: 0.48rem 1.65rem 0.48rem 0.55rem;
+  border: 1px solid var(--accent-border);
+  border-radius: 6px;
+  background: #ffffff;
+  color: var(--fg);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.comparison-table select:focus {
+  outline: 2px solid var(--accent-shadow);
+  border-color: var(--accent);
+}
+
+.comparison-locate {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--accent-darker);
+  font: inherit;
+  font-size: 0.69rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.comparison-column-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+}
+
+.comparison-remove {
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--fg-muted);
+  font: inherit;
+  font-size: 0.69rem;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+.comparison-remove:hover {
+  color: var(--danger);
+  text-decoration: underline;
+}
+
+.comparison-locate:hover {
+  text-decoration: underline;
+}
+
+.comparison-table tbody th {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+  background: #fbfcfd;
+  font-weight: 400;
+}
+
+.comparison-table tbody tr:hover td,
+.comparison-table tbody tr:hover th {
+  background: var(--accent-light);
+}
+
+.comparison-row-label,
+.comparison-row-hint,
+.comparison-sources {
+  display: block;
+}
+
+.comparison-row-label {
+  color: var(--fg);
+  font-weight: 700;
+}
+
+.comparison-row-hint {
+  margin-top: 0.1rem;
+  color: var(--fg-muted);
+  font-size: 0.68rem;
+  line-height: 1.25;
+}
+
+.comparison-sources {
+  margin-top: 0.28rem;
+}
+
+.comparison-source {
+  display: inline-block;
+  max-width: 9rem;
+  margin: 0 0.35rem 0.1rem 0;
+  overflow: hidden;
+  color: var(--accent-darker);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  vertical-align: bottom;
+  white-space: nowrap;
+}
+
+.comparison-source:hover {
+  text-decoration: underline;
+}
+
+.comparison-value {
+  color: var(--fg);
+  font-weight: 650;
+  line-height: 1.35;
+}
+
+.comparison-value.positive {
+  color: var(--accent-darker);
+}
+
+.comparison-value.attention {
+  color: var(--warn-dark);
+}
+
+.comparison-footnote {
+  margin: 0.75rem 0 0;
+  color: var(--fg-muted);
+  font-size: 0.72rem;
+  line-height: 1.45;
+}
+
+@media (max-width: 760px) {
+  .comparison-workspace {
+    min-width: 48rem;
+  }
+
+  .comparison-intro {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .comparison-summary {
+    align-items: stretch;
+  }
+}
+
 .map-status-overlay {
   position: absolute;
   left: 50%;
@@ -341,6 +653,14 @@ body,
   }
 
   .map-side-panel.demand-panel {
+    top: 8.25rem;
+    right: 0.75rem;
+    bottom: 0.75rem;
+    left: 0.75rem;
+    width: auto;
+  }
+
+  .map-side-panel.comparison-panel {
     top: 8.25rem;
     right: 0.75rem;
     bottom: 0.75rem;
@@ -1844,4 +2164,3 @@ body,
   gap: 0.4rem;
   font-size: 0.85rem;
 }
-
