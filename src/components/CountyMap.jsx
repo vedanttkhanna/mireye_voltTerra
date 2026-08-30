@@ -13,23 +13,60 @@ const BUCKET_FILL = {
   fund_grid_upgrade_first: '#ef4444',
   insufficient_data: '#64748b',
 };
+// Rider-side shading. Same three tiers the point check returns, so a county
+// the map calls hard and an address the panel calls hard mean the same thing.
+const RIDER_FILL = {
+  easy: '#10b981',
+  workable: '#f59e0b',
+  hard: '#ef4444',
+  unknown: '#94a3b8',
+};
+
+const RIDER_LABEL = {
+  easy: 'Easy to own an EV',
+  workable: 'Workable with planning',
+  hard: 'Hard without home charging',
+  unknown: 'Not enough data',
+};
+
+// The cartographic layer is two lines of the same weight: a red state
+// perimeter and yellow county seams inside it. Hue separates the two, not
+// thickness, so neither reads as the more important border.
+const BOUNDARY_RED = '#dc2626';
+const BOUNDARY_YELLOW = '#facc15';
+const BOUNDARY_WEIGHT = 4;
+
 function getStateOutlineStyle() {
   return {
     fill: false,
-    color: '#facc15',
-    weight: 4,
+    color: BOUNDARY_RED,
+    weight: BOUNDARY_WEIGHT,
     opacity: 1,
     lineJoin: 'round',
   };
 }
 
-function getCountyBoundaryStyle(feature, selectedFips) {
+function getCountyBoundaryStyle(feature, selectedFips, riderRating = null) {
   const selected = feature.properties.county_fips === selectedFips;
+
+  // Rider mode colours the county BODY by how hard EV ownership is there. The
+  // stroke stays yellow in both modes, so the tier reads from the fill and
+  // never from the border.
+  if (riderRating) {
+    return {
+      color: BOUNDARY_YELLOW,
+      weight: BOUNDARY_WEIGHT,
+      opacity: selected ? 1 : 0.85,
+      fillColor: RIDER_FILL[riderRating] ?? RIDER_FILL.unknown,
+      fillOpacity: selected ? 0.6 : riderRating === 'unknown' ? 0.16 : 0.4,
+    };
+  }
+
   return {
-    color: '#facc15',
-    weight: selected ? 2.4 : 1.1,
+    color: BOUNDARY_YELLOW,
+    weight: BOUNDARY_WEIGHT,
     opacity: selected ? 1 : 0.8,
-    fillColor: '#facc15',
+    fillColor: BOUNDARY_YELLOW,
     fillOpacity: selected ? 0.24 : 0,
   };
 }
@@ -68,6 +105,17 @@ function countyTooltip(countyName, county) {
     ? (county.grid_feasibility.passes_gates ? 'Grid gates pass' : 'Grid upgrade first')
     : (county.underserved ? 'Grid evidence unavailable' : 'Within peer threshold');
   return `<strong>${countyName}</strong><br/><strong>${ratio != null ? formatRatio(ratio) : 'No ratio'} ${metric}</strong><br/>${county.charger_count ?? 0} public ports<br/>${grid}<br/><span style="color:#854d0e;font-weight:600">Click to select</span>`;
+}
+
+function riderCountyTooltip(countyName, county) {
+  const rider = county?.rider_feasibility;
+  if (!rider) {
+    return `<strong>${countyName}</strong><br/>Run a live sweep for this state to rate it`;
+  }
+  const reasons = rider.reasons?.length
+    ? `<br/>${rider.reasons.map((reason) => `· ${reason}`).join('<br/>')}`
+    : '';
+  return `<strong>${countyName}</strong><br/><strong>${RIDER_LABEL[rider.rating] ?? 'Not enough data'}</strong><br/>${rider.public_ports} public ports, ${rider.dc_fast_ports} DC fast${reasons}<br/><span style="color:#854d0e;font-weight:600">Click to select</span>`;
 }
 
 // Substations the agent looked up live. Square rather than round so they read
@@ -423,6 +471,85 @@ function AgentFindingsLayer({ findings }) {
   );
 }
 
+/**
+ * A label anchor for a county polygon: the centre of the bounding box of its
+ * largest ring. Not a true centroid -- for a crescent-shaped county the point
+ * can sit just outside the polygon -- but it is stable, costs one pass over
+ * the coordinates, and reads correctly for the compact shapes US counties
+ * mostly are.
+ */
+function featureLabelPoint(geometry) {
+  const rings = [];
+  const collect = (geom) => {
+    if (!geom) return;
+    if (geom.type === 'Polygon') rings.push(geom.coordinates[0]);
+    else if (geom.type === 'MultiPolygon') geom.coordinates.forEach((poly) => rings.push(poly[0]));
+    else if (geom.type === 'GeometryCollection') geom.geometries.forEach(collect);
+  };
+  collect(geometry);
+  if (!rings.length) return null;
+
+  // Largest ring, so an offshore island never pulls the label off the mainland.
+  const ring = rings.reduce((biggest, r) => (r.length > biggest.length ? r : biggest), rings[0]);
+  let minLat = Infinity, maxLat = -Infinity, minLng = Infinity, maxLng = -Infinity;
+  for (const [lng, lat] of ring) {
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) continue;
+    if (lat < minLat) minLat = lat;
+    if (lat > maxLat) maxLat = lat;
+    if (lng < minLng) minLng = lng;
+    if (lng > maxLng) maxLng = lng;
+  }
+  if (!Number.isFinite(minLat) || !Number.isFinite(minLng)) return null;
+  return [(minLat + maxLat) / 2, (minLng + maxLng) / 2];
+}
+
+function countyNameIcon(name) {
+  return L.divIcon({
+    className: 'county-name-label',
+    html: `<span>${name}</span>`,
+    iconSize: [0, 0],
+    iconAnchor: [0, 0],
+  });
+}
+
+/**
+ * Permanent county names. Kept as its own non-interactive marker layer rather
+ * than a tooltip on the polygon, because a Leaflet layer holds one tooltip and
+ * the polygon's is already the hover read-out.
+ *
+ * Labels are hidden below a per-state zoom floor: 58 names over California is
+ * readable, 254 over Texas is a smear.
+ */
+function CountyLabelLayer({ boundaries }) {
+  const map = useMap();
+  const [zoom, setZoom] = useState(() => map.getZoom());
+  useMapEvents({ zoomend: () => setZoom(map.getZoom()) });
+
+  const labels = useMemo(() => {
+    return (boundaries?.features ?? [])
+      .map((feature) => ({
+        fips: feature.properties.county_fips,
+        name: feature.properties.county_name,
+        position: featureLabelPoint(feature.geometry),
+      }))
+      .filter((label) => label.name && label.position);
+  }, [boundaries]);
+
+  const minZoom = labels.length > 100 ? 8 : labels.length > 60 ? 7 : 6;
+  if (zoom < minZoom) return null;
+
+  return labels.map((label) => (
+    <Marker
+      key={`label-${label.fips}`}
+      position={label.position}
+      icon={countyNameIcon(label.name)}
+      interactive={false}
+      keyboard={false}
+      zIndexOffset={-500}
+    />
+  ));
+}
+
 function ClickCapture({ active, onPick }) {
   useMapEvents({
     click(e) {
@@ -498,6 +625,9 @@ export default function CountyMap({ activeState, selectedFips, onSelectCounty, t
   const currentState = activeState || 'CA';
   const { data: boundaries, error: boundariesError } = useApi(`/api/counties/boundaries/${currentState}`);
   const hasLiveSweep = Array.isArray(liveCounties) && liveCounties.length > 0;
+  // Every cartographic layer waits for the sweep, the local Census geometry
+  // included. The map before a sweep is deliberately empty: nothing is drawn
+  // over a state until there is a live result to draw about it.
   const { data: stateOutline } = useApi(hasLiveSweep ? `/api/counties/state-outline/${currentState}` : null);
   const {
     data: countyStationData,
@@ -540,7 +670,11 @@ export default function CountyMap({ activeState, selectedFips, onSelectCounty, t
         boxShadow: '0 4px 16px rgba(15, 23, 42, 0.14)',
         backdropFilter: 'blur(8px)',
       } : { display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.75rem' }}>
-        <Legend showChargingStations={Boolean(riderResult || countyStationData?.stations?.length)} />
+        <Legend
+          riderMode={riderMode}
+          hasLiveSweep={hasLiveSweep}
+          showChargingStations={Boolean(riderResult || countyStationData?.stations?.length)}
+        />
         {backgroundMode && <ZoomButtons map={mapInstance} />}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           {toolbarAction}
@@ -611,30 +745,43 @@ export default function CountyMap({ activeState, selectedFips, onSelectCounty, t
           {backgroundMode && <MapRefSetter onReady={setMapInstance} />}
           <TileLayer
             // OSM's standard style uses pink/red road strokes, which can look
-            // like our grid-upgrade overlay. Esri's neutral canvas leaves the
-            // yellow county geometry and real red decision markers unambiguous.
+            // like our red state perimeter. Esri's neutral canvas leaves the
+            // cartographic geometry and the scoring colours unambiguous.
             url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
             attribution='Tiles &copy; <a href="https://www.esri.com/">Esri</a>'
           />
 
-          {/* Census county geometry is drawn only as yellow cartographic
-              boundaries. It carries no scoring colour, so it cannot be
-              mistaken for a route or a grid-upgrade zone. */}
+          {/* Census county geometry, stroked yellow at the same weight as the
+              red state perimeter. In facility mode the stroke carries no
+              scoring colour at all; in rider mode only the fill does, so a
+              border is never mistaken for a verdict. */}
           {hasLiveSweep && boundaries && (
             <GeoJSON
-              key={`${currentState}-counties-${selectedFips ?? 'none'}-${exploreMode ? 'point' : 'select'}`}
+              key={`${currentState}-counties-${selectedFips ?? 'none'}-${exploreMode ? 'point' : 'select'}-${riderMode ? 'rider' : 'facility'}-${liveCounties?.length ?? 0}`}
               data={boundaries}
-              style={(feature) => getCountyBoundaryStyle(feature, selectedFips)}
+              style={(feature) =>
+                getCountyBoundaryStyle(
+                  feature,
+                  selectedFips,
+                  riderMode ? liveCountyByFips.get(feature.properties.county_fips)?.rider_feasibility?.rating ?? null : null
+                )
+              }
               interactive={!exploreMode}
               onEachFeature={(feature, layer) => {
                 const { county_fips: countyFips, county_name: countyName } = feature.properties;
-                layer.bindTooltip(countyTooltip(countyName, liveCountyByFips.get(countyFips)), { sticky: true });
+                const county = liveCountyByFips.get(countyFips);
+                layer.bindTooltip(
+                  riderMode ? riderCountyTooltip(countyName, county) : countyTooltip(countyName, county),
+                  { sticky: true }
+                );
                 layer.on('click', () => {
                   if (!exploreMode) onSelectCounty?.(countyFips);
                 });
               }}
             />
           )}
+
+          {hasLiveSweep && boundaries && <CountyLabelLayer boundaries={boundaries} />}
 
           {/* Keep the statewide perimeter above the county seams so it reads
               as the state boundary at every zoom level. */}
@@ -675,12 +822,38 @@ export default function CountyMap({ activeState, selectedFips, onSelectCounty, t
   );
 }
 
-function Legend({ showChargingStations = false }) {
+// Nothing is on the map until a sweep has run, so the legend explains the
+// empty map rather than naming layers that are not drawn yet.
+function Legend({ riderMode = false, hasLiveSweep = false, showChargingStations = false }) {
+  if (!hasLiveSweep) {
+    return (
+      <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', fontSize: '0.78rem', color: 'var(--fg-muted)' }}>
+        <span style={{ fontWeight: 500 }}>
+          {riderMode
+            ? 'Run a live sweep to map counties and shade them by EV-ownership difficulty'
+            : 'Run a live sweep to map counties and their funding decisions'}
+        </span>
+      </div>
+    );
+  }
+
   return (
     <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', fontSize: '0.78rem', color: 'var(--fg-muted)' }}>
-      <LegendItem color="#facc15" label="County boundary" />
-      <LegendItem color={BUCKET_FILL.fund_charger_now} label="Fund charger now" />
-      <LegendItem color={BUCKET_FILL.fund_grid_upgrade_first} label="Fund grid upgrade first" />
+      <LegendItem color={BOUNDARY_RED} label="State boundary" />
+      <LegendItem color={BOUNDARY_YELLOW} label="County boundary" />
+      {riderMode ? (
+        <>
+          <LegendItem color={RIDER_FILL.easy} label={RIDER_LABEL.easy} />
+          <LegendItem color={RIDER_FILL.workable} label={RIDER_LABEL.workable} />
+          <LegendItem color={RIDER_FILL.hard} label={RIDER_LABEL.hard} />
+          <LegendItem color={RIDER_FILL.unknown} label={RIDER_LABEL.unknown} />
+        </>
+      ) : (
+        <>
+          <LegendItem color={BUCKET_FILL.fund_charger_now} label="Fund charger now" />
+          <LegendItem color={BUCKET_FILL.fund_grid_upgrade_first} label="Fund grid upgrade first" />
+        </>
+      )}
       {showChargingStations && <LegendItem color="#0284c7" label="Public EV charging station" />}
     </div>
   );

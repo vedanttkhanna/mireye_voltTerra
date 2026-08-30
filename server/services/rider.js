@@ -170,6 +170,71 @@ export function scoreRiderFeasibility({ stations, nearestDcfcMiles = null, count
   };
 }
 
+/**
+ * The county-wide version of the verdict above, for the rider map's shading.
+ *
+ * scoreRiderFeasibility answers "can I own an EV at THIS point" and costs a
+ * live AFDC pull plus Mireye routing per point. That cannot be run for every
+ * county in a state. This asks the weaker question the sweep can already
+ * answer -- "is this county a hard place to own an EV at all" -- from figures
+ * the live sweep has in hand, so shading the whole state costs nothing extra.
+ *
+ * Same three tiers and the same reasoning as the point check, one rung
+ * coarser:
+ *   - no public ports, or no public DC fast port anywhere in the county, is
+ *     hard: without home charging there is nothing to plug into.
+ *   - contested (at or above twice the state median demand per port) caps the
+ *     county at workable, exactly as `contested` blocks `easy` at point level.
+ *   - everything with fast charging and no worse than median contention is
+ *     easy.
+ *
+ * It is a county average, not a verdict about an address: a well-served city
+ * inside a sparse county still reads as that county's tier until the rider
+ * checks their actual point.
+ */
+export const CONTESTED_MEDIAN_MULTIPLE = 2;
+
+export function scoreCountyRiderFeasibility(county, { stateMedianRatio = null } = {}) {
+  const ports = county?.charger_count ?? 0;
+  const dcFastPorts = county?.chargers?.dc_fast_ports ?? 0;
+  const ratio = county?.driver_to_plug_ratio ?? county?.people_per_port ?? null;
+  const contested =
+    ratio != null && stateMedianRatio != null && ratio >= stateMedianRatio * CONTESTED_MEDIAN_MULTIPLE;
+
+  const reasons = [];
+  if (ports === 0) reasons.push('no public charging ports in the county');
+  else if (dcFastPorts === 0) reasons.push('no public DC fast charging in the county');
+  if (contested) {
+    reasons.push(`${ratio.toFixed(1)} per port, at least twice the state median of ${stateMedianRatio.toFixed(1)}`);
+  } else if (ratio != null && stateMedianRatio != null && ratio > stateMedianRatio) {
+    reasons.push(`${ratio.toFixed(1)} per port, above the state median of ${stateMedianRatio.toFixed(1)}`);
+  }
+
+  let rating;
+  if (ports === 0 || dcFastPorts === 0) rating = 'hard';
+  else if (ratio == null || stateMedianRatio == null) rating = 'unknown';
+  else if (contested) rating = 'workable';
+  else if (ratio <= stateMedianRatio) rating = 'easy';
+  else rating = 'workable';
+
+  if (rating === 'unknown') reasons.push('not enough demand data to rate this county');
+
+  return {
+    rating,
+    rating_label:
+      rating === 'easy' ? 'Easy county for EV ownership'
+        : rating === 'workable' ? 'Workable with planning'
+          : rating === 'hard' ? 'Hard without home charging'
+            : 'Not enough data',
+    public_ports: ports,
+    dc_fast_ports: dcFastPorts,
+    demand_per_port: ratio,
+    state_median_demand_per_port: stateMedianRatio,
+    contested,
+    reasons,
+  };
+}
+
 /** Pulls the nearest public charging stations to a point from DOE AFDC. */
 export async function fetchNearestStations({
   lat,

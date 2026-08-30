@@ -18,6 +18,7 @@ import { mireye } from './mireye.js';
 import { computeGridFeasibilityScore, bucketCounty, flagUnderservedCounties } from './scoring.js';
 import { fetchAllStations } from './afdc.js';
 import { fetchLiveEvRegistrations } from './live-registrations.js';
+import { scoreCountyRiderFeasibility } from './rider.js';
 import { config } from '../config.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -396,6 +397,17 @@ export async function runLiveSweep({ state, onProgress = () => {} } = {}) {
       underserved,
       bucket,
       grid_feasibility,
+      // The same counties, read from the driver's side. Costs nothing extra:
+      // it is derived from the port counts and ratio already computed above,
+      // so EV Rider can shade a whole state without its own sweep.
+      rider_feasibility: scoreCountyRiderFeasibility(
+        {
+          charger_count: c.charger_count,
+          chargers: c.chargers,
+          driver_to_plug_ratio: Number.isFinite(c.ratio) ? Number(c.ratio.toFixed(1)) : null,
+        },
+        { stateMedianRatio: median }
+      ),
     };
   });
 
@@ -421,6 +433,9 @@ export async function runLiveSweep({ state, onProgress = () => {} } = {}) {
     counties_fund_charger_now: scored.filter((c) => c.bucket === 'fund_charger_now').length,
     counties_fund_grid_upgrade_first: scored.filter((c) => c.bucket === 'fund_grid_upgrade_first').length,
     counties_insufficient_data: 0,
+    counties_rider_hard: scored.filter((c) => c.rider_feasibility?.rating === 'hard').length,
+    counties_rider_workable: scored.filter((c) => c.rider_feasibility?.rating === 'workable').length,
+    counties_rider_easy: scored.filter((c) => c.rider_feasibility?.rating === 'easy').length,
     total_stations,
     charger_join_coverage: {
       ...chargerCoverage,

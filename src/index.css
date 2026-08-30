@@ -660,6 +660,30 @@ body,
   color: var(--danger);
 }
 
+/* County names, drawn as a marker layer over the polygons. The halo keeps a
+   name readable over both the pale basemap and the rider shading; pointer
+   events stay off so a label never blocks a click on the county under it. */
+.county-name-label {
+  pointer-events: none !important;
+  background: none;
+  border: none;
+}
+
+.county-name-label span {
+  display: block;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: #1e293b;
+  text-shadow:
+    0 0 3px #ffffff,
+    0 0 3px #ffffff,
+    1px 1px 2px rgba(255, 255, 255, 0.95),
+    -1px -1px 2px rgba(255, 255, 255, 0.95);
+}
+
 @media (max-width: 760px) {
   .map-brand-overlay {
     top: 0.75rem;

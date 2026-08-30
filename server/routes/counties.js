@@ -166,6 +166,7 @@ countiesRouter.get('/boundaries/:state?', async (req, res) => {
             driver_to_plug_ratio: s?.driver_to_plug_ratio ?? s?.people_per_port ?? null,
             underserved: s?.underserved ?? null,
             bucket: s?.bucket ?? null,
+            rider_rating: s?.rider_feasibility?.rating ?? null,
           },
         };
       }),
