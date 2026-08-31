@@ -7,6 +7,7 @@
     "node": ">=20"
   },
   "scripts": {
+    "build": "vite build",
     "dev": "concurrently -n server,client -c blue,green \"npm:server:dev\" \"npm:client:dev\"",
     "server:dev": "node --watch server/index.js",
     "server:start": "node server/index.js",
