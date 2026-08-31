@@ -12,6 +12,7 @@ import RiderTypeView from './components/RiderTypeView.jsx';
 import BucketBadge from './components/BucketBadge.jsx';
 import ComparisonPanel from './components/ComparisonPanel.jsx';
 import { usePostJson } from './hooks/useApi.js';
+import { readJsonResponse } from './utils/http.js';
 
 const STATE_NAMES = {
   CA: 'California', NV: 'Nevada', AZ: 'Arizona', OR: 'Oregon', WA: 'Washington',
@@ -62,7 +63,7 @@ export default function App() {
   useEffect(() => {
     if (!activeState) return;
     fetch(`/api/live/quote/${activeState}`)
-      .then((r) => (r.ok ? r.json() : null))
+      .then((r) => (r.ok ? readJsonResponse(r, `GET /api/live/quote/${activeState}`) : null))
       .then((data) => setQuoteData(data))
       .catch(() => setQuoteData(null));
   }, [activeState]);
@@ -94,8 +95,7 @@ export default function App() {
 
     try {
       const res = await fetch(`/api/live/sweep/${targetState}`, { method: 'POST' });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.detail || 'Live sweep failed');
+      const data = await readJsonResponse(res, `POST /api/live/sweep/${targetState}`);
       setLiveResult(data);
       setLiveStatus({ running: false, message: `Live sweep complete for ${STATE_NAMES[targetState] ?? targetState}!` });
     } catch (err) {

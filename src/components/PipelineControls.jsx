@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { readJsonResponse } from '../utils/http.js';
 
 export default function PipelineControls({ status, onRerun, compact = false }) {
   const [running, setRunning] = useState(false);
@@ -20,8 +21,7 @@ export default function PipelineControls({ status, onRerun, compact = false }) {
     setResult(null);
     try {
       const res = await fetch('/api/pipeline/run', { method: 'POST' });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.detail || 'Sweep failed');
+      const body = await readJsonResponse(res, 'POST /api/pipeline/run');
       setResult(body);
       onRerun?.();
     } catch (err) {

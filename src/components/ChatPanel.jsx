@@ -3,6 +3,7 @@ import { renderMarkdownLite } from '../utils/markdownLite.jsx';
 import CitationChip from './CitationChip.jsx';
 import BucketBadge from './BucketBadge.jsx';
 import ToolExecutionList from './ToolExecutionList.jsx';
+import { readJsonResponse } from '../utils/http.js';
 
 function formatDataGap(gap) {
   if (typeof gap === 'string') return gap;
@@ -121,10 +122,7 @@ export default function ChatPanel({ selectedCounty, onSelectCounty, chatExpanded
         }),
       });
 
-      const data = await res.json();
-      if (!res.ok) {
-        throw new Error(data.detail || 'Agent request failed');
-      }
+      const data = await readJsonResponse(res, 'POST /api/chat');
 
       // Deduplicate citations by source_url + source
       const uniqueCitations = [];

@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
+import { readJsonResponse } from '../utils/http.js';
 
 /** Fetches a GET endpoint on mount and exposes a manual refetch. */
 export function useApi(path) {
@@ -17,8 +18,7 @@ export function useApi(path) {
     setError(null);
     try {
       const res = await fetch(path);
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.detail || `${res.status} ${res.statusText}`);
+      const body = await readJsonResponse(res, `GET ${path}`);
       setData(body);
     } catch (err) {
       setError(err.message);
@@ -44,8 +44,7 @@ export function usePostAction(path) {
     setError(null);
     try {
       const res = await fetch(path, { method: 'POST' });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.detail || `${res.status} ${res.statusText}`);
+      const body = await readJsonResponse(res, `POST ${path}`);
       return body;
     } catch (err) {
       setError(err.message);
@@ -73,8 +72,7 @@ export function usePostJson(path) {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
-        const body = await res.json();
-        if (!res.ok) throw new Error(body.detail || `${res.status} ${res.statusText}`);
+        const body = await readJsonResponse(res, `POST ${path}`);
         return body;
       } catch (err) {
         setError(err.message);

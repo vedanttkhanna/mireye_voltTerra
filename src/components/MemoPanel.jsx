@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import CitationList from './CitationList.jsx';
 import { formatTimestamp } from '../utils/format.js';
 import { renderMarkdownLite } from '../utils/markdownLite.jsx';
+import { readJsonResponse } from '../utils/http.js';
 
 const STATUS = { LOADING: 'loading', MISSING: 'missing', READY: 'ready', GENERATING: 'generating', ERROR: 'error' };
 
@@ -18,8 +19,7 @@ export default function MemoPanel({ fips, bucket }) {
         setStatus(STATUS.MISSING);
         return;
       }
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.detail || 'Failed to load memo');
+      const body = await readJsonResponse(res, `GET /api/counties/${fips}/memo`);
       setMemo(body);
       setStatus(STATUS.READY);
     } catch (err) {
@@ -37,8 +37,7 @@ export default function MemoPanel({ fips, bucket }) {
     setError(null);
     try {
       const res = await fetch(`/api/counties/${fips}/memo`, { method: 'POST' });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.detail || 'Memo generation failed');
+      const body = await readJsonResponse(res, `POST /api/counties/${fips}/memo`);
       setMemo(body);
       setStatus(STATUS.READY);
     } catch (err) {
